@@ -1,0 +1,15 @@
+PRAGMA threads=64;
+PRAGMA memory_limit='250GB';
+PRAGMA enable_progress_bar=true;
+
+-- Setup: Create tables and load data for bipartite graph detection
+-- Based on sg.dl Datalog program
+
+-- Create arc table (edges in the graph)
+CREATE TABLE Arc (
+    src INTEGER,
+    dest INTEGER
+);
+
+-- Load data
+COPY Arc FROM '{{DATASET_PATH}}/Arc.csv' (FORMAT CSV, HEADER false);

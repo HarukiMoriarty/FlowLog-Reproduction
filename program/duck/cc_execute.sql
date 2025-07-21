@@ -6,15 +6,6 @@ PRAGMA enable_progress_bar=true;
 -- Finds all connected components in an undirected graph
 -- Based on cc.dl Datalog program
 
--- Create edges table for graph structure
-CREATE TABLE edges (
-    node1id INTEGER,
-    node2id INTEGER
-);
-
--- Load graph data from CSV file
-COPY edges FROM '{{DATASET_PATH}}/Arc.csv' (FORMAT CSV, HEADER false);
-
 -- Recursive propagation to find connected components
 WITH RECURSIVE cc(id, comp) AS (
     -- Initialize each node with itself as component ID

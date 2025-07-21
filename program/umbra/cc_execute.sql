@@ -1,12 +1,3 @@
--- Step 1: Define edges
-DROP TABLE IF EXISTS edges;
-CREATE TABLE edges(
-    node1id INTEGER, 
-    node2id INTEGER
-);
-
-COPY edges FROM '{{DATASET_PATH}}/Arc.csv' (DELIMITER ',', FORMAT csv, HEADER false);
-
 -- Recursive propagation of component IDs (no DISTINCT ON, no ORDER BY)
 WITH RECURSIVE cc(id, comp) AS (
     SELECT node1id, node1id AS comp FROM edges

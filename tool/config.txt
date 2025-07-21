@@ -1,1 +1,14 @@
-bipartite.sql=mind
+bipartite=mind
+bipartite=netflix
+cc=livejournal
+cc=orkut
+csda=csda-httpd
+csda=csda-linux
+csda=csda-postgresql
+reach=livejournal
+reach=orkut
+reach=twitter
+sg=G5K-0.001
+sg=G10K-0.001
+tc=G5K-0.001
+tc=G10K-0.001

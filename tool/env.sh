@@ -42,8 +42,8 @@ mkdir -p "$HOME/data/duckdb"
 echo "[SETUP] Pulling Umbra Docker image..."
 sudo docker pull umbradb/umbra:latest
 
-# Create Umbra data directory
-mkdir -p "$HOME/data/umbra"
+# Create Umbra DB
+sudo docker run --rm -v umbra-db:/var/db umbradb/umbra:latest umbra-sql -createdb /var/db/umbra.db > /dev/null
 
 echo "[DONE] Environment setup complete. Restart your terminal or run:"
 echo "  export PATH=\"$HOME/bin:\$PATH\""
