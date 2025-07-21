@@ -6,7 +6,7 @@ CREATE TABLE Arc(
 );
 
 -- Load data
-COPY Arc FROM '/hostdata/dataset/mind/Arc.csv' (DELIMITER ',', FORMAT csv);
+COPY Arc FROM '{{DATASET_PATH}}/Arc.csv' (DELIMITER ',', FORMAT csv);
 
 -- Compute transitive closure
 WITH RECURSIVE Tc(x, y) AS (

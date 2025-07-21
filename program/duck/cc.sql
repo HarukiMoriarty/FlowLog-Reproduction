@@ -13,7 +13,7 @@ CREATE TABLE edges (
 );
 
 -- Load graph data from CSV file
-COPY edges FROM './dataset/mind/Arc.csv' (FORMAT CSV, HEADER false);
+COPY edges FROM '{{DATASET_PATH}}/Arc.csv' (FORMAT CSV, HEADER false);
 
 -- Recursive propagation to find connected components
 WITH RECURSIVE cc(id, comp) AS (

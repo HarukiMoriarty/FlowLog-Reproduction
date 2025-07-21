@@ -5,7 +5,7 @@ CREATE TABLE edges(
     node2id INTEGER
 );
 
-COPY edges FROM '/hostdata/dataset/mind/Arc.csv' (DELIMITER ',', FORMAT csv, HEADER false);
+COPY edges FROM '{{DATASET_PATH}}/Arc.csv' (DELIMITER ',', FORMAT csv, HEADER false);
 
 -- Recursive propagation of component IDs (no DISTINCT ON, no ORDER BY)
 WITH RECURSIVE cc(id, comp) AS (

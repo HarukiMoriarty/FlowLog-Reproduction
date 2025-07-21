@@ -16,8 +16,8 @@ CREATE TABLE NullEdge (
 );
 
 -- Load data from CSV files
-COPY Edge FROM './dataset/csda-httpd/Edge.csv' (FORMAT CSV, HEADER FALSE);
-COPY NullEdge FROM './dataset/csda-httpd/NullEdge.csv' (FORMAT CSV, HEADER FALSE);
+COPY Edge FROM '{{DATASET_PATH}}/Edge.csv' (FORMAT CSV, HEADER FALSE);
+COPY NullEdge FROM '{{DATASET_PATH}}/NullEdge.csv' (FORMAT CSV, HEADER FALSE);
 
 -- Transitive closure computation
 WITH RECURSIVE tc(src, dest) AS (

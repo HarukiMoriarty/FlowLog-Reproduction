@@ -14,8 +14,8 @@ CREATE TABLE source (
 );
 
 -- Load data from CSV files
-COPY arc FROM '/hostdata/dataset/mind/Arc.csv' (FORMAT CSV, HEADER false);
-COPY source FROM '/hostdata/dataset/mind/Source.csv' (FORMAT CSV, HEADER false);
+COPY arc FROM '{{DATASET_PATH}}/Arc.csv' (FORMAT CSV, HEADER false);
+COPY source FROM '{{DATASET_PATH}}/Source.csv' (FORMAT CSV, HEADER false);
 
 WITH RECURSIVE
     coloring(x, color) AS (

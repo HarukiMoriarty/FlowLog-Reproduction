@@ -13,8 +13,8 @@ CREATE TABLE Arc(
 );
 
 -- Load data
-COPY Source FROM './dataset/mind/Source.csv' (DELIMITER ',', FORMAT csv, HEADER FALSE);
-COPY Arc FROM './dataset/mind/Arc.csv' (DELIMITER ',', FORMAT csv, HEADER FALSE);
+COPY Source FROM '{{DATASET_PATH}}/Source.csv' (DELIMITER ',', FORMAT csv, HEADER FALSE);
+COPY Arc FROM '{{DATASET_PATH}}/Arc.csv' (DELIMITER ',', FORMAT csv, HEADER FALSE);
 
 -- Compute Reachable nodes
 WITH RECURSIVE Reach(id) AS (
