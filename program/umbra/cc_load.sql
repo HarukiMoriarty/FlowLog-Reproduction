@@ -7,4 +7,4 @@ CREATE TABLE edges(
 
 COPY edges FROM '{{DATASET_PATH}}/Arc.csv' (DELIMITER ',', FORMAT csv, HEADER false);
 
-CHECKPOINT;
+SELECT COUNT(*) FROM edges;

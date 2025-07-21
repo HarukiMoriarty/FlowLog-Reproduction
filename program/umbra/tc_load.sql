@@ -8,4 +8,4 @@ CREATE TABLE Arc(
 -- Load data
 COPY Arc FROM '{{DATASET_PATH}}/Arc.csv' (DELIMITER ',', FORMAT csv);
 
-CHECKPOINT;
+SELECT COUNT(*) FROM Arc;

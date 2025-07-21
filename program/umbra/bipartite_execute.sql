@@ -1,8 +1,5 @@
 -- Based on bipartite.dl Datalog program
 
-SELECT COUNT(*) FROM arc;
-SELECT COUNT(*) FROM source;
-
 WITH RECURSIVE
     coloring(x, color) AS (
         -- Base case: Start from source nodes, color 0

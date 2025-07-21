@@ -11,4 +11,4 @@ CREATE TABLE Arc (
 -- Load data
 COPY Arc FROM '{{DATASET_PATH}}/Arc.csv' (FORMAT CSV, HEADER false);
 
-CHECKPOINT;
+SELECT COUNT(*) FROM Arc;

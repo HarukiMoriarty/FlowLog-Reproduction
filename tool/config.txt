@@ -2,6 +2,7 @@ bipartite=mind
 bipartite=netflix
 cc=livejournal
 cc=orkut
+cc=twitter
 csda=csda-httpd
 csda=csda-linux
 csda=csda-postgresql
