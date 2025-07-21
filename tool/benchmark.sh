@@ -12,7 +12,7 @@ declare -a RESULTS
 mkdir -p "$DATASET_DIR"
 
 # ------------------------------
-# Run DuckDB with timing
+# Run DuckDB 5 times, return fastest
 # ------------------------------
 run_duckdb() {
     local program=$1
@@ -26,11 +26,19 @@ run_duckdb() {
 
     sed "s|{{DATASET_PATH}}|dataset/${dataset}|g" "$template" > "$TEMP_SQL"
 
-    /usr/bin/time -f "%e" duckdb :memory: < "$TEMP_SQL" 2>&1 >/dev/null
+    local fastest=""
+    for i in {1..5}; do
+        local time=$(/usr/bin/time -f "%e" duckdb :memory: < "$TEMP_SQL" 2>&1 >/dev/null)
+        if [[ -z "$fastest" || $(echo "$time < $fastest" | bc -l) -eq 1 ]]; then
+            fastest="$time"
+        fi
+    done
+
+    echo "$fastest"
 }
 
 # ------------------------------
-# Run Umbra with timing
+# Run Umbra 5 times, return fastest
 # ------------------------------
 run_umbra() {
     local program=$1
@@ -44,15 +52,23 @@ run_umbra() {
 
     sed "s|{{DATASET_PATH}}|/hostdata/dataset/${dataset}|g" "$template" > "$TEMP_SQL"
 
-    /usr/bin/time -f "%e" \
-        bash -c "sudo docker run --rm \
-            -e UMBRA_THREADS=64 \
-            -e UMBRA_MEMORY_LIMIT='250GB' \
-            -v umbra-db:/var/db \
-            -v \"$PWD\":/hostdata \
-            umbradb/umbra:latest \
-            bash -c 'umbra-sql /var/db/umbra.db < /hostdata/$TEMP_SQL' \
-            > /dev/null 2>&1" 2>&1
+    local fastest=""
+    for i in {1..5}; do
+        local time=$(/usr/bin/time -f "%e" \
+            bash -c "sudo docker run --rm \
+                -e UMBRA_THREADS=64 \
+                -e UMBRA_MEMORY_LIMIT='250GB' \
+                -v umbra-db:/var/db \
+                -v \"$PWD\":/hostdata \
+                umbradb/umbra:latest \
+                bash -c 'umbra-sql /var/db/umbra.db < /hostdata/$TEMP_SQL' \
+                > /dev/null 2>&1" 2>&1)
+        if [[ -z "$fastest" || $(echo "$time < $fastest" | bc -l) -eq 1 ]]; then
+            fastest="$time"
+        fi
+    done
+
+    echo "$fastest"
 }
 
 # ------------------------------
@@ -91,7 +107,7 @@ rm -f "$TEMP_SQL"
 # Final result table
 # ------------------------------
 printf "\n==============================\n"
-printf "Timing Results Table\n"
+printf "Timing Results Table (Best of 5 runs)\n"
 printf "==============================\n\n"
 printf "%-30s %-15s %-18s %-18s\n" "Program" "Dataset" "DuckDB_Time(s)" "Umbra_Time(s)"
 printf "%-30s %-15s %-18s %-18s\n" "------------------------------" "---------------" "------------------" "------------------"
