@@ -15,11 +15,11 @@ cd ..
 
 # Write header if result file does not exist
 if [[ ! -f "$RESULT_FILE" ]]; then
-    printf "%-30s %-15s %-15s %-15s %-15s %-15s %-15s\n" \
-        "Program" "Dataset" "Duck_Load(s)" "Duck_Exec(s)" "Umbra_Load(s)" "Umbra_Exec(s)" "FlowLog_Exec(s)" \
+    printf "%-30s %-15s %-15s %-15s %-15s %-15s %-15s %-15s\n" \
+        "Program" "Dataset" "Duck_Load(s)" "Duck_Exec(s)" "Umbra_Load(s)" "Umbra_Exec(s)" "FlowLog_Load(s)" "FlowLog_Exec(s)" \
         > "$RESULT_FILE"
-    printf "%-30s %-15s %-15s %-15s %-15s %-15s %-15s\n" \
-        "------------------------------" "---------------" "---------------" "---------------" "---------------" "---------------" "---------------" \
+    printf "%-30s %-15s %-15s %-15s %-15s %-15s %-15s %-15s\n" \
+        "------------------------------" "---------------" "---------------" "---------------" "---------------" "---------------" "---------------" "---------------" \
         >> "$RESULT_FILE"
 fi
 
@@ -82,33 +82,87 @@ run_flowlog() {
     [[ ! -d "$fact_path" ]] && { echo "-1 -1"; return; }
     
     # Create log file for FlowLog output (run once for logging)
-    echo "=== FlowLog Execute Log for $base on $dataset ===" > "./log/flowlog_${base}_${dataset}.log"
+    local log_file="./log/flowlog_${base}_${dataset}.log"
+    echo "=== FlowLog Execute Log for $base on $dataset ===" > "$log_file"
     "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" \
-        >> "./log/flowlog_${base}_${dataset}.log" 2>&1
+        >> "$log_file" 2>&1
     
     # Run FlowLog multiple times to find fastest execution time
+    local fastest_load=""
     local fastest_exec=""
-    local time_file="./result/time/${base}_${dataset}_none.txt"
     
     for i in {1..3}; do
-        # Run FlowLog silently for timing
-        "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" \
-            > /dev/null 2>&1
+        # Create temporary log file for this timing run
+        local temp_log="./log/flowlog_${base}_${dataset}_${i}.log"
         
-        # Read timing from result file
-        if [[ -f "$time_file" ]]; then
-            local exec_time=$(head -1 "$time_file" | grep -oP '^[0-9]+\.[0-9]+' || echo "-1")
-            
-            if [[ "$exec_time" != "-1" ]]; then
-                if [[ -z "$fastest_exec" || $(echo "$exec_time < $fastest_exec" | bc -l) -eq 1 ]]; then
-                    fastest_exec="$exec_time"
-                fi
+        # Run FlowLog and capture output for timing analysis
+        "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" \
+            > "$temp_log" 2>&1
+        
+        # Extract load time (latest "Data loaded for" line) - handle both ms and s
+        local load_line=$(grep "Data loaded for" "$temp_log" | tail -1)
+        local load_time="-1"
+        if [[ -n "$load_line" ]]; then
+            if [[ "$load_line" =~ ([0-9]+\.?[0-9]*)ms ]]; then
+                # Convert milliseconds to seconds
+                load_time=$(echo "${BASH_REMATCH[1]} / 1000" | bc -l)
+            elif [[ "$load_line" =~ ([0-9]+\.?[0-9]*)s ]]; then
+                # Already in seconds
+                load_time="${BASH_REMATCH[1]}"
             fi
         fi
+        
+        # Extract total execution time ("Dataflow executed" or "Fixpoint reached" line) - handle both ms and s
+        local exec_line=$(grep -E "(Dataflow executed|Fixpoint reached)" "$temp_log")
+        local total_time="-1"
+        if [[ -n "$exec_line" ]]; then
+            if [[ "$exec_line" =~ ([0-9]+\.?[0-9]*)ms ]]; then
+                # Convert milliseconds to seconds
+                total_time=$(echo "${BASH_REMATCH[1]} / 1000" | bc -l)
+            elif [[ "$exec_line" =~ ([0-9]+\.?[0-9]*)s ]]; then
+                # Already in seconds
+                total_time="${BASH_REMATCH[1]}"
+            fi
+        fi
+        
+        # Calculate pure execution time (total - load)
+        local exec_time="-1"
+        if [[ "$load_time" != "-1" && "$total_time" != "-1" ]]; then
+            exec_time=$(echo "$total_time - $load_time" | bc -l)
+        fi
+        
+        # Track fastest load time
+        if [[ "$load_time" != "-1" ]]; then
+            if [[ -z "$fastest_load" || $(echo "$load_time < $fastest_load" | bc -l) -eq 1 ]]; then
+                fastest_load="$load_time"
+            fi
+        fi
+        
+        # Track fastest execution time
+        if [[ "$exec_time" != "-1" ]]; then
+            if [[ -z "$fastest_exec" || $(echo "$exec_time < $fastest_exec" | bc -l) -eq 1 ]]; then
+                fastest_exec="$exec_time"
+            fi
+        fi
+        
+        # Clean up temporary log
+        rm -f "$temp_log"
     done
     
-    # Return the fastest execution time, or -1 if no valid timing found
-    echo "${fastest_exec:-"-1"}"
+    # Return the fastest times, or -1 if no valid timing found
+    # Format to 4 decimal places for better readability
+    local formatted_load="${fastest_load:-"-1"}"
+    local formatted_exec="${fastest_exec:-"-1"}"
+    
+    if [[ "$formatted_load" != "-1" ]]; then
+        formatted_load=$(printf "%.4f" "$formatted_load")
+    fi
+    
+    if [[ "$formatted_exec" != "-1" ]]; then
+        formatted_exec=$(printf "%.4f" "$formatted_exec")
+    fi
+    
+    echo "$formatted_load $formatted_exec"
 }
 
 # ------------------------------
@@ -197,10 +251,10 @@ while IFS='=' read -r program dataset; do
 
     read duck_load duck_exec < <(run_duckdb "$program" "$dataset")
     read umbra_load umbra_exec < <(run_umbra "$program" "$dataset")
-    flowlog_exec=$(run_flowlog "$program" "$dataset")
+    read flowlog_load flowlog_exec < <(run_flowlog "$program" "$dataset")
 
-    printf "%-30s %-15s %-15s %-15s %-15s %-15s %-15s\n" \
-        "$program" "$dataset" "$duck_load" "$duck_exec" "$umbra_load" "$umbra_exec" "$flowlog_exec" \
+    printf "%-30s %-15s %-15s %-15s %-15s %-15s %-15s %-15s\n" \
+        "$program" "$dataset" "$duck_load" "$duck_exec" "$umbra_load" "$umbra_exec" "$flowlog_load" "$flowlog_exec" \
         >> "$RESULT_FILE"
 
     echo "[CLEANUP] Removing dataset: $dataset"

@@ -1,6 +1,7 @@
 bipartite=mind
 bipartite=netflix
 bipartite=roadNet-CA
+bipartite=web-BerkStan
 cc=livejournal
 cc=orkut
 cc=twitter
