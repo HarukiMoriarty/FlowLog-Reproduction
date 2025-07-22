@@ -7,6 +7,7 @@ PRAGMA enable_progress_bar=true;
 -- Based on cc.dl Datalog program
 
 -- Create edges table for graph structure
+DROP TABLE IF EXISTS edges;
 CREATE TABLE edges (
     node1id INTEGER,
     node2id INTEGER

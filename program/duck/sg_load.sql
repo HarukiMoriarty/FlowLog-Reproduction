@@ -6,6 +6,7 @@ PRAGMA enable_progress_bar=true;
 -- Based on sg.dl Datalog program
 
 -- Create arc table (edges in the graph)
+DROP TABLE IF EXISTS Arc;
 CREATE TABLE Arc (
     src INTEGER,
     dest INTEGER

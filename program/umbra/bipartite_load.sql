@@ -14,8 +14,8 @@ CREATE TABLE source (
 );
 
 -- Load data from CSV files
-COPY arc FROM '{{DATASET_PATH}}/Arc.csv' (FORMAT CSV, HEADER false);
-COPY source FROM '{{DATASET_PATH}}/Source.csv' (FORMAT CSV, HEADER false);
+COPY arc FROM '/hostdata/dataset/roadNet-CA/Arc.csv' (FORMAT CSV, HEADER false);
+COPY source FROM '/hostdata/dataset/roadNet-CA/Source.csv' (FORMAT CSV, HEADER false);
 
 -- Display table sizes avoid lazy store
 SELECT COUNT(*) FROM arc;

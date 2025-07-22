@@ -5,11 +5,13 @@ PRAGMA enable_progress_bar=true;
 -- Based on csda.dl Datalog program
 
 -- Create tables
+DROP TABLE IF EXISTS Edge;
 CREATE TABLE Edge (
     src INTEGER,
     dest INTEGER
 );
 
+DROP TABLE IF EXISTS NullEdge;
 CREATE TABLE NullEdge (
     src INTEGER,
     dest INTEGER

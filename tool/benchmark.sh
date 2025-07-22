@@ -4,9 +4,20 @@ set -e
 CONFIG_FILE="./tool/config.txt"
 TEMP_SQL="tmp_sql"
 DATASET_DIR="./dataset"
-declare -a RESULTS
+RESULT_FILE="result.txt"
 
 mkdir -p "$DATASET_DIR"
+rm -rf "$RESULT_FILE"
+
+# Write header if result file does not exist
+if [[ ! -f "$RESULT_FILE" ]]; then
+    printf "%-30s %-15s %-15s %-15s %-15s %-15s\n" \
+        "Program" "Dataset" "Duck_Load(s)" "Duck_Exec(s)" "Umbra_Load(s)" "Umbra_Exec(s)" \
+        > "$RESULT_FILE"
+    printf "%-30s %-15s %-15s %-15s %-15s %-15s\n" \
+        "------------------------------" "---------------" "---------------" "---------------" "---------------" "---------------" \
+        >> "$RESULT_FILE"
+fi
 
 # ------------------------------
 # Run DuckDB: returns load_time exec_time
@@ -57,6 +68,8 @@ run_umbra() {
 
     [[ ! -f "$load_tpl" || ! -f "$exec_tpl" ]] && { echo "-1 -1"; return; }
 
+    sudo docker run --rm -v umbra-db:/var/db umbradb/umbra:latest umbra-sql -createdb /var/db/umbra.db > /dev/null
+
     sed "s|{{DATASET_PATH}}|/hostdata/dataset/${dataset}|g" "$load_tpl" > "${TEMP_SQL}_load.sql"
     cp "$exec_tpl" "${TEMP_SQL}_exec.sql"
 
@@ -66,10 +79,11 @@ run_umbra() {
     for i in {1..3}; do
         local ltime=$(/usr/bin/time -f "%e" \
             bash -c "sudo docker run --rm \
-                -e UMBRA_THREADS=64 \
-                -e UMBRA_MEMORY_LIMIT='250GB' \
+                --cpuset-cpus='0-63' \
+                --memory='250g' \
                 -v umbra-db:/var/db \
                 -v \"$PWD\":/hostdata \
+                --user root \
                 umbradb/umbra:latest \
                 bash -c 'umbra-sql /var/db/umbra.db < /hostdata/${TEMP_SQL}_load.sql' \
                 > /dev/null 2>&1" 2>&1)
@@ -81,10 +95,11 @@ run_umbra() {
     for i in {1..3}; do
         local etime=$(/usr/bin/time -f "%e" \
             bash -c "sudo docker run --rm \
-                -e UMBRA_THREADS=64 \
-                -e UMBRA_MEMORY_LIMIT='250GB' \
+                --cpuset-cpus='0-63' \
+                --memory='250g' \
                 -v umbra-db:/var/db \
                 -v \"$PWD\":/hostdata \
+                --user root \
                 umbradb/umbra:latest \
                 bash -c 'umbra-sql /var/db/umbra.db < /hostdata/${TEMP_SQL}_exec.sql' \
                 > /dev/null 2>&1" 2>&1)
@@ -93,6 +108,8 @@ run_umbra() {
         fi
     done
 
+    sudo docker volume rm umbra-db > /dev/null 2>&1
+    
     echo "$fastest_load $fastest_exec"
 }
 
@@ -104,7 +121,7 @@ while IFS='=' read -r program dataset; do
 
     DATASET_PATH="${DATASET_DIR}/${dataset}"
     ZIP_URL="https://pages.cs.wisc.edu/~m0riarty/dataset/${dataset}.zip"
-    ZIP_PATH="${DATASET_PATH}.zip"
+    ZIP_PATH="/dev/shm/${dataset}.zip"
 
     if [[ -d "$DATASET_PATH" ]]; then
         echo "[SKIP] Dataset already exists: $DATASET_PATH"
@@ -119,27 +136,26 @@ while IFS='=' read -r program dataset; do
     read duck_load duck_exec < <(run_duckdb "$program" "$dataset")
     read umbra_load umbra_exec < <(run_umbra "$program" "$dataset")
 
-    RESULTS+=("$program $dataset $duck_load $duck_exec $umbra_load $umbra_exec")
+    printf "%-30s %-15s %-15s %-15s %-15s %-15s\n" \
+        "$program" "$dataset" "$duck_load" "$duck_exec" "$umbra_load" "$umbra_exec" \
+        >> "$RESULT_FILE"
 
     echo "[CLEANUP] Removing dataset: $dataset"
     rm -rf "$ZIP_PATH" "${DATASET_DIR:?}/${dataset}"
+    echo ""
+
+    echo "[RESULTS SO FAR]"
+    cat "$RESULT_FILE"
     echo ""
 done < "$CONFIG_FILE"
 
 rm -f "${TEMP_SQL}"_*.sql
 
 # ------------------------------
-# Final result table
+# Final display of all results
 # ------------------------------
-printf "\n==============================\n"
-printf "Timing Results Table (Best of 5 runs)\n"
-printf "==============================\n\n"
-printf "%-30s %-15s %-15s %-15s %-15s %-15s\n" \
-    "Program" "Dataset" "Duck_Load(s)" "Duck_Exec(s)" "Umbra_Load(s)" "Umbra_Exec(s)"
-printf "%-30s %-15s %-15s %-15s %-15s %-15s\n" \
-    "------------------------------" "---------------" "---------------" "---------------" "---------------" "---------------"
-
-for result in "${RESULTS[@]}"; do
-    read -r prog data dl de ul ue <<< "$result"
-    printf "%-30s %-15s %-15s %-15s %-15s %-15s\n" "$prog" "$data" "$dl" "$de" "$ul" "$ue"
-done
+echo ""
+echo "=============================="
+echo "Final Timing Results Table"
+echo "=============================="
+cat "$RESULT_FILE"
