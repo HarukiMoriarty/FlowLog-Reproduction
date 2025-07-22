@@ -1,2 +1,11 @@
+# Dataset
 /dataset/
+
+# Execution Logs
+/log/
+
+# FlowLog Result
+/result/
+
+# Temporary SQL files
 tmp_sql
