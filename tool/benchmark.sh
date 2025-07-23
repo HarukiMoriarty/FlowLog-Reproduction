@@ -244,14 +244,19 @@ while IFS='=' read -r program dataset; do
         echo "[SKIP] Dataset already exists: $DATASET_PATH"
     else
         echo "[PREP] Downloading and extracting dataset: $dataset"
-        wget -q -O "$ZIP_PATH" "$ZIP_URL"
-        unzip -q "$ZIP_PATH" -d "$DATASET_DIR"
+        wget -O "$ZIP_PATH" "$ZIP_URL"
+        unzip "$ZIP_PATH" -d "$DATASET_DIR"
     fi
 
     echo "[RUNNING] $program on $dataset"
 
+    echo "[DUCKDB] Running DuckDB benchmark for $program on $dataset..."
     read duck_load duck_exec < <(run_duckdb "$program" "$dataset")
+    
+    echo "[UMBRA] Running Umbra benchmark for $program on $dataset..."
     read umbra_load umbra_exec < <(run_umbra "$program" "$dataset")
+    
+    echo "[FLOWLOG] Running FlowLog benchmark for $program on $dataset..."
     read flowlog_load flowlog_exec < <(run_flowlog "$program" "$dataset")
 
     printf "%-30s %-15s %-15s %-15s %-15s %-15s %-15s %-15s\n" \

@@ -12,4 +12,4 @@ WITH RECURSIVE tc(x, y) AS (
 )
 
 -- Step 4: Output number of NullNode entries
-SELECT DISTINCT COUNT(*) FROM tc;
+SELECT COUNT(*) FROM tc;

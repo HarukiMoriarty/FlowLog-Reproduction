@@ -11,4 +11,4 @@ WITH RECURSIVE Tc(x, y) AS (
     JOIN Arc AS b ON a.y = b.x
 )
 
-SELECT DISTINCT COUNT(*) FROM Tc;
+SELECT COUNT(*) FROM Tc;
