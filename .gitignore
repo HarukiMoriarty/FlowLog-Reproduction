@@ -8,7 +8,7 @@
 /result/
 
 # Temporary SQL files
-*tmp_sql
+tmp_sql*
 
 # Benchmark Results
 result.txt
