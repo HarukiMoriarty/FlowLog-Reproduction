@@ -2,21 +2,30 @@ bipartite=mind
 bipartite=netflix
 bipartite=roadNet-CA
 bipartite=web-BerkStan
+bipartite=mag
+
 cc=livejournal
 cc=orkut
 cc=twitter
 cc=web-BerkStan
 # BOM=tree
+
 csda=csda-httpd
 csda=csda-linux
 csda=csda-postgresql
+
 reach=livejournal
 reach=orkut
 reach=web-BerkStan
 reach=roadNet-CA
 reach=twitter
+
 sg=G5K-0.001
 sg=G10K-0.001
+sg=G20K-0.001
 # sg=tree
+
 tc=G5K-0.001
 tc=G10K-0.001
+tc=G20K-0.001
+tc=roadNet-CA
