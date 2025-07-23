@@ -12,4 +12,4 @@ WITH RECURSIVE tc(src, dest) AS (
     FROM tc
     JOIN Edge e ON tc.dest = e.src
 )
-SELECT COUNT(*) FROM tc;
+SELECT DISTINCT COUNT(*) FROM tc;

@@ -8,6 +8,7 @@ RESULT_FILE="result.txt"
 
 mkdir -p "$DATASET_DIR"
 rm -rf "$RESULT_FILE"
+mkdir -p "./log"
 
 cd FlowLog
 cargo build --release

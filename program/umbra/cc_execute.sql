@@ -11,7 +11,7 @@ WITH RECURSIVE cc(id, comp) AS (
 )
 
 -- Final projection (deduplicate by picking smallest comp per node)
-SELECT COUNT(*) FROM (
+SELECT DISTINCT COUNT(*) FROM (
     SELECT id, MIN(comp) AS comp
     FROM cc
     GROUP BY id

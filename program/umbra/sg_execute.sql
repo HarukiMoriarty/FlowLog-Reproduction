@@ -15,4 +15,4 @@ WITH RECURSIVE Sg(x, y) AS (
     JOIN Sg AS S ON A1.src = S.x
     JOIN Arc AS A2 ON S.y = A2.src
 )
-SELECT COUNT(*) FROM Sg;
+SELECT DISTINCT COUNT(*) FROM Sg;

@@ -22,7 +22,7 @@ WITH RECURSIVE cc(id, comp) AS (
 )
 
 -- Count total number of nodes after deduplication
-SELECT COUNT(*) AS total_nodes
+SELECT DISTINCT COUNT(*) AS total_nodes
 FROM (
     SELECT id, MIN(comp) AS comp
     FROM cc

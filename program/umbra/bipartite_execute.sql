@@ -16,9 +16,9 @@ WITH RECURSIVE
         ) AS derived
     )
 SELECT
-    COUNT(DISTINCT x) FILTER (WHERE color = 0) AS zero_count,
-    COUNT(DISTINCT x) FILTER (WHERE color = 1) AS one_count,
+    DISTINCT COUNT(DISTINCT x) FILTER (WHERE color = 0) AS zero_count,
+    DISTINCT COUNT(DISTINCT x) FILTER (WHERE color = 1) AS one_count,
     -- Count the intersection of the two sets
-    COUNT(DISTINCT x) FILTER (WHERE color = 0 AND x IN (SELECT x FROM coloring WHERE color = 1)) AS intersection_count
+    DISTINCT COUNT(DISTINCT x) FILTER (WHERE color = 0 AND x IN (SELECT x FROM coloring WHERE color = 1)) AS intersection_count
 FROM coloring;
 

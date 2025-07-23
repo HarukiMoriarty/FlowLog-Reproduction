@@ -15,4 +15,4 @@ WITH RECURSIVE Reach(id) AS (
     JOIN Arc a ON r.id = a.x
 )
 
-SELECT COUNT(*) AS num_reachable FROM Reach;
+SELECT DISTINCT COUNT(*) AS num_reachable FROM Reach;
