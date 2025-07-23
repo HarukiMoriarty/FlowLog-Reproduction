@@ -1,0 +1,4 @@
+=== Umbra Execute Log for cc on web-BerkStan ===
+INFO:    [s] execution: (18.357759 min, 18.357759 max, 18.357759 median, 0.0% relMAD, 18.357759 avg, 0.000000 sdev, 15201191 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.007494 min, 0.007494 max, 0.007494 median, 0.0% relMAD, 0.007494 avg, 0.000000 sdev)
+count
+685230

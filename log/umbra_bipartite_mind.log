@@ -1,0 +1,4 @@
+=== Umbra Execute Log for bipartite on mind ===
+INFO:    [s] execution: (0.879856 min, 0.879856 max, 0.879856 median, 0.0% relMAD, 0.879856 avg, 0.000000 sdev, 36299832 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.003982 min, 0.003982 max, 0.003982 median, 0.0% relMAD, 0.003982 avg, 0.000000 sdev)
+zero_count one_count intersection_count
+876953 97506 0

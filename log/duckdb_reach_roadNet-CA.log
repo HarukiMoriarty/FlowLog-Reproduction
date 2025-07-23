@@ -1,0 +1,7 @@
+=== DuckDB Execute Log for reach on roadNet-CA ===
+┌───────────────┐
+│ num_reachable │
+│     int64     │
+├───────────────┤
+│       1957027 │
+└───────────────┘

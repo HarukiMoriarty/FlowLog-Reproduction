@@ -1,0 +1,7 @@
+=== FlowLog Execute Log for csda on csda-postgresql ===
+[2m2025-07-22T22:45:16.761707Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 3.432501ms:	Dataflow assembled
+[2m2025-07-22T22:45:18.728246Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 1.969964567s:	Data loaded for NullEdge
+[2m2025-07-22T22:45:18.728307Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 1.970037705s:	Data loaded for Edge
+[2m2025-07-22T22:45:22.464487Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [NullNode]: ((), (), 21503813)
+[2m2025-07-22T22:45:22.465464Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 5.707184162s:	Fixpoint reached
+[2m2025-07-22T22:45:22.470588Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

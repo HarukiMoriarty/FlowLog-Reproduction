@@ -1,0 +1,7 @@
+=== FlowLog Execute Log for reach on orkut ===
+[2m2025-07-22T22:48:41.956249Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 4.972238ms:	Dataflow assembled
+[2m2025-07-22T22:48:49.261124Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 7.309849504s:	Data loaded for Source
+[2m2025-07-22T22:48:49.261171Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 7.309900199s:	Data loaded for Arc
+[2m2025-07-22T22:48:54.023879Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Reach]: ((), (), 3056659)
+[2m2025-07-22T22:48:54.030017Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.078736002s:	Fixpoint reached
+[2m2025-07-22T22:48:54.058639Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

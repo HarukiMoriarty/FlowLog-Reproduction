@@ -1,0 +1,4 @@
+=== Umbra Execute Log for reach on web-BerkStan ===
+count
+459831
+INFO:    [s] execution: (11.175341 min, 11.175341 max, 11.175341 median, 0.0% relMAD, 11.175341 avg, 0.000000 sdev, 7600597 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.001453 min, 0.001453 max, 0.001453 median, 0.0% relMAD, 0.001453 avg, 0.000000 sdev)

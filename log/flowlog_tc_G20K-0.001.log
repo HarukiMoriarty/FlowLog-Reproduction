@@ -1,0 +1,6 @@
+=== FlowLog Execute Log for tc on G20K-0.001 ===
+[2m2025-07-23T04:00:15.801303Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 3.535706ms:	Dataflow assembled
+[2m2025-07-23T04:00:15.832720Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 34.957963ms:	Data loaded for Arc
+[2m2025-07-23T04:00:58.076505Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Tc]: ((), (), 400000000)
+[2m2025-07-23T04:00:58.140123Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 42.342347702s:	Fixpoint reached
+[2m2025-07-23T04:00:58.161159Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query
