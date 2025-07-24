@@ -565,7 +565,6 @@ VarPointsTo(heap, to) :-
   SupertypeOf(type, heaptype),
   HeapAllocation_Type(heap, heaptype),
   VarPointsTo(heap, from).
-.optimize
 #  .plan 1:(5,2,1,4,3)
 ArrayIndexPointsTo(baseheap, heap) :-
   Reachable(inmethod),

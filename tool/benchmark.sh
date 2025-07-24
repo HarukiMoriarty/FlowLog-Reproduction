@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-CONFIG_FILE="./tool/config.txt"
+CONFIG_FILE="./tool/config/benchmark.txt"
 TEMP_SQL="tmp_sql"
 DATASET_DIR="./dataset"
 RESULT_FILE="result.txt"
