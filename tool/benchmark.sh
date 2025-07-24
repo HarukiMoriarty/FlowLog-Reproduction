@@ -54,7 +54,15 @@ run_duckdb() {
 
     # Execute query for timing (find fastest)
     for i in {1..3}; do
-        local etime=$(/usr/bin/time -f "%e" duckdb "$DUCKDB_DB" < "${TEMP_SQL}_exec.sql" 2>&1 >/dev/null)
+        # Run with 15-minute timeout
+        local etime=""
+        if timeout 900 /usr/bin/time -f "%e" duckdb "$DUCKDB_DB" < "${TEMP_SQL}_exec.sql" 2>/tmp/duckdb_time.tmp >/dev/null; then
+            etime=$(cat /tmp/duckdb_time.tmp)
+            rm -f /tmp/duckdb_time.tmp
+        else
+            etime="900"  # Set to 15 minutes if timeout
+        fi
+        
         if [[ -z "$fastest_exec" || $(echo "$etime < $fastest_exec" | bc -l) -eq 1 ]]; then
             fastest_exec="$etime"
         fi
@@ -96,9 +104,28 @@ run_flowlog() {
         # Create temporary log file for this timing run
         local temp_log="./log/flowlog_${base}_${dataset}_${i}.log"
         
-        # Run FlowLog and capture output for timing analysis
-        "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" \
-            > "$temp_log" 2>&1
+        # Run FlowLog with 15-minute timeout and capture output for timing analysis
+        if timeout 900 "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" \
+            > "$temp_log" 2>&1; then
+            # FlowLog completed successfully, proceed with timing extraction
+            :
+        else
+            # Create a dummy log indicating timeout
+            # Set default timeout values and skip timing extraction
+            load_time="900"
+            exec_time="900"
+            
+            # Track fastest times even for timeout
+            if [[ -z "$fastest_load" || $(echo "$load_time < $fastest_load" | bc -l) -eq 1 ]]; then
+                fastest_load="$load_time"
+            fi
+            if [[ -z "$fastest_exec" || $(echo "$exec_time < $fastest_exec" | bc -l) -eq 1 ]]; then
+                fastest_exec="$exec_time"
+            fi
+            
+            rm -f "$temp_log"
+            continue
+        fi
         
         # Extract load time (latest "Data loaded for" line) - handle both ms and s
         local load_line=$(grep "Data loaded for" "$temp_log" | tail -1)
@@ -210,7 +237,9 @@ run_umbra() {
 
     # Execute query for timing (find fastest)
     for i in {1..3}; do
-        local etime=$(/usr/bin/time -f "%e" \
+        # Run with 15-minute timeout
+        local etime=""
+        if timeout 900 /usr/bin/time -f "%e" \
             bash -c "sudo docker run --rm \
                 --cpuset-cpus='0-63' \
                 --memory='250g' \
@@ -219,7 +248,13 @@ run_umbra() {
                 --user root \
                 umbradb/umbra:latest \
                 bash -c 'umbra-sql /var/db/umbra.db < /hostdata/${TEMP_SQL}_exec.sql' \
-                > /dev/null 2>&1" 2>&1)
+                > /dev/null 2>&1" 2>/tmp/umbra_time.tmp; then
+            etime=$(cat /tmp/umbra_time.tmp)
+            rm -f /tmp/umbra_time.tmp
+        else
+            etime="900"  # Set to 15 minutes if timeout
+        fi
+        
         if [[ -z "$fastest_exec" || $(echo "$etime < $fastest_exec" | bc -l) -eq 1 ]]; then
             fastest_exec="$etime"
         fi
