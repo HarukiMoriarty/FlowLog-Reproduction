@@ -10,5 +10,5 @@
 
 .rule
 NullNode(x, y) :- NullEdge(x, y).
-NullNode(x, y) :-NullNode(x, w), Edge(w, y).
+NullNode(x, y) :- NullNode(x, w), Edge(w, y).
 

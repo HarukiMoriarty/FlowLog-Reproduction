@@ -1,0 +1,14 @@
+.in
+.decl Source(id: number)
+.input Source.csv
+
+.decl Arc(x: number, y: number)
+.input Arc.csv
+
+.printsize 
+.decl Reach(id: number)
+
+.rule
+Reach(y) :- Source(y).
+# Reordered: moved Arc(x,y) before Reach(x) to change join order
+Reach(y) :- Arc(x,y), Reach(x).

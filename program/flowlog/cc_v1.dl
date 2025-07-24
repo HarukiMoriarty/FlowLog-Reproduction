@@ -1,0 +1,13 @@
+.in
+.decl Arc(a: number, b: number)
+.input Arc.csv
+
+.printsize
+.decl CC2(cc: number)
+.decl CC(node: number, cc: number)
+
+.rule
+CC(node, min(node)) :- Arc(node, _).
+# Reordered: moved CC(other, cc) before Arc(other, node) to change join order
+CC(node, min(cc)) :- CC(other, cc), Arc(other, node).
+CC2(node, min(cc)) :- CC(node, cc).
