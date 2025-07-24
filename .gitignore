@@ -9,6 +9,7 @@
 
 # Temporary SQL files
 tmp_sql*
+temp*
 
 # Benchmark Results
-result.txt
+# result.txt

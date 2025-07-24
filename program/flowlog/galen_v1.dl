@@ -1,0 +1,39 @@
+.in
+.decl P(X: number, Z: number)
+.input P.csv
+
+.decl Q(X: number, Y: number, Z: number)
+.input Q.csv
+
+.decl R(R: number, P: number, E: number)
+.input R.csv
+
+.decl C(Y: number, Z: number, W: number)
+.input C.csv
+
+.decl U(R: number, Z: number, W: number)
+.input U.csv
+
+.decl S(R: number, P: number)
+.input S.csv
+
+.printsize 
+.decl OutP(X: number, Z: number)
+
+.printsize
+.decl OutQ(X: number, Y: number, Z: number)
+
+.rule
+OutP(x,y) :- P(x,y).
+OutQ(x,y,z) :- Q(x,y,z).
+OutP(x,z) :- OutP(x,y), OutP(y,z).
+# Reordered: moved OutQ(y,r,z) before OutP(x,y) to change join order
+OutQ(x,r,z) :- OutQ(y,r,z), OutP(x,y).
+# Reordered: moved OutQ(x,r,y) to first position, U(w,r,z) second, OutP(y,w) last
+OutP(x,z) :- OutQ(x,r,y), U(w,r,z), OutP(y,w).
+# Reordered: moved OutP(x,y) before OutP(x,w) to change join order 
+OutP(x,z) :- C(y,w,z), OutP(x,y), OutP(x,w).
+# Reordered: moved S(r,q) before OutQ(x,r,z) to change join order
+OutQ(x,q,z) :- S(r,q), OutQ(x,r,z).
+# Reordered: moved OutQ(z,u,o) to first position, R(y,u,e) second, OutQ(x,y,z) last
+OutQ(x,e,o) :- OutQ(z,u,o), R(y,u,e), OutQ(x,y,z).
