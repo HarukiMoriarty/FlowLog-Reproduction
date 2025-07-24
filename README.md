@@ -4,13 +4,18 @@ Benchmarks FlowLog vs DuckDB vs Umbra.
 
 ## Quick Start
 
-1. Setup environment:
+1. Clone this repository with submodules:
+```bash
+git clone --recursive https://github.com/HarukiMoriarty/Datalog-DB-benchmark
+```
+
+2. Setup environment:
 ```bash
 ./tool/env.sh
 ```
 Installs DuckDB, Docker, Rust, pulls Umbra image, and shows FlowLog submodule setup.
 
-2. Run benchmarks:
+3. Run benchmarks:
 ```bash
 ./tool/benchmark.sh
 ```
