@@ -61,6 +61,8 @@ fi
 echo "[UPDATE] Moving Rust to latest version..."
 rustup update && rustup default stable
 
+source ~/.bashrc
+
 echo "[SETUP] FlowLog environment ready!"
 
 # ============================================
