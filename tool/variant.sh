@@ -32,7 +32,7 @@ WORKERS=64                                              # Number of worker threa
 setup_dataset() {
     # Download and extract dataset if not already present
     local dataset_name="$1"
-    local dataset_zip="./dev/shm/${dataset_name}.zip"
+    local dataset_zip="/dev/shm/${dataset_name}.zip"
     local extract_path="${FACT_DIR}/${dataset_name}"
     local dataset_url="https://pages.cs.wisc.edu/~m0riarty/dataset/${dataset_name}.zip"
 

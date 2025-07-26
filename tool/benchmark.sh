@@ -4,7 +4,7 @@ set -e
 CONFIG_FILE="./tool/config/benchmark.txt"
 TEMP_SQL="tmp_sql"
 DATASET_DIR="./dataset"
-RESULT_FILE="result.txt"
+RESULT_FILE="benchmark.txt"
 
 mkdir -p "$DATASET_DIR"
 rm -rf "$RESULT_FILE"
