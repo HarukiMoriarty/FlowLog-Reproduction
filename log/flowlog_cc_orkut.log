@@ -1,6 +1,7 @@
 === FlowLog Execute Log for cc on orkut ===
-[2m2025-07-22T21:32:43.170842Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 5.559069ms:	Dataflow assembled
-[2m2025-07-22T21:32:50.343760Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 7.178479222s:	Data loaded for Arc
-[2m2025-07-22T21:33:01.693262Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [CC]: ((), (), 17281478)
-[2m2025-07-22T21:33:01.722014Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 18.556722106s:	Fixpoint reached
-[2m2025-07-22T21:33:01.759911Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query
+[2m2025-07-25T18:34:03.296690Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 10.738345ms:	Dataflow assembled
+[2m2025-07-25T18:34:13.921835Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 10.635890707s:	Data loaded for Arc
+[2m2025-07-25T18:34:25.911017Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [CC]: ((), (), 17281478)
+[2m2025-07-25T18:34:25.960295Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) CC2: ((), (), 3072441)
+[2m2025-07-25T18:34:25.960999Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 22.67465822s:	Dataflow executed
+[2m2025-07-25T18:34:25.973720Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

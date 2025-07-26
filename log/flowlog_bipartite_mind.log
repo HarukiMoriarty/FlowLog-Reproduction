@@ -1,8 +1,8 @@
 === FlowLog Execute Log for bipartite on mind ===
-[2m2025-07-23T06:29:48.556604Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 8.014593ms:	Dataflow assembled
-[2m2025-07-23T06:29:50.222089Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 1.673504597s:	Data loaded for Arc
-[2m2025-07-23T06:29:50.222135Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 1.673554231s:	Data loaded for Source
-[2m2025-07-23T06:29:50.890322Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [One]: ((), (), 97506)
-[2m2025-07-23T06:29:50.890423Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Zero]: ((), (), 876953)
-[2m2025-07-23T06:29:50.890635Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 2.342049509s:	Fixpoint reached
-[2m2025-07-23T06:29:50.892751Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query
+[2m2025-07-25T17:29:37.315689Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 10.478035ms:	Dataflow assembled
+[2m2025-07-25T17:29:38.845279Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 1.540072777s:	Data loaded for Arc
+[2m2025-07-25T17:29:38.845481Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 1.540284395s:	Data loaded for Source
+[2m2025-07-25T17:29:40.021153Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [One]: ((), (), 97506)
+[2m2025-07-25T17:29:40.021350Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Zero]: ((), (), 876953)
+[2m2025-07-25T17:29:40.021700Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 2.716494562s:	Dataflow executed
+[2m2025-07-25T17:29:40.024171Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

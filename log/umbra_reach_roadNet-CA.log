@@ -1,4 +1,4 @@
 === Umbra Execute Log for reach on roadNet-CA ===
+INFO:    [s] execution: (14.629232 min, 14.629232 max, 14.629232 median, 0.0% relMAD, 14.629232 avg, 0.000000 sdev, 5533216 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.002149 min, 0.002149 max, 0.002149 median, 0.0% relMAD, 0.002149 avg, 0.000000 sdev)
 count
 1957027
-INFO:    [s] execution: (14.460962 min, 14.460962 max, 14.460962 median, 0.0% relMAD, 14.460962 avg, 0.000000 sdev, 5533216 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.001544 min, 0.001544 max, 0.001544 median, 0.0% relMAD, 0.001544 avg, 0.000000 sdev)

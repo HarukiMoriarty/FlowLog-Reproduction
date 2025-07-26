@@ -1,7 +1,7 @@
 === FlowLog Execute Log for csda on csda-linux ===
-[2m2025-07-22T22:42:33.005721Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 5.542652ms:	Dataflow assembled
-[2m2025-07-22T22:42:37.144310Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 4.144134131s:	Data loaded for NullEdge
-[2m2025-07-22T22:42:37.144367Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 4.144195777s:	Data loaded for Edge
-[2m2025-07-22T22:42:40.987709Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [NullNode]: ((), (), 55751178)
-[2m2025-07-22T22:42:41.052630Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 8.0524488s:	Fixpoint reached
-[2m2025-07-22T22:42:41.066969Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query
+[2m2025-07-25T19:56:58.914036Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 5.306155ms:	Dataflow assembled
+[2m2025-07-25T19:57:02.323347Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 3.414618572s:	Data loaded for NullEdge
+[2m2025-07-25T19:57:02.324089Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 3.415372659s:	Data loaded for Edge
+[2m2025-07-25T19:57:08.501791Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [NullNode]: ((), (), 55751178)
+[2m2025-07-25T19:57:08.502163Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 9.59328068s:	Dataflow executed
+[2m2025-07-25T19:57:08.558789Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

@@ -1,4 +1,4 @@
 === Umbra Execute Log for cc on livejournal ===
+INFO:    [s] execution: (17.966433 min, 17.966433 max, 17.966433 median, 0.0% relMAD, 17.966433 avg, 0.000000 sdev, 137987547 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.002440 min, 0.002440 max, 0.002440 median, 0.0% relMAD, 0.002440 avg, 0.000000 sdev)
 count
 4847571
-INFO:    [s] execution: (17.021624 min, 17.021624 max, 17.021624 median, 0.0% relMAD, 17.021624 avg, 0.000000 sdev, 137987547 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.002596 min, 0.002596 max, 0.002596 median, 0.0% relMAD, 0.002596 avg, 0.000000 sdev)

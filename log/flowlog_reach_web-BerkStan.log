@@ -1,7 +1,7 @@
 === FlowLog Execute Log for reach on web-BerkStan ===
-[2m2025-07-22T22:50:27.269944Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 4.598995ms:	Dataflow assembled
-[2m2025-07-22T22:50:27.918792Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 653.439614ms:	Data loaded for Source
-[2m2025-07-22T22:50:27.918904Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 653.565691ms:	Data loaded for Arc
-[2m2025-07-22T22:50:28.338657Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Reach]: ((), (), 459831)
-[2m2025-07-22T22:50:28.340224Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 1.074880503s:	Fixpoint reached
-[2m2025-07-22T22:50:28.342745Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query
+[2m2025-07-25T20:07:15.639392Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 6.442471ms:	Dataflow assembled
+[2m2025-07-25T20:07:16.422284Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 789.338ms:	Data loaded for Source
+[2m2025-07-25T20:07:16.422357Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 789.420716ms:	Data loaded for Arc
+[2m2025-07-25T20:07:16.969396Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Reach]: ((), (), 459831)
+[2m2025-07-25T20:07:16.969658Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 1.336706091s:	Dataflow executed
+[2m2025-07-25T20:07:16.973478Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

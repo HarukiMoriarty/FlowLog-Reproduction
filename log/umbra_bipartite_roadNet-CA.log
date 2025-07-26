@@ -1,4 +1,4 @@
 === Umbra Execute Log for bipartite on roadNet-CA ===
-INFO:    [s] execution: (31.887762 min, 31.887762 max, 31.887762 median, 0.0% relMAD, 31.887762 avg, 0.000000 sdev, 11066430 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.003755 min, 0.003755 max, 0.003755 median, 0.0% relMAD, 0.003755 avg, 0.000000 sdev)
 zero_count one_count intersection_count
 1957027 1957027 1957027
+INFO:    [s] execution: (30.481712 min, 30.481712 max, 30.481712 median, 0.0% relMAD, 30.481712 avg, 0.000000 sdev, 11066430 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.003765 min, 0.003765 max, 0.003765 median, 0.0% relMAD, 0.003765 avg, 0.000000 sdev)

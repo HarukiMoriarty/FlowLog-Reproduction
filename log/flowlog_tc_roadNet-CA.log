@@ -1,0 +1,4 @@
+=== FlowLog Execute Log for tc on roadNet-CA ===
+[2m2025-07-26T17:40:20.744020Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 5.422603ms:	Dataflow assembled
+[2m2025-07-26T17:40:21.329542Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 590.94849ms:	Data loaded for Arc
+tool/benchmark.sh: line 79: 170076 Killed                  "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" >> "$log_file" 2>&1

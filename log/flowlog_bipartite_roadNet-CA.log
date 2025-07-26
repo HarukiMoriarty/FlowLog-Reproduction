@@ -1,8 +1,9 @@
 === FlowLog Execute Log for bipartite on roadNet-CA ===
-[2m2025-07-22T21:19:27.669111Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 5.443452ms:	Dataflow assembled
-[2m2025-07-22T21:19:28.154191Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 490.518745ms:	Data loaded for Arc
-[2m2025-07-22T21:19:28.154389Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 490.726937ms:	Data loaded for Source
-[2m2025-07-22T21:19:28.852218Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [One]: ((), (), 1957027)
-[2m2025-07-22T21:19:28.852441Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Zero]: ((), (), 1957027)
-[2m2025-07-22T21:19:28.852716Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 1.189049085s:	Fixpoint reached
-[2m2025-07-22T21:19:28.855466Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query
+[2m2025-07-25T17:36:36.438199Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 14.500664ms:	Dataflow assembled
+[2m2025-07-25T17:36:37.025695Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 601.999614ms:	Data loaded for Arc
+[2m2025-07-25T17:36:37.025827Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 602.140128ms:	Data loaded for Source
+[2m2025-07-25T17:36:38.098642Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [One]: ((), (), 1957027)
+[2m2025-07-25T17:36:38.098881Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Zero]: ((), (), 1957027)
+[2m2025-07-25T17:36:38.110261Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) BipartiteViolation: ((), (), 1957027)
+[2m2025-07-25T17:36:38.110505Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 1.686798065s:	Dataflow executed
+[2m2025-07-25T17:36:38.114503Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

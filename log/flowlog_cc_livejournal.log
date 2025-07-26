@@ -1,6 +1,7 @@
 === FlowLog Execute Log for cc on livejournal ===
-[2m2025-07-22T21:29:10.042707Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 5.167933ms:	Dataflow assembled
-[2m2025-07-22T21:29:16.067571Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 6.030030551s:	Data loaded for Arc
-[2m2025-07-22T21:29:23.686704Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [CC]: ((), (), 25831588)
-[2m2025-07-22T21:29:23.702003Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 13.664464602s:	Fixpoint reached
-[2m2025-07-22T21:29:23.738219Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query
+[2m2025-07-25T18:28:51.848078Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 10.611336ms:	Dataflow assembled
+[2m2025-07-25T18:28:59.492031Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 7.654571745s:	Data loaded for Arc
+[2m2025-07-25T18:29:08.994903Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [CC]: ((), (), 25831588)
+[2m2025-07-25T18:29:09.051975Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) CC2: ((), (), 4847571)
+[2m2025-07-25T18:29:09.052115Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 17.214643428s:	Dataflow executed
+[2m2025-07-25T18:29:09.088484Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

@@ -1,6 +1,6 @@
 === FlowLog Execute Log for sg on G20K-0.001 ===
-[2m2025-07-23T03:54:30.104932Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 4.459092ms:	Dataflow assembled
-[2m2025-07-23T03:54:30.136906Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 36.440368ms:	Data loaded for Arc
-[2m2025-07-23T03:55:54.346313Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Sg]: ((), (), 400000000)
-[2m2025-07-23T03:55:54.426509Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 84.326037441s:	Fixpoint reached
-[2m2025-07-23T03:55:54.442835Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query
+[2m2025-07-26T03:38:49.550065Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 10.000585ms:	Dataflow assembled
+[2m2025-07-26T03:38:49.588561Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 48.515573ms:	Data loaded for Arc
+[2m2025-07-26T03:40:29.120550Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Sg]: ((), (), 400000000)
+[2m2025-07-26T03:40:29.172230Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 99.632161258s:	Dataflow executed
+[2m2025-07-26T03:40:29.234862Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query
