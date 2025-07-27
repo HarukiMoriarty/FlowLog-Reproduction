@@ -1,7 +1,7 @@
 === FlowLog Execute Log for cc on web-BerkStan ===
-[2m2025-07-25T19:51:04.744696Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 10.60262ms:	Dataflow assembled
-[2m2025-07-25T19:51:05.533172Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 799.080825ms:	Data loaded for Arc
-[2m2025-07-25T19:51:10.366510Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [CC]: ((), (), 6964762)
-[2m2025-07-25T19:51:10.390664Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) CC2: ((), (), 685230)
-[2m2025-07-25T19:51:10.390815Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 5.656722077s:	Dataflow executed
-[2m2025-07-25T19:51:10.393790Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query
+[2m2025-07-27T06:26:57.960044Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 9.84478ms:	Dataflow assembled
+[2m2025-07-27T06:26:58.794900Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 844.70145ms:	Data loaded for Arc
+[2m2025-07-27T06:27:01.012832Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [CC]: ((), (), 6964762)
+[2m2025-07-27T06:27:01.026450Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) CC2: ((), (), 685230)
+[2m2025-07-27T06:27:01.026696Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 3.076502167s:	Dataflow executed
+[2m2025-07-27T06:27:01.029547Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

@@ -8,9 +8,10 @@ RESULT_FILE="benchmark.txt"
 
 mkdir -p "$DATASET_DIR"
 rm -rf "$RESULT_FILE"
-mkdir -p "./log"
+mkdir -p "./log/benchmark"
 
 cd FlowLog
+git checkout nemo_aggregation_new
 cargo build --release
 cd ..
 
@@ -41,16 +42,13 @@ run_duckdb() {
     cp "$exec_tpl" "${TEMP_SQL}_exec.sql"
 
     local fastest_exec=""
-    
-    # redirect log output 
-    # duckdb "$DUCKDB_DB" < "${TEMP_SQL}_load.sql" > ./log
 
     # Load database
     load_time=$(/usr/bin/time -f "%e" duckdb "$DUCKDB_DB" < "${TEMP_SQL}_load.sql" 2>&1 >/dev/null)
 
     # Execute query once for logging (to verify correctness)
-    echo "=== DuckDB Execute Log for $base on $dataset ===" > "./log/duckdb_${base}_${dataset}.log"
-    duckdb "$DUCKDB_DB" < "${TEMP_SQL}_exec.sql" >> "./log/duckdb_${base}_${dataset}.log" 2>&1
+    echo "=== DuckDB Execute Log for $base on $dataset ===" > "./log/benchmark/duckdb_${base}_${dataset}.log"
+    duckdb "$DUCKDB_DB" < "${TEMP_SQL}_exec.sql" >> "./log/benchmark/duckdb_${base}_${dataset}.log" 2>&1
 
     # Execute query for timing (find fastest)
     for i in {1..3}; do
@@ -91,7 +89,7 @@ run_flowlog() {
     [[ ! -d "$fact_path" ]] && { echo "-1 -1"; return; }
     
     # Create log file for FlowLog output (run once for logging)
-    local log_file="./log/flowlog_${base}_${dataset}.log"
+    local log_file="./log/benchmark/flowlog_${base}_${dataset}.log"
     echo "=== FlowLog Execute Log for $base on $dataset ===" > "$log_file"
     "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" \
         >> "$log_file" 2>&1
@@ -102,7 +100,7 @@ run_flowlog() {
     
     for i in {1..3}; do
         # Create temporary log file for this timing run
-        local temp_log="./log/flowlog_${base}_${dataset}_${i}.log"
+        local temp_log="./log/benchmark/flowlog_${base}_${dataset}_${i}.log"
         
         # Run FlowLog with 15-minute timeout and capture output for timing analysis
         if timeout 900 "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" \
@@ -224,7 +222,7 @@ run_umbra() {
             > /dev/null 2>&1" 2>&1)
 
     # Execute query once for logging (to verify correctness)
-    echo "=== Umbra Execute Log for $base on $dataset ===" > "./log/umbra_${base}_${dataset}.log"
+    echo "=== Umbra Execute Log for $base on $dataset ===" > "./log/benchmark/umbra_${base}_${dataset}.log"
     sudo docker run --rm \
         --cpuset-cpus='0-63' \
         --memory='250g' \
@@ -233,7 +231,7 @@ run_umbra() {
         --user root \
         umbradb/umbra:latest \
         bash -c "umbra-sql /var/db/umbra.db < /hostdata/${TEMP_SQL}_exec.sql" \
-        >> "./log/umbra_${base}_${dataset}.log" 2>&1
+        >> "./log/benchmark/umbra_${base}_${dataset}.log" 2>&1
 
     # Execute query for timing (find fastest)
     for i in {1..3}; do
