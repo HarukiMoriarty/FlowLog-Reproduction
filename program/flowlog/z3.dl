@@ -159,7 +159,6 @@ Reg_def_use_def_used(EA_def,VarIdentity,EA_used,Index) :-
    Reg_def_use_live_var_at_block_end(Block,BlockUsed,Var),
    Reg_def_use_live_var_def(Block,VarIdentity,Var,EA_def),
    Reg_def_use_live_var_used(BlockUsed,Var,EA_used,Index).  
-# .optimize
 # .plan 1:(3,1,2)
 
 Reg_def_use_def_used(EA_def,Var,Next_EA_used,NextIndex) :- 
@@ -264,7 +263,6 @@ Stack_def_use_def_used(EA_def,DefVarr,DefVarp,EA_used,VarUsedr,VarUsedp) :-
    Stack_def_use_live_var_at_block_end(Block,BlockUsed,Varr,Varp),
    Stack_def_use_live_var_def(Block,DefVarr,DefVarp,Varr,Varp,EA_def),
    Stack_def_use_live_var_used(BlockUsed,Varr,Varp,VarUsedr,VarUsedp,EA_used,_,_). # fake edb
-# .optimize
 # .plan 1:(3,1,2)
 
 Stack_def_use_def_used(EA_def,DefVarr,DefVarp,EA_used,UsedVarr,UsedVarp) :- 

@@ -232,7 +232,7 @@ Reg_reg_arithmetic_operation_defs(EA,Reg_def,EA_def1,Reg1,EA_def2,Reg2,Mult,Offs
 ##### Def_used_for_address
 Def_used_for_address(EA,Reg,Type) :- 
    def_used_for_address_0(EA,Reg,Type),
-   Type = 8859592.
+   Type = 371929.
 
 # Def_used_for_address(EA,Reg,"PCRelative") :- 
 #    Arch_pc_relative_addr(EA,Reg,_).
@@ -246,11 +246,11 @@ Def_used_for_address(EA_def,Reg,Type) :-
    Reg_def_use_def_used(EA_def,Reg,EA_used,_).
 
 Def_used_for_address(EA_def,Reg1,Type) :- 
-   Arch_memory_access(0,EALoad,Reg2,RegBaseLoad,4,StackPosLoad),
-   Stack_def_use_def_used(EAStore,RegBaseStore,StackPosStore,EALoad,RegBaseLoad,StackPosLoad), # truncate the last argument, Stack_def_use_def_used(EAStore,RegBaseStore,StackPosStore,EALoad,RegBaseLoad,StackPosLoad,_),
-   Arch_memory_access(2309374,EAStore,Reg1,RegBaseStore,4,StackPosStore),
    Def_used_for_address(EALoad,Reg2,Type),
-   Reg_def_use_def_used(EA_def,Reg1,EAStore,_).         # Reordered: move Def_used_for_address(EALoad,Reg2,Type) to 4th position
+   Arch_memory_access(332573,EALoad,Reg2,RegBaseLoad,332575,StackPosLoad),
+   Stack_def_use_def_used(EAStore,RegBaseStore,StackPosStore,EALoad,RegBaseLoad,StackPosLoad), # truncate the last argument, Stack_def_use_def_used(EAStore,RegBaseStore,StackPosStore,EALoad,RegBaseLoad,StackPosLoad,_),
+   Arch_memory_access(333071,EAStore,Reg1,RegBaseStore,332575,StackPosStore),
+   Reg_def_use_def_used(EA_def,Reg1,EAStore,_).
 ##### end of Def_used_for_address (4/4)
 
 
@@ -258,25 +258,25 @@ Def_used_for_address(EA_def,Reg1,Type) :-
 Stack_def_use_def_used(EA_def,Varr,Varp,EA_used,Varr,Varp) :- 
    Stack_def_use_used(EA_used,Varr,Varp,_),
    Stack_def_use_block_last_def(EA_used,EA_def,Varr,Varp).
-
+   
 Stack_def_use_def_used(EA_def,DefVarr,DefVarp,EA_used,VarUsedr,VarUsedp) :- 
    Stack_def_use_live_var_at_block_end(Block,BlockUsed,Varr,Varp),
-   Stack_def_use_live_var_def(Block,DefVarr,DefVarp,Varr,Varp,EA_def),
-   Stack_def_use_live_var_used(BlockUsed,Varr,Varp,VarUsedr,VarUsedp,EA_used,_,_). # fake edb
+   Stack_def_use_live_var_used(BlockUsed,Varr,Varp,VarUsedr,VarUsedp,EA_used,_,_), # fake edb
+   Stack_def_use_live_var_def(Block,DefVarr,DefVarp,Varr,Varp,EA_def).        # Reordered: switch last two atom position
 # .plan 1:(3,1,2)
 
 Stack_def_use_def_used(EA_def,DefVarr,DefVarp,EA_used,UsedVarr,UsedVarp) :- 
 #    Stack_def_use_live_var_used_in_block(_,EA,DefVarr,DefVarp,UsedVarr,UsedVarp,EA_used,Index,_),  # replace by the following atom
    Stack_def_use_live_var_used(EA,DefVarr,DefVarp,UsedVarr,UsedVarp,EA_used,_,_), # fake edb
    May_fallthrough(EA_def,EA),
+   Stack_def_use_def(EA_def,DefVarr,DefVarp),
    Code_in_block(EA_def,Block),
-   Code_in_block(EA,Block),
-   Stack_def_use_def(EA_def,DefVarr,DefVarp).
+   Code_in_block(EA,Block).         # Change Stack_def_use_def to third position
  
 Stack_def_use_def_used(EA_def,VarDefr,VarDefp,Next_EA_used,VarUsedr,VarUsedp) :- 
    Stack_def_use_live_var_at_prior_used(EA_used,NextUsedBlock,Varr,Varp),
-   Stack_def_use_live_var_used(NextUsedBlock,Varr,Varp,VarUsedr,VarUsedp,Next_EA_used,_,_), # fake edb
-   Stack_def_use_def_used(EA_def,VarDefr,VarDefp,EA_used,Varr,Varp).       # Reordered: switch last two atom order
+   Stack_def_use_def_used(EA_def,VarDefr,VarDefp,EA_used,Varr,Varp),
+   Stack_def_use_live_var_used(NextUsedBlock,Varr,Varp,VarUsedr,VarUsedp,Next_EA_used,_,_). # fake edb
 ##### end of Stack_def_use_def_used (4/4)
 
 

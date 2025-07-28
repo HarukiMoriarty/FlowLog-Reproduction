@@ -258,7 +258,7 @@ Def_used_for_address(EA_def,Reg1,Type) :-
 Stack_def_use_def_used(EA_def,Varr,Varp,EA_used,Varr,Varp) :- 
    Stack_def_use_used(EA_used,Varr,Varp,_),
    Stack_def_use_block_last_def(EA_used,EA_def,Varr,Varp).
-
+   
 Stack_def_use_def_used(EA_def,DefVarr,DefVarp,EA_used,VarUsedr,VarUsedp) :- 
    Stack_def_use_live_var_at_block_end(Block,BlockUsed,Varr,Varp),
    Stack_def_use_live_var_def(Block,DefVarr,DefVarp,Varr,Varp,EA_def),

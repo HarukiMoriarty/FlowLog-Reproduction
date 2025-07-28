@@ -249,8 +249,8 @@ Def_used_for_address(EA_def,Reg1,Type) :-
    Def_used_for_address(EALoad,Reg2,Type),
    Arch_memory_access(332573,EALoad,Reg2,RegBaseLoad,332575,StackPosLoad),
    Stack_def_use_def_used(EAStore,RegBaseStore,StackPosStore,EALoad,RegBaseLoad,StackPosLoad), # truncate the last argument, Stack_def_use_def_used(EAStore,RegBaseStore,StackPosStore,EALoad,RegBaseLoad,StackPosLoad,_),
-   Reg_def_use_def_used(EA_def,Reg1,EAStore,_),
-   Arch_memory_access(333071,EAStore,Reg1,RegBaseStore,332575,StackPosStore).           # Reordered: switch last two atom order
+   Arch_memory_access(333071,EAStore,Reg1,RegBaseStore,332575,StackPosStore),
+   Reg_def_use_def_used(EA_def,Reg1,EAStore,_).
 ##### end of Def_used_for_address (4/4)
 
 
@@ -269,9 +269,9 @@ Stack_def_use_def_used(EA_def,DefVarr,DefVarp,EA_used,UsedVarr,UsedVarp) :-
 #    Stack_def_use_live_var_used_in_block(_,EA,DefVarr,DefVarp,UsedVarr,UsedVarp,EA_used,Index,_),  # replace by the following atom
    Stack_def_use_live_var_used(EA,DefVarr,DefVarp,UsedVarr,UsedVarp,EA_used,_,_), # fake edb
    May_fallthrough(EA_def,EA),
+   Stack_def_use_def(EA_def,DefVarr,DefVarp),
    Code_in_block(EA_def,Block),
-   Code_in_block(EA,Block),
-   Stack_def_use_def(EA_def,DefVarr,DefVarp).
+   Code_in_block(EA,Block).         # Change Stack_def_use_def to third position
  
 Stack_def_use_def_used(EA_def,VarDefr,VarDefp,Next_EA_used,VarUsedr,VarUsedp) :- 
    Stack_def_use_live_var_at_prior_used(EA_used,NextUsedBlock,Varr,Varp),
