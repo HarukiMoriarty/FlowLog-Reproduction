@@ -99,13 +99,30 @@ run_single_timing_test() {
     # Run the binary with specified optimization flag and capture output to log
     echo "[RUN] Timing test: $prog_name ($optimization_label)"
 
+    # Run with timeout (600 seconds = 10 minutes)
+    # Temporarily disable exit on error for timeout handling
+    set +e
+    
     if [ -z "$optimization_flag" ]; then
-        RUST_LOG=info "$BINARY_PATH" --program "$prog_path" --facts "$fact_path" --workers "$WORKERS" > "$log_file" 2>&1
+        timeout 600 bash -c "RUST_LOG=info '$BINARY_PATH' --program '$prog_path' --facts '$fact_path' --workers '$WORKERS'" > "$log_file" 2>&1
     else
-        RUST_LOG=info "$BINARY_PATH" --program "$prog_path" --facts "$fact_path" --workers "$WORKERS" "$optimization_flag" > "$log_file" 2>&1
+        timeout 600 bash -c "RUST_LOG=info '$BINARY_PATH' --program '$prog_path' --facts '$fact_path' --workers '$WORKERS' '$optimization_flag'" > "$log_file" 2>&1
     fi
 
-    echo "[TIMING] Completed $prog_name ($optimization_label)"
+    local exit_code=$?
+
+    # Re-enable exit on error
+    set -e
+
+    if [ $exit_code -eq 124 ]; then
+        echo "[TIMEOUT] Test timed out after 600 seconds: $prog_name ($optimization_label)"
+        echo "TIMEOUT: Test exceeded 600 seconds limit" >> "$log_file"
+    elif [ $exit_code -ne 0 ]; then
+        echo "[ERROR] Test failed with exit code $exit_code: $prog_name ($optimization_label)"
+        echo "ERROR: Test failed with exit code $exit_code" >> "$log_file"
+    else
+        echo "[TIMING] Completed $prog_name ($optimization_label)"
+    fi
 }
 
 run_all_timing_tests() {
@@ -135,6 +152,7 @@ run_all_timing_tests() {
         # Run tests with all optimization levels
         for i in "${!optimizations[@]}"; do
             run_single_timing_test "$prog_name" "$dataset_name" "${optimizations[$i]}" "${opt_labels[$i]}"
+            sleep 5 # Sleep to avoid overwhelming the system
         done
 
         # Cleanup dataset after all optimization tests
@@ -155,6 +173,17 @@ extract_time_from_log() {
     
     if [ ! -f "$log_file" ]; then
         echo "N/A"
+        return
+    fi
+    
+    # Check for timeout or error messages first
+    if grep -q "TIMEOUT:" "$log_file" 2>/dev/null; then
+        echo "TIMEOUT"
+        return
+    fi
+    
+    if grep -q "ERROR:" "$log_file" 2>/dev/null; then
+        echo "ERROR"
         return
     fi
     
@@ -185,8 +214,8 @@ generate_timing_table() {
     echo "[SUMMARY] Timing Results Table"
     echo "============================"
 
-    printf "| %-20s | %-17s | %-17s | %-17s | %-17s |\n" "Program-Dataset" "No Optimization" "O1" "O2" "O3"
-    printf "|----------------------|-------------------|-------------------|-------------------|-------------------|\n"
+    printf "| %-25s | %-17s | %-17s | %-17s | %-17s |\n" "Program-Dataset" "No Optimization" "O1" "O2" "O3"
+    printf "|---------------------------|-------------------|-------------------|-------------------|-------------------|\n"
 
     # Read each program=dataset pair and display timing results
     while IFS='=' read -r prog_name dataset_name; do
@@ -260,7 +289,8 @@ main() {
     # Build the Rust binary
     echo "[BUILD] Building the project..."
     cd FlowLog
-    cargo build --release
+    git pull && git checkout nemo_aggregation
+    cargo clean && cargo build --release
     cd ..
 
     # Run all timing tests

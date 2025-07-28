@@ -599,12 +599,12 @@ VarPointsTo(heap, this) :-
   Reachable(inMethod),
   Instruction_Method(invocation, inMethod),
   VirtualMethodInvocation_Base(invocation, base),
-  VarPointsTo(heap, base),
-  HeapAllocation_Type(heap, heaptype),
   VirtualMethodInvocation_SimpleName(invocation, simplename),
   VirtualMethodInvocation_Descriptor(invocation, descriptor),
+  VarPointsTo(heap, base),
+  HeapAllocation_Type(heap, heaptype),
   MethodLookup(simplename, descriptor, heaptype, toMethod),
-  ThisVar(toMethod, this).
+  ThisVar(toMethod, this).      # Change VirtualMethodInvocation to 4th position
 # .plan 1:(4,3,2,1,5,6,7,8,9)
 InstanceFieldPointsTo(heap, fld, baseheap) :-
   Reachable(inmethod),
@@ -626,7 +626,7 @@ Reachable(toMethod) :-
   HeapAllocation_Type(heap, heaptype),
   MethodLookup(simplename, descriptor, heaptype, toMethod),
   VirtualMethodInvocation_SimpleName(invocation, simplename),
-  VirtualMethodInvocation_Descriptor(invocation, descriptor).           Reordered: move MethodLookup(simplename, descriptor, heaptype, toMethod) to 6th position
+  VirtualMethodInvocation_Descriptor(invocation, descriptor).           # Reordered: move MethodLookup(simplename, descriptor, heaptype, toMethod) to 6th position
 CallGraphEdge(invocation, toMethod) :-
   Reachable(inMethod),
   Instruction_Method(invocation, inMethod),

@@ -578,20 +578,20 @@ ArrayIndexPointsTo(baseheap, heap) :-
   ComponentType(baseheaptype, componenttype),
   SupertypeOf(componenttype, heaptype).
 VarPointsTo(heap, to) :-
-  VarPointsTo(baseheap, base),
-  LoadArrayIndex(base, to, inmethod),
   Reachable(inmethod),
-  ArrayIndexPointsTo(baseheap, heap),
-  Var_Type(to, type),
-  SupertypeOf(type, basecomponenttype),
+  LoadArrayIndex(base, to, inmethod),
+  VarPointsTo(baseheap, base),
   HeapAllocation_Type(baseheap, baseheaptype),
-  ComponentType(baseheaptype, basecomponenttype).           # Reordered: move VarPointsTo(baseheap, to) to first position, move SupertyOf(type, basecomponenttype) to 6th position
+  Var_Type(to, type),
+  ArrayIndexPointsTo(baseheap, heap),
+  ComponentType(baseheaptype, basecomponenttype),
+  SupertypeOf(type, basecomponenttype).     # Reordered: change HeapAllocation_Type to fourth position
 # .plan 1:(3,2,1,4,5,6,7,8), 2:(4,3,2,1,5,6,7,8)
 VarPointsTo(heap, to) :-
   Reachable(inmethod),
+  InstanceFieldPointsTo(heap, signature, baseheap),
   LoadInstanceField(base, signature, to, inmethod),
-  VarPointsTo(baseheap, base),
-  InstanceFieldPointsTo(heap, signature, baseheap).
+  VarPointsTo(baseheap, base).      # Reordered: change InstanceFieldPointsTo to second position
 # .plan 1:(3,2,1,4), 2:(4,2,1,3)
 VarPointsTo(heap, to) :-
   Reachable(inmethod),

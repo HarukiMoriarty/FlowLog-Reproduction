@@ -626,9 +626,9 @@ Reachable(toMethod) :-
   VirtualMethodInvocation_Base(invocation, base),
   VarPointsTo(heap, base),
   HeapAllocation_Type(heap, heaptype),
+  MethodLookup(simplename, descriptor, heaptype, toMethod),
   VirtualMethodInvocation_SimpleName(invocation, simplename),
-  VirtualMethodInvocation_Descriptor(invocation, descriptor),
-  MethodLookup(simplename, descriptor, heaptype, toMethod).
+  VirtualMethodInvocation_Descriptor(invocation, descriptor).     # Reordered: change MethodLookup to 6th position
 CallGraphEdge(invocation, toMethod) :-
   Reachable(inMethod),
   Instruction_Method(invocation, inMethod),
@@ -652,10 +652,10 @@ CallGraphEdge(invocation, tomethod) :-
 Reachable(tomethod) :-
   Reachable(inmethod),
   Instruction_Method(invocation, inmethod),
+  MethodInvocation_Method(invocation, tomethod),
   SpecialMethodInvocation_Base(invocation, base),
   VarPointsTo(heap, base),
-  MethodInvocation_Method(invocation, tomethod),
-  ThisVar(tomethod, this).
+  ThisVar(tomethod, this).      # Reordered: change MethodInvocation_Method to third position
 CallGraphEdge(invocation, tomethod) :-
   Reachable(inmethod),
   Instruction_Method(invocation, inmethod),

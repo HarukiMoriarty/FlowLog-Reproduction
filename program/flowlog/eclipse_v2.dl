@@ -581,9 +581,9 @@ VarPointsTo(heap, to) :-
   VarPointsTo(baseheap, base),
   ArrayIndexPointsTo(baseheap, heap),
   Var_Type(to, type),
+  SupertypeOf(type, basecomponenttype),
   HeapAllocation_Type(baseheap, baseheaptype),
-  ComponentType(baseheaptype, basecomponenttype),
-  SupertypeOf(type, basecomponenttype).
+  ComponentType(baseheaptype, basecomponenttype).     # Reordered: change SupertypeOf to 6th position
 # .plan 1:(3,2,1,4,5,6,7,8), 2:(4,3,2,1,5,6,7,8)
 VarPointsTo(heap, to) :-
   Reachable(inmethod),
