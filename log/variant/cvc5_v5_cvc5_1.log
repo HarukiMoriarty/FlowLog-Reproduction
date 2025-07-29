@@ -1,0 +1,40 @@
+[2m2025-07-29T02:46:39.215573Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 233.08492ms:	Dataflow assembled
+[2m2025-07-29T02:46:39.409594Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.11213ms:	Data loaded for Arch_memory_access
+[2m2025-07-29T02:46:39.409669Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.198433ms:	Data loaded for Arch_reg_reg_arithmetic_operation
+[2m2025-07-29T02:46:39.409678Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.20756ms:	Data loaded for Arch_return_reg
+[2m2025-07-29T02:46:39.409689Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.218661ms:	Data loaded for Block_next
+[2m2025-07-29T02:46:39.409697Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.226616ms:	Data loaded for Block_last_instruction
+[2m2025-07-29T02:46:39.409704Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.233809ms:	Data loaded for Code_in_block
+[2m2025-07-29T02:46:39.409712Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.241093ms:	Data loaded for Direct_call
+[2m2025-07-29T02:46:39.409719Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.248006ms:	Data loaded for May_fallthrough
+[2m2025-07-29T02:46:39.409732Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.261431ms:	Data loaded for Reg_def_use_block_last_def
+[2m2025-07-29T02:46:39.409747Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.27659ms:	Data loaded for Reg_def_use_defined_in_block
+[2m2025-07-29T02:46:39.409756Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.285166ms:	Data loaded for Reg_def_use_flow_def
+[2m2025-07-29T02:46:39.409763Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.292329ms:	Data loaded for Reg_def_use_live_var_def
+[2m2025-07-29T02:46:39.409770Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.299723ms:	Data loaded for Reg_def_use_ref_in_block
+[2m2025-07-29T02:46:39.409778Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.307037ms:	Data loaded for Reg_def_use_return_block_end
+[2m2025-07-29T02:46:39.409784Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.31397ms:	Data loaded for Reg_def_use_used
+[2m2025-07-29T02:46:39.409797Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.326484ms:	Data loaded for Reg_def_use_used_in_block
+[2m2025-07-29T02:46:39.409804Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.333407ms:	Data loaded for Reg_used_for
+[2m2025-07-29T02:46:39.409812Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.341392ms:	Data loaded for Relative_jump_table_entry_candidate
+[2m2025-07-29T02:46:39.409819Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.348225ms:	Data loaded for Stack_def_use_def
+[2m2025-07-29T02:46:39.409826Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.355078ms:	Data loaded for Stack_def_use_defined_in_block
+[2m2025-07-29T02:46:39.409832Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.36181ms:	Data loaded for Stack_def_use_live_var_def
+[2m2025-07-29T02:46:39.409840Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.369184ms:	Data loaded for Stack_def_use_ref_in_block
+[2m2025-07-29T02:46:39.409847Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.376678ms:	Data loaded for Stack_def_use_used_in_block
+[2m2025-07-29T02:46:39.409854Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.383421ms:	Data loaded for Stack_def_use_used
+[2m2025-07-29T02:46:39.409881Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.410071ms:	Data loaded for Stack_def_use_live_var_used
+[2m2025-07-29T02:46:39.409887Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.416593ms:	Data loaded for Jump_table_start
+[2m2025-07-29T02:46:39.409894Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.423116ms:	Data loaded for def_used_for_address_0
+[2m2025-07-29T02:46:39.409900Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 427.429678ms:	Data loaded for Stack_def_use_block_last_def
+[2m2025-07-29T02:46:44.274883Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Reg_def_use_def_used]: ((), (), 65950)
+[2m2025-07-29T02:46:44.275438Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Reg_def_use_live_var_at_block_end]: ((), (), 84775)
+[2m2025-07-29T02:46:44.275473Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Reg_def_use_live_var_at_prior_used]: ((), (), 46552)
+[2m2025-07-29T02:46:44.275511Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Reg_def_use_live_var_used]: ((), (), 41186)
+[2m2025-07-29T02:46:44.275543Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Reg_def_use_return_val_used]: ((), (), 4442)
+[2m2025-07-29T02:46:44.696774Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Stack_def_use_live_var_at_block_end]: ((), (), 21236205)
+[2m2025-07-29T02:46:56.330415Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Stack_def_use_def_used]: ((), (), 2065369)
+[2m2025-07-29T02:46:56.412794Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Def_used_for_address]: ((), (), 10299)
+[2m2025-07-29T02:46:56.423987Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) Reg_reg_arithmetic_operation_defs: ((), (), 117)
+[2m2025-07-29T02:46:56.438979Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 17.455087461s:	Dataflow executed
+[2m2025-07-29T02:46:56.505297Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

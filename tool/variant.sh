@@ -139,7 +139,8 @@ run_all_timing_tests() {
 
     # Read each program=dataset pair from config file
     while IFS='=' read -r prog_name dataset_name; do
-        if [ -z "$prog_name" ] || [ -z "$dataset_name" ]; then
+        # Skip empty lines and comment lines starting with #
+        if [ -z "$prog_name" ] || [ -z "$dataset_name" ] || [[ "$prog_name" =~ ^#.* ]]; then
             continue
         fi
 
@@ -219,7 +220,8 @@ generate_timing_table() {
 
     # Read each program=dataset pair and display timing results
     while IFS='=' read -r prog_name dataset_name; do
-        if [ -z "$prog_name" ] || [ -z "$dataset_name" ]; then
+        # Skip empty lines and comment lines starting with #
+        if [ -z "$prog_name" ] || [ -z "$dataset_name" ] || [[ "$prog_name" =~ ^#.* ]]; then
             continue
         fi
 
@@ -255,7 +257,8 @@ generate_timing_csv() {
 
     # Read each program=dataset pair and write timing data
     while IFS='=' read -r prog_name dataset_name; do
-        if [ -z "$prog_name" ] || [ -z "$dataset_name" ]; then
+        # Skip empty lines and comment lines starting with #
+        if [ -z "$prog_name" ] || [ -z "$dataset_name" ] || [[ "$prog_name" =~ ^#.* ]]; then
             continue
         fi
 

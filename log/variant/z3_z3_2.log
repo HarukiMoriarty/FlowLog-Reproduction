@@ -1,0 +1,30 @@
+[2m2025-07-29T03:55:22.181533Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 119.899753ms:	Dataflow assembled
+[2m2025-07-29T03:55:34.188174Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126556104s:	Data loaded for Arch_memory_access
+[2m2025-07-29T03:55:34.188242Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126630313s:	Data loaded for Arch_reg_reg_arithmetic_operation
+[2m2025-07-29T03:55:34.188261Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126649149s:	Data loaded for Arch_return_reg
+[2m2025-07-29T03:55:34.188285Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126673104s:	Data loaded for Block_next
+[2m2025-07-29T03:55:34.188297Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126685026s:	Data loaded for Block_last_instruction
+[2m2025-07-29T03:55:34.188312Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126700496s:	Data loaded for Code_in_block
+[2m2025-07-29T03:55:34.188328Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126716305s:	Data loaded for Direct_call
+[2m2025-07-29T03:55:34.188335Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126723499s:	Data loaded for May_fallthrough
+[2m2025-07-29T03:55:34.188361Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126749117s:	Data loaded for Reg_def_use_block_last_def
+[2m2025-07-29T03:55:34.188390Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126777941s:	Data loaded for Reg_def_use_defined_in_block
+[2m2025-07-29T03:55:34.188402Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126790154s:	Data loaded for Reg_def_use_flow_def
+[2m2025-07-29T03:55:34.188412Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126800404s:	Data loaded for Reg_def_use_live_var_def
+[2m2025-07-29T03:55:34.188422Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126809942s:	Data loaded for Reg_def_use_ref_in_block
+[2m2025-07-29T03:55:34.188429Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126817596s:	Data loaded for Reg_def_use_return_block_end
+[2m2025-07-29T03:55:34.188438Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126826573s:	Data loaded for Reg_def_use_used
+[2m2025-07-29T03:55:34.188462Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126850297s:	Data loaded for Reg_def_use_used_in_block
+[2m2025-07-29T03:55:34.188471Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126858864s:	Data loaded for Reg_used_for
+[2m2025-07-29T03:55:34.188482Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126870395s:	Data loaded for Relative_jump_table_entry_candidate
+[2m2025-07-29T03:55:34.188490Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.12687816s:	Data loaded for Stack_def_use_def
+[2m2025-07-29T03:55:34.188498Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126886065s:	Data loaded for Stack_def_use_defined_in_block
+[2m2025-07-29T03:55:34.188506Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.1268941s:	Data loaded for Stack_def_use_live_var_def
+[2m2025-07-29T03:55:34.188515Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126902826s:	Data loaded for Stack_def_use_ref_in_block
+[2m2025-07-29T03:55:34.188525Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126913056s:	Data loaded for Stack_def_use_used_in_block
+[2m2025-07-29T03:55:34.188533Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126921401s:	Data loaded for Stack_def_use_used
+[2m2025-07-29T03:55:34.188575Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126962739s:	Data loaded for Stack_def_use_live_var_used
+[2m2025-07-29T03:55:34.188582Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126970213s:	Data loaded for Jump_table_start
+[2m2025-07-29T03:55:34.188598Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126985732s:	Data loaded for def_used_for_address_0
+[2m2025-07-29T03:55:34.188605Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.126992786s:	Data loaded for Stack_def_use_block_last_def
+ERROR: Test failed with exit code 137
