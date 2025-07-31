@@ -13,3 +13,4 @@ temp*
 
 # Benchmark Results
 # result.txt
+*.csv
