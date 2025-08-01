@@ -2,11 +2,13 @@
 WITH RECURSIVE cc(id, comp) AS (
     SELECT node1id, node1id AS comp FROM edges
 
-    UNION
+    UNION ALL RECURRING
 
     SELECT e.node2id AS id, MIN(c.comp)
     FROM cc AS c
     JOIN edges AS e ON e.node1id = c.id
+    LEFT JOIN Recurring r ON e.node2id = r.id
+    WHERE c.comp < r.comp OR r.comp IS NULL
     GROUP BY e.node2id
 )
 

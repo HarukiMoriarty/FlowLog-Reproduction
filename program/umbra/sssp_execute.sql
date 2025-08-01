@@ -6,15 +6,20 @@ WITH RECURSIVE Sssp(x, d) AS (
     SELECT src AS x, 0 AS d
     FROM Id
 
-    UNION
+    UNION ALL RECURRING
 
     -- Recursive case: extend shortest paths
-    SELECT a.dest AS x, MIN(s.d + a.weight) AS d
-    FROM Sssp s
-    JOIN Arc a ON s.x = a.src
-    GROUP BY a.dest
+    select x,d from (
+        SELECT a.dest as x, min(s.d + a.weight) as d, min(r.d) as rd
+        FROM Sssp s
+        JOIN Arc a on s.x = a.src
+        LEFT JOIN Recurring r on a.dest = r.x
+        WHERE s.d + a.weight < r.d or r.d is null
+        GROUP BY a.dest
+    ) s where s.d < s.rd or s.rd is null
 )
 
+-- Deduplicate the results
 SELECT COUNT(*) FROM (
     SELECT x, MIN(d) AS d
     FROM Sssp
