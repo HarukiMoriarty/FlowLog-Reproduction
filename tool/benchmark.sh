@@ -11,7 +11,7 @@ rm -rf "$RESULT_FILE"
 mkdir -p "./log/benchmark"
 
 cd FlowLog
-git checkout nemo_aggregation_new
+git checkout nemo_arithmetic
 cargo build --release
 cd ..
 

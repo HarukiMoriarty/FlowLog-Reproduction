@@ -1,0 +1,8 @@
+=== FlowLog Execute Log for sssp on G5K-0.001-sssp ===
+[2m2025-08-01T03:41:30.384434Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 10.190218ms:	Dataflow assembled
+[2m2025-08-01T03:41:30.386998Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.759197ms:	Data loaded for arc
+[2m2025-08-01T03:41:30.387120Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.882078ms:	Data loaded for id
+[2m2025-08-01T03:41:30.412514Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [sssp2]: ((), (), 4973)
+[2m2025-08-01T03:41:30.413251Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) sssp: ((), (), 4973)
+[2m2025-08-01T03:41:30.413523Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 39.283102ms:	Dataflow executed
+[2m2025-08-01T03:41:30.415825Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

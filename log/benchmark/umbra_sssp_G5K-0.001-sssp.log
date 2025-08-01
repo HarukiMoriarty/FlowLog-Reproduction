@@ -1,0 +1,4 @@
+=== Umbra Execute Log for sssp on G5K-0.001-sssp ===
+INFO:    [s] execution: (63.913662 min, 63.913662 max, 63.913662 median, 0.0% relMAD, 63.913662 avg, 0.000000 sdev, 25048 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.002850 min, 0.002850 max, 0.002850 median, 0.0% relMAD, 0.002850 avg, 0.000000 sdev)
+count
+4973
