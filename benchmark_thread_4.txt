@@ -6,7 +6,7 @@ bipartite                      web-BerkStan    0.69            6.41            2
 bipartite                      mag             46.53           257.50          203.35          45.19           71.3694         328.5033       
 cc                             livejournal     4.29            166.79          11.21           89.55           4.3564          56.8114        
 cc                             orkut           6.08            54.23           19.63           31.49           7.2186          81.9545        
-cc                             twitter         TIMEOUT         TIMEOUT         187.79          408.84          TIMEOUT         TIMEOUT       
+cc                             twitter         TIMEOUT         TIMEOUT         N/A             N/A             TIMEOUT         TIMEOUT       
 cc                             web-BerkStan    0.72            30.30           2.37            97.25           0.4505          8.9818         
 csda                           csda-httpd      1.02            4.64            2.95            20.88           0.6551          4.8236         
 csda                           csda-linux      2.95            49.86           8.95            99.33           3.2017          26.4184        
