@@ -1,0 +1,4 @@
+=== Umbra Execute Log for sssp on twitter-sssp ===
+count
+35016137
+INFO:    [s] execution: (34.739548 min, 34.739548 max, 34.739548 median, 0.0% relMAD, 34.739548 avg, 0.000000 sdev, 1468365184 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.004062 min, 0.004062 max, 0.004062 median, 0.0% relMAD, 0.004062 avg, 0.000000 sdev)

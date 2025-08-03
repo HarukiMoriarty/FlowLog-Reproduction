@@ -1,0 +1,8 @@
+=== FlowLog Execute Log for sssp on twitter-sssp ===
+[2m2025-08-03T08:08:37.870330Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 9.126778ms:	Dataflow assembled
+[2m2025-08-03T08:10:14.288753Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 96.427553389s:	Data loaded for arc
+[2m2025-08-03T08:10:14.288800Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 96.427605688s:	Data loaded for id
+[2m2025-08-03T08:10:38.100066Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [sssp2]: ((), (), 35016137)
+[2m2025-08-03T08:10:38.323029Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) sssp: ((), (), 35016137)
+[2m2025-08-03T08:10:38.336111Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 120.474905413s:	Dataflow executed
+[2m2025-08-03T08:10:38.364028Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query
