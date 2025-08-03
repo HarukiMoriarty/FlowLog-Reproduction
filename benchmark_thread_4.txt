@@ -18,3 +18,5 @@ reach                          roadNet-CA      0.62            5.58            2
 reach                          twitter         66.73           88.04           186.71          51.78           110.6587        249.8149       
 sg                             G10K-0.001      0.11            795.52          N/A             N/A             0.0081          232.2922       
 sg                             G20K-0.001      TIMEOUT         TIMEOUT         N/A             N/A             TIMEOUT         TIMEOUT
+tc                             G10K-0.001      0.09            88.79           1.10            26.93           0.0081          101.1113       
+tc                             G20K-0.001      TIMEOUT         TIMEOUT         0.98            21.24           0.0246          716.2252
