@@ -1,4 +1,3 @@
-PRAGMA threads=64;
 PRAGMA memory_limit='250GB';
 PRAGMA enable_progress_bar=true;
 

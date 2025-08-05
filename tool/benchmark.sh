@@ -1,182 +1,278 @@
 #!/bin/bash
 set -e
 
+# =============================================================================
+# Database Benchmark Script
+# =============================================================================
+# Benchmarks DuckDB, Umbra, and FlowLog databases with configurable parameters
+
+# Default timeout in seconds (15 minutes) and thread count
+TIMEOUT_SECONDS=${1:-900}
+THREAD_COUNT=${2:-64}
+
+# Display usage if help is requested
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    echo "Usage: $0 [TIMEOUT_SECONDS] [THREAD_COUNT]"
+    echo ""
+    echo "Run database benchmarks with configurable timeout and thread count."
+    echo ""
+    echo "Arguments:"
+    echo "  TIMEOUT_SECONDS  Timeout for each query execution in seconds (default: 900 = 15 minutes)"
+    echo "  THREAD_COUNT     Number of threads/workers to use (default: 64)"
+    echo ""
+    echo "Examples:"
+    echo "  $0                # Use default 15-minute timeout and 64 threads"
+    echo "  $0 600            # Use 10-minute timeout and 64 threads"
+    echo "  $0 1800 32        # Use 30-minute timeout and 32 threads"
+    echo "  $0 900 4          # Use 15-minute timeout and 4 threads"
+    exit 0
+fi
+
+# =============================================================================
+# Configuration and Setup
+# =============================================================================
+
 CONFIG_FILE="./tool/config/benchmark.txt"
 TEMP_SQL="tmp_sql"
 DATASET_DIR="./dataset"
 RESULT_FILE="benchmark.txt"
+TEMP_RESULT_FILE="/tmp/benchmark_result.tmp"
 
+# Initialize directories and files
 mkdir -p "$DATASET_DIR"
 rm -rf "$RESULT_FILE"
 mkdir -p "./log/benchmark"
 
+echo "=== Database Benchmark Configuration ==="
+echo "Timeout: ${TIMEOUT_SECONDS} seconds ($(echo "scale=1; $TIMEOUT_SECONDS/60" | bc -l) minutes)"
+echo "Thread count: ${THREAD_COUNT}"
+
+# Generate CPU set for Umbra (0-based indexing)
+if [[ $THREAD_COUNT -eq 1 ]]; then
+    CPUSET="0"
+else
+    CPUSET="0-$((THREAD_COUNT-1))"
+fi
+echo "CPU set: ${CPUSET}"
+echo ""
+
+echo "=== Building FlowLog ==="
 cd FlowLog
 git checkout nemo_arithmetic
 cargo build --release
 cd ..
+echo "FlowLog build completed"
+echo ""
 
-# Write header if result file does not exist
+# Initialize result file with headers
 if [[ ! -f "$RESULT_FILE" ]]; then
     printf "%-30s %-15s %-15s %-15s %-15s %-15s %-15s %-15s\n" \
-        "Program" "Dataset" "Duck_Load(s)" "Duck_Exec(s)" "Umbra_Load(s)" "Umbra_Exec(s)" "FlowLog_Load(s)" "FlowLog_Exec(s)" \
+        "Program" "Dataset" "Duck_Load(s)" "Duck_Exec(s)" \
+        "Umbra_Load(s)" "Umbra_Exec(s)" "FlowLog_Load(s)" "FlowLog_Exec(s)" \
         > "$RESULT_FILE"
     printf "%-30s %-15s %-15s %-15s %-15s %-15s %-15s %-15s\n" \
-        "------------------------------" "---------------" "---------------" "---------------" "---------------" "---------------" "---------------" "---------------" \
+        "------------------------------" "---------------" "---------------" "---------------" \
+        "---------------" "---------------" "---------------" "---------------" \
         >> "$RESULT_FILE"
 fi
 
-# ------------------------------
-# Run DuckDB: returns load_time exec_time
-# ------------------------------
+# =============================================================================
+# Database Benchmark Functions
+# =============================================================================
+# -----------------------------------------------------------------------------
+# DuckDB Benchmark Function
+# -----------------------------------------------------------------------------
 run_duckdb() {
     local base=$1
     local dataset=$2
     local load_tpl="program/duck/${base}_load.sql"
     local exec_tpl="program/duck/${base}_execute.sql"
+    local duckdb_db="temp.duckdb"
 
-    DUCKDB_DB="temp.duckdb"
+    echo "  Starting DuckDB benchmark: $base on $dataset"
 
-    [[ ! -f "$load_tpl" || ! -f "$exec_tpl" ]] && { echo "-1 -1"; return; }
+    # Check if template files exist
+    [[ ! -f "$load_tpl" || ! -f "$exec_tpl" ]] && { 
+        echo "  ERROR: Template files not found"
+        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        return 
+    }
 
+    # Prepare SQL files
     sed "s|{{DATASET_PATH}}|dataset/${dataset}|g" "$load_tpl" > "${TEMP_SQL}_load.sql"
     cp "$exec_tpl" "${TEMP_SQL}_exec.sql"
+
+    # Add thread count pragma to DuckDB execution SQL
+    echo "  Setting thread count: $THREAD_COUNT"
+    sed -i "1i PRAGMA threads=$THREAD_COUNT;" "${TEMP_SQL}_load.sql"
+    sed -i "1i PRAGMA threads=$THREAD_COUNT;" "${TEMP_SQL}_exec.sql"
 
     local fastest_exec=""
 
     # Load database
-    load_time=$(/usr/bin/time -f "%e" duckdb "$DUCKDB_DB" < "${TEMP_SQL}_load.sql" 2>&1 >/dev/null)
+    echo "  Loading database..."
+    load_time=$(/usr/bin/time -f "%e" duckdb "$duckdb_db" < "${TEMP_SQL}_load.sql" 2>&1 >/dev/null)
+    echo "  Database loaded in $load_time seconds"
 
-    # Execute query once for logging (to verify correctness)
+    # Run logging execution
+    echo "  Running logging execution..."
     echo "=== DuckDB Execute Log for $base on $dataset ===" > "./log/benchmark/duckdb_${base}_${dataset}.log"
-    duckdb "$DUCKDB_DB" < "${TEMP_SQL}_exec.sql" >> "./log/benchmark/duckdb_${base}_${dataset}.log" 2>&1
+    timeout "$TIMEOUT_SECONDS" duckdb "$duckdb_db" < "${TEMP_SQL}_exec.sql" \
+        >> "./log/benchmark/duckdb_${base}_${dataset}.log" 2>&1 || \
+        echo "  WARNING: Logging execution failed or timed out"
 
-    # Execute query for timing (find fastest)
+    # Run timing executions
+    echo "  Running timing executions..."
     for i in {1..3}; do
-        # Run with 15-minute timeout
+        echo "    Timing run $i/3"
         local etime=""
-        if timeout 900 /usr/bin/time -f "%e" duckdb "$DUCKDB_DB" < "${TEMP_SQL}_exec.sql" 2>/tmp/duckdb_time.tmp >/dev/null; then
-            etime=$(cat /tmp/duckdb_time.tmp)
-            rm -f /tmp/duckdb_time.tmp
+        
+        if timeout "$TIMEOUT_SECONDS" bash -c "/usr/bin/time -f '%e' duckdb '$duckdb_db' < '${TEMP_SQL}_exec.sql' 2>/tmp/duckdb_time.tmp >/dev/null"; then
+            if [[ -f /tmp/duckdb_time.tmp ]]; then
+                etime=$(cat /tmp/duckdb_time.tmp)
+                rm -f /tmp/duckdb_time.tmp
+                # Validate that etime is a valid number
+                if [[ "$etime" =~ ^[0-9]+\.?[0-9]*$ ]]; then
+                    echo "      Completed in $etime seconds"
+                else
+                    etime="$TIMEOUT_SECONDS"
+                    echo "      Invalid time value, using timeout"
+                fi
+            else
+                etime="$TIMEOUT_SECONDS"
+                echo "      No time file found, using timeout value"
+            fi
         else
-            etime="900"  # Set to 15 minutes if timeout
+            etime="$TIMEOUT_SECONDS"
+            rm -f /tmp/duckdb_time.tmp
+            echo "      Timed out"
         fi
         
-        if [[ -z "$fastest_exec" || $(echo "$etime < $fastest_exec" | bc -l) -eq 1 ]]; then
-            fastest_exec="$etime"
+        # Track fastest execution time
+        if [[ -n "$etime" && "$etime" != "$TIMEOUT_SECONDS" ]]; then
+            if [[ -z "$fastest_exec" || $(echo "$etime < $fastest_exec" | bc -l) -eq 1 ]]; then
+                fastest_exec="$etime"
+            fi
         fi
     done
 
-    rm -f "$DUCKDB_DB"
+    # Set fallback if no valid execution time was recorded
+    if [[ -z "$fastest_exec" ]]; then
+        fastest_exec="$TIMEOUT_SECONDS"
+    fi
 
-    echo "$load_time $fastest_exec"
+    echo "  Fastest execution time: $fastest_exec seconds"
+    rm -f "$duckdb_db"
+
+    # Write results to temp file
+    echo "$load_time $fastest_exec" > "$TEMP_RESULT_FILE"
+    echo "  Results: load=$load_time exec=$fastest_exec"
 }
 
-# ------------------------------
-# Run FlowLog: returns load_time exec_time
-# ------------------------------
+# -----------------------------------------------------------------------------
+# FlowLog Benchmark Function
+# -----------------------------------------------------------------------------
 run_flowlog() {
     local base=$1
     local dataset=$2
     local prog_file="program/flowlog/${base}.dl"
     local fact_path="dataset/${dataset}"
     local flowlog_binary="./FlowLog/target/release/executing"
-    local workers=64
+    local workers=$THREAD_COUNT
     
-    # Check if program file exists
-    [[ ! -f "$prog_file" ]] && { echo "-1 -1"; return; }
+    echo "  Starting FlowLog benchmark: $base on $dataset"
+    echo "  Using $workers workers"
     
-    # Check if dataset exists
-    [[ ! -d "$fact_path" ]] && { echo "-1 -1"; return; }
+    # Check if required files exist
+    [[ ! -f "$prog_file" ]] && { 
+        echo "  ERROR: Program file not found: $prog_file"
+        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        return
+    }
     
-    # Create log file for FlowLog output (run once for logging)
+    [[ ! -d "$fact_path" ]] && { 
+        echo "  ERROR: Dataset path not found: $fact_path"
+        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        return
+    }
+    
+    # Run logging execution
+    echo "  Running logging execution..."
     local log_file="./log/benchmark/flowlog_${base}_${dataset}.log"
     echo "=== FlowLog Execute Log for $base on $dataset ===" > "$log_file"
-    "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" \
-        >> "$log_file" 2>&1
+    timeout "$TIMEOUT_SECONDS" "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" \
+        >> "$log_file" 2>&1 || echo "  WARNING: Logging execution failed or timed out"
     
-    # Run FlowLog multiple times to find fastest execution time
+    # Run timing executions
+    echo "  Running timing executions..."
     local fastest_load=""
     local fastest_exec=""
     
     for i in {1..3}; do
-        # Create temporary log file for this timing run
+        echo "    Timing run $i/3"
         local temp_log="./log/benchmark/flowlog_${base}_${dataset}_${i}.log"
         
-        # Run FlowLog with 15-minute timeout and capture output for timing analysis
-        if timeout 900 "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" \
+        # Run FlowLog with timeout and capture output
+        if timeout "$TIMEOUT_SECONDS" "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" \
             > "$temp_log" 2>&1; then
-            # FlowLog completed successfully, proceed with timing extraction
-            :
+            echo "      Completed successfully"
         else
-            # Create a dummy log indicating timeout
-            # Set default timeout values and skip timing extraction
-            load_time="900"
-            exec_time="900"
-            
-            # Track fastest times even for timeout
-            if [[ -z "$fastest_load" || $(echo "$load_time < $fastest_load" | bc -l) -eq 1 ]]; then
-                fastest_load="$load_time"
+            echo "      Timed out"
+            # Set timeout values and continue
+            if [[ -z "$fastest_load" || $(echo "$TIMEOUT_SECONDS < $fastest_load" | bc -l) -eq 1 ]]; then
+                fastest_load="$TIMEOUT_SECONDS"
             fi
-            if [[ -z "$fastest_exec" || $(echo "$exec_time < $fastest_exec" | bc -l) -eq 1 ]]; then
-                fastest_exec="$exec_time"
+            if [[ -z "$fastest_exec" || $(echo "$TIMEOUT_SECONDS < $fastest_exec" | bc -l) -eq 1 ]]; then
+                fastest_exec="$TIMEOUT_SECONDS"
             fi
-            
             rm -f "$temp_log"
             continue
         fi
         
-        # Extract load time (latest "Data loaded for" line) - handle both ms and s
+        # Extract timing information
         local load_line=$(grep "Data loaded for" "$temp_log" | tail -1)
         local load_time="-1"
         if [[ -n "$load_line" ]]; then
             if [[ "$load_line" =~ ([0-9]+\.?[0-9]*)ms ]]; then
-                # Convert milliseconds to seconds
                 load_time=$(echo "${BASH_REMATCH[1]} / 1000" | bc -l)
             elif [[ "$load_line" =~ ([0-9]+\.?[0-9]*)s ]]; then
-                # Already in seconds
                 load_time="${BASH_REMATCH[1]}"
             fi
         fi
         
-        # Extract total execution time ("Dataflow executed" or "Fixpoint reached" line) - handle both ms and s
         local exec_line=$(grep -E "(Dataflow executed|Fixpoint reached)" "$temp_log")
         local total_time="-1"
         if [[ -n "$exec_line" ]]; then
             if [[ "$exec_line" =~ ([0-9]+\.?[0-9]*)ms ]]; then
-                # Convert milliseconds to seconds
                 total_time=$(echo "${BASH_REMATCH[1]} / 1000" | bc -l)
             elif [[ "$exec_line" =~ ([0-9]+\.?[0-9]*)s ]]; then
-                # Already in seconds
                 total_time="${BASH_REMATCH[1]}"
             fi
         fi
         
-        # Calculate pure execution time (total - load)
+        # Calculate execution time
         local exec_time="-1"
         if [[ "$load_time" != "-1" && "$total_time" != "-1" ]]; then
             exec_time=$(echo "$total_time - $load_time" | bc -l)
         fi
         
-        # Track fastest load time
+        # Track fastest times
         if [[ "$load_time" != "-1" ]]; then
             if [[ -z "$fastest_load" || $(echo "$load_time < $fastest_load" | bc -l) -eq 1 ]]; then
                 fastest_load="$load_time"
             fi
         fi
         
-        # Track fastest execution time
         if [[ "$exec_time" != "-1" ]]; then
             if [[ -z "$fastest_exec" || $(echo "$exec_time < $fastest_exec" | bc -l) -eq 1 ]]; then
                 fastest_exec="$exec_time"
             fi
         fi
         
-        # Clean up temporary log
         rm -f "$temp_log"
     done
     
-    # Return the fastest times, or -1 if no valid timing found
-    # Format to 4 decimal places for better readability
+    # Format results
     local formatted_load="${fastest_load:-"-1"}"
     local formatted_exec="${fastest_exec:-"-1"}"
     
@@ -187,32 +283,47 @@ run_flowlog() {
     if [[ "$formatted_exec" != "-1" ]]; then
         formatted_exec=$(printf "%.4f" "$formatted_exec")
     fi
-    
-    echo "$formatted_load $formatted_exec"
+
+    # Write results to temp file
+    echo "$formatted_load $formatted_exec" > "$TEMP_RESULT_FILE"
+    echo "  Results: load=$formatted_load exec=$formatted_exec"
 }
 
-# ------------------------------
-# Run Umbra: returns load_time exec_time
-# ------------------------------
+# -----------------------------------------------------------------------------
+# Umbra Benchmark Function
+# -----------------------------------------------------------------------------
 run_umbra() {
     local base=$1
     local dataset=$2
     local load_tpl="program/umbra/${base}_load.sql"
     local exec_tpl="program/umbra/${base}_execute.sql"
 
-    [[ ! -f "$load_tpl" || ! -f "$exec_tpl" ]] && { echo "-1 -1"; return; }
+    echo "  Starting Umbra benchmark: $base on $dataset"
+    echo "  Using CPU set: $CPUSET"
 
-    sudo docker run --rm -v umbra-db:/var/db umbradb/umbra:latest umbra-sql -createdb /var/db/umbra.db > /dev/null
+    # Check if template files exist
+    [[ ! -f "$load_tpl" || ! -f "$exec_tpl" ]] && { 
+        echo "  ERROR: Template files not found"
+        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        return
+    }
 
+    # Create database
+    echo "  Creating database..."
+    sudo docker run --rm -v umbra-db:/var/db umbradb/umbra:latest \
+        umbra-sql -createdb /var/db/umbra.db > /dev/null
+
+    # Prepare SQL files
     sed "s|{{DATASET_PATH}}|/hostdata/dataset/${dataset}|g" "$load_tpl" > "${TEMP_SQL}_load.sql"
     cp "$exec_tpl" "${TEMP_SQL}_exec.sql"
 
     local fastest_exec=""
 
     # Load database
+    echo "  Loading database..."
     load_time=$(/usr/bin/time -f "%e" \
         bash -c "sudo docker run --rm \
-            --cpuset-cpus='0-63' \
+            --cpuset-cpus='$CPUSET' \
             --memory='250g' \
             -v umbra-db:/var/db \
             -v \"$PWD\":/hostdata \
@@ -220,26 +331,30 @@ run_umbra() {
             umbradb/umbra:latest \
             bash -c 'umbra-sql /var/db/umbra.db < /hostdata/${TEMP_SQL}_load.sql' \
             > /dev/null 2>&1" 2>&1)
+    echo "  Database loaded in $load_time seconds"
 
-    # Execute query once for logging (to verify correctness)
+    # Run logging execution
+    echo "  Running logging execution..."
     echo "=== Umbra Execute Log for $base on $dataset ===" > "./log/benchmark/umbra_${base}_${dataset}.log"
-    sudo docker run --rm \
-        --cpuset-cpus='0-63' \
+    timeout "$TIMEOUT_SECONDS" sudo docker run --rm \
+        --cpuset-cpus="$CPUSET" \
         --memory='250g' \
         -v umbra-db:/var/db \
         -v "$PWD":/hostdata \
         --user root \
         umbradb/umbra:latest \
         bash -c "umbra-sql /var/db/umbra.db < /hostdata/${TEMP_SQL}_exec.sql" \
-        >> "./log/benchmark/umbra_${base}_${dataset}.log" 2>&1
+        >> "./log/benchmark/umbra_${base}_${dataset}.log" 2>&1 || \
+        echo "  WARNING: Logging execution failed or timed out"
 
-    # Execute query for timing (find fastest)
+    # Run timing executions
+    echo "  Running timing executions..."
     for i in {1..3}; do
-        # Run with 15-minute timeout
+        echo "    Timing run $i/3"
         local etime=""
-        if timeout 900 /usr/bin/time -f "%e" \
-            bash -c "sudo docker run --rm \
-                --cpuset-cpus='0-63' \
+        
+        if timeout "$TIMEOUT_SECONDS" bash -c "/usr/bin/time -f '%e' sudo docker run --rm \
+                --cpuset-cpus='$CPUSET' \
                 --memory='250g' \
                 -v umbra-db:/var/db \
                 -v \"$PWD\":/hostdata \
@@ -247,25 +362,56 @@ run_umbra() {
                 umbradb/umbra:latest \
                 bash -c 'umbra-sql /var/db/umbra.db < /hostdata/${TEMP_SQL}_exec.sql' \
                 > /dev/null 2>&1" 2>/tmp/umbra_time.tmp; then
-            etime=$(cat /tmp/umbra_time.tmp)
-            rm -f /tmp/umbra_time.tmp
+            if [[ -f /tmp/umbra_time.tmp ]]; then
+                etime=$(cat /tmp/umbra_time.tmp)
+                rm -f /tmp/umbra_time.tmp
+                # Validate timing result
+                if [[ "$etime" =~ ^[0-9]+\.?[0-9]*$ ]]; then
+                    echo "      Completed in $etime seconds"
+                else
+                    etime="$TIMEOUT_SECONDS"
+                    echo "      Invalid time value, using timeout"
+                fi
+            else
+                etime="$TIMEOUT_SECONDS"
+                echo "      No time file found, using timeout value"
+            fi
         else
-            etime="900"  # Set to 15 minutes if timeout
+            etime="$TIMEOUT_SECONDS"
+            rm -f /tmp/umbra_time.tmp
+            echo "      Timed out"
         fi
         
-        if [[ -z "$fastest_exec" || $(echo "$etime < $fastest_exec" | bc -l) -eq 1 ]]; then
-            fastest_exec="$etime"
+        # Track fastest execution time
+        if [[ -n "$etime" && "$etime" != "$TIMEOUT_SECONDS" ]]; then
+            if [[ -z "$fastest_exec" || $(echo "$etime < $fastest_exec" | bc -l) -eq 1 ]]; then
+                fastest_exec="$etime"
+            fi
         fi
     done
 
-    sudo docker volume rm umbra-db > /dev/null 2>&1
+    # Set fallback if no valid execution time was recorded
+    if [[ -z "$fastest_exec" ]]; then
+        fastest_exec="$TIMEOUT_SECONDS"
+    fi
 
-    echo "$load_time $fastest_exec"
+    echo "  Fastest execution time: $fastest_exec seconds"
+    
+    # Clean up Docker resources
+    echo "  Waiting for Docker cleanup to complete..."
+    sleep 10
+    echo "  Removing Docker volume..."
+    sudo docker volume rm umbra-db > /dev/null 2>&1 || echo "  WARNING: Could not remove volume"
+
+    # Write results to temp file
+    echo "$load_time $fastest_exec" > "$TEMP_RESULT_FILE"
+    echo "  Results: load=$load_time exec=$fastest_exec"
 }
 
-# ------------------------------
-# Main benchmark loop
-# ------------------------------
+# =============================================================================
+# Main Benchmark Loop
+# =============================================================================
+
 while IFS='=' read -r program dataset; do
     [[ -z "$program" || "$program" =~ ^# ]] && continue
 
@@ -273,45 +419,68 @@ while IFS='=' read -r program dataset; do
     ZIP_URL="https://pages.cs.wisc.edu/~m0riarty/dataset/${dataset}.zip"
     ZIP_PATH="/dev/shm/${dataset}.zip"
 
+    # Download and extract dataset if needed
     if [[ -d "$DATASET_PATH" ]]; then
-        echo "[SKIP] Dataset already exists: $DATASET_PATH"
+        echo "SKIP: Dataset already exists: $DATASET_PATH"
     else
-        echo "[PREP] Downloading and extracting dataset: $dataset"
+        echo "PREP: Downloading and extracting dataset: $dataset"
         wget -O "$ZIP_PATH" "$ZIP_URL"
         unzip "$ZIP_PATH" -d "$DATASET_DIR"
     fi
 
-    echo "[RUNNING] $program on $dataset"
+    echo ""
+    echo "=== RUNNING: $program on $dataset ==="
 
-    echo "[DUCKDB] Running DuckDB benchmark for $program on $dataset..."
-    read duck_load duck_exec < <(run_duckdb "$program" "$dataset")
+    # Run DuckDB benchmark
+    echo ""
+    echo "--- DuckDB Benchmark ---"
+    run_duckdb "$program" "$dataset"
+    read duck_load duck_exec < "$TEMP_RESULT_FILE"
+    echo "DuckDB completed: load=$duck_load exec=$duck_exec"
     
-    echo "[UMBRA] Running Umbra benchmark for $program on $dataset..."
-    read umbra_load umbra_exec < <(run_umbra "$program" "$dataset")
+    # Run Umbra benchmark
+    echo ""
+    echo "--- Umbra Benchmark ---"
+    run_umbra "$program" "$dataset"
+    read umbra_load umbra_exec < "$TEMP_RESULT_FILE"
+    echo "Umbra completed: load=$umbra_load exec=$umbra_exec"
     
-    echo "[FLOWLOG] Running FlowLog benchmark for $program on $dataset..."
-    read flowlog_load flowlog_exec < <(run_flowlog "$program" "$dataset")
+    # Run FlowLog benchmark
+    echo ""
+    echo "--- FlowLog Benchmark ---"
+    run_flowlog "$program" "$dataset"
+    read flowlog_load flowlog_exec < "$TEMP_RESULT_FILE"
+    echo "FlowLog completed: load=$flowlog_load exec=$flowlog_exec"
 
+    # Write results to file
     printf "%-30s %-15s %-15s %-15s %-15s %-15s %-15s %-15s\n" \
-        "$program" "$dataset" "$duck_load" "$duck_exec" "$umbra_load" "$umbra_exec" "$flowlog_load" "$flowlog_exec" \
+        "$program" "$dataset" "$duck_load" "$duck_exec" \
+        "$umbra_load" "$umbra_exec" "$flowlog_load" "$flowlog_exec" \
         >> "$RESULT_FILE"
 
-    echo "[CLEANUP] Removing dataset: $dataset"
-    rm -rf "$ZIP_PATH" "${DATASET_DIR:?}/${dataset}"
+    # Cleanup
     echo ""
+    echo "CLEANUP: Removing dataset: $dataset"
+    rm -rf "$ZIP_PATH" "${DATASET_DIR:?}/${dataset}"
 
-    echo "[RESULTS SO FAR]"
+    # Show progress
+    echo ""
+    echo "=== RESULTS SO FAR ==="
     cat "$RESULT_FILE"
     echo ""
 done < "$CONFIG_FILE"
 
-rm -f "${TEMP_SQL}"_*.sql
+# =============================================================================
+# Cleanup and Final Results
+# =============================================================================
 
-# ------------------------------
-# Final display of all results
-# ------------------------------
+# Clean up temporary files
+rm -f "${TEMP_SQL}"_*.sql
+rm -f "$TEMP_RESULT_FILE"
+
+# Display final results
 echo ""
-echo "=============================="
-echo "Final Timing Results Table"
-echo "=============================="
+echo "=============================================="
+echo "           FINAL TIMING RESULTS"
+echo "=============================================="
 cat "$RESULT_FILE"
