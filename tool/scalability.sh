@@ -51,14 +51,15 @@ echo ""
 
 # Initialize result file with headers
 if [[ ! -f "$RESULT_FILE" ]]; then
-    printf "%-30s %-15s %-8s %-15s %-15s %-15s %-15s %-15s %-15s\n" \
+    printf "%-20s %-20s %-8s %-12s %-12s %-12s %-12s %-12s %-12s\n" \
         "Program" "Dataset" "Threads" "Duck_Load(s)" "Duck_Exec(s)" \
         "Umbra_Load(s)" "Umbra_Exec(s)" "FlowLog_Load(s)" "FlowLog_Exec(s)" \
         > "$RESULT_FILE"
-    printf "%-30s %-15s %-8s %-15s %-15s %-15s %-15s %-15s %-15s\n" \
-        "------------------------------" "---------------" "--------" "---------------" "---------------" \
-        "---------------" "---------------" "---------------" "---------------" \
+    printf "%-20s %-20s %-8s %-12s %-12s %-12s %-12s %-12s %-12s\n" \
+        "--------------------" "--------------------" "--------" "------------" "------------" \
+        "------------" "------------" "------------" "------------" \
         >> "$RESULT_FILE"
+fi
 fi
 
 # =============================================================================
@@ -485,7 +486,7 @@ while IFS='=' read -r program dataset; do
         echo "FlowLog completed: load=$flowlog_load exec=$flowlog_exec"
 
         # Write results to file
-        printf "%-30s %-15s %-8s %-15s %-15s %-15s %-15s %-15s %-15s\n" \
+        printf "%-20s %-20s %-8s %-12s %-12s %-12s %-12s %-12s %-12s\n" \
             "$program" "$dataset" "$thread_count" "$duck_load" "$duck_exec" \
             "$umbra_load" "$umbra_exec" "$flowlog_load" "$flowlog_exec" \
             >> "$RESULT_FILE"
