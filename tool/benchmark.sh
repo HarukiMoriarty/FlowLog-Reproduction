@@ -127,7 +127,8 @@ run_duckdb() {
         echo "    Timing run $i/3"
         local etime=""
         
-        if timeout "$TIMEOUT_SECONDS" bash -c "/usr/bin/time -f '%e' duckdb '$duckdb_db' < '${TEMP_SQL}_exec.sql' 2>/tmp/duckdb_time.tmp >/dev/null"; then
+        if timeout "$TIMEOUT_SECONDS" /usr/bin/time -f "%e" -o /tmp/duckdb_time.tmp \
+                duckdb "$duckdb_db" < "${TEMP_SQL}_exec.sql" > /dev/null 2>&1; then
             if [[ -f /tmp/duckdb_time.tmp ]]; then
                 etime=$(cat /tmp/duckdb_time.tmp)
                 rm -f /tmp/duckdb_time.tmp
@@ -353,15 +354,16 @@ run_umbra() {
         echo "    Timing run $i/3"
         local etime=""
         
-        if timeout "$TIMEOUT_SECONDS" bash -c "/usr/bin/time -f '%e' sudo docker run --rm \
-                --cpuset-cpus='$CPUSET' \
+        if timeout "$TIMEOUT_SECONDS" /usr/bin/time -f "%e" -o /tmp/umbra_time.tmp \
+                sudo docker run --rm \
+                --cpuset-cpus="$CPUSET" \
                 --memory='250g' \
                 -v umbra-db:/var/db \
-                -v \"$PWD\":/hostdata \
+                -v "$PWD":/hostdata \
                 --user root \
                 umbradb/umbra:latest \
-                bash -c 'umbra-sql /var/db/umbra.db < /hostdata/${TEMP_SQL}_exec.sql' \
-                > /dev/null 2>&1" 2>/tmp/umbra_time.tmp; then
+                bash -c "umbra-sql /var/db/umbra.db < /hostdata/${TEMP_SQL}_exec.sql" \
+                > /dev/null 2>&1; then
             if [[ -f /tmp/umbra_time.tmp ]]; then
                 etime=$(cat /tmp/umbra_time.tmp)
                 rm -f /tmp/umbra_time.tmp
@@ -374,7 +376,7 @@ run_umbra() {
                 fi
             else
                 etime="$TIMEOUT_SECONDS"
-                echo "      No time file found, using timeout value"
+                echo "      No time file found, using timeout valu $etime"
             fi
         else
             etime="$TIMEOUT_SECONDS"
