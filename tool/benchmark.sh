@@ -41,7 +41,7 @@ TEMP_RESULT_FILE="/tmp/benchmark_result.tmp"
 # Initialize directories and files
 mkdir -p "$DATASET_DIR"
 rm -rf "$RESULT_FILE"
-mkdir -p "./log/benchmark"
+mkdir -p "./log/benchmark/${THREAD_COUNT}"
 
 echo "=== Database Benchmark Configuration ==="
 echo "Timeout: ${TIMEOUT_SECONDS} seconds ($(echo "scale=1; $TIMEOUT_SECONDS/60" | bc -l) minutes)"
@@ -116,9 +116,9 @@ run_duckdb() {
 
     # Run logging execution
     echo "  Running logging execution..."
-    echo "=== DuckDB Execute Log for $base on $dataset ===" > "./log/benchmark/duckdb_${base}_${dataset}.log"
+    echo "=== DuckDB Execute Log for $base on $dataset ===" > "./log/benchmark/${THREAD_COUNT}/duckdb_${base}_${dataset}.log"
     timeout "$TIMEOUT_SECONDS" duckdb "$duckdb_db" < "${TEMP_SQL}_exec.sql" \
-        >> "./log/benchmark/duckdb_${base}_${dataset}.log" 2>&1 || \
+        >> "./log/benchmark/${THREAD_COUNT}/duckdb_${base}_${dataset}.log" 2>&1 || \
         echo "  WARNING: Logging execution failed or timed out"
 
     # Run timing executions
@@ -199,7 +199,7 @@ run_flowlog() {
     
     # Run logging execution
     echo "  Running logging execution..."
-    local log_file="./log/benchmark/flowlog_${base}_${dataset}.log"
+    local log_file="./log/benchmark/${THREAD_COUNT}/flowlog_${base}_${dataset}.log"
     echo "=== FlowLog Execute Log for $base on $dataset ===" > "$log_file"
     timeout "$TIMEOUT_SECONDS" "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" \
         >> "$log_file" 2>&1 || echo "  WARNING: Logging execution failed or timed out"
@@ -211,7 +211,7 @@ run_flowlog() {
     
     for i in {1..3}; do
         echo "    Timing run $i/3"
-        local temp_log="./log/benchmark/flowlog_${base}_${dataset}_${i}.log"
+        local temp_log="./log/benchmark/${THREAD_COUNT}/flowlog_${base}_${dataset}_${i}.log"
         
         # Run FlowLog with timeout and capture output
         if timeout "$TIMEOUT_SECONDS" "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" \
@@ -300,6 +300,17 @@ run_umbra() {
     local exec_tpl="program/umbra/${base}_execute.sql"
 
     echo "  Starting Umbra benchmark: $base on $dataset"
+    
+    # Skip specific program-dataset combinations
+    if [[ "$base" == "cc" && "$dataset" == "arabic" ]] || \
+       [[ "$base" == "cc" && "$dataset" == "twitter" ]] || \
+       [[ "$base" == "tc" && "$dataset" == "G20K-0.001" ]] || \
+       [[ "$base" == "sg" && "$dataset" == "G10K-0.001" ]]; then
+        echo "  SKIP: Skipping Umbra for $base on $dataset (known problematic combination)"
+        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        return
+    fi
+    
     echo "  Using CPU set: $CPUSET"
 
     # Check if template files exist
@@ -319,24 +330,59 @@ run_umbra() {
     cp "$exec_tpl" "${TEMP_SQL}_exec.sql"
 
     local fastest_exec=""
+    local load_times=()
 
-    # Load database
-    echo "  Loading database..."
-    load_time=$(/usr/bin/time -f "%e" \
-        bash -c "sudo docker run --rm \
-            --cpuset-cpus='$CPUSET' \
-            --memory='250g' \
-            -v umbra-db:/var/db \
-            -v \"$PWD\":/hostdata \
-            --user root \
-            umbradb/umbra:latest \
-            bash -c 'umbra-sql /var/db/umbra.db < /hostdata/${TEMP_SQL}_load.sql' \
-            > /dev/null 2>&1" 2>&1)
-    echo "  Database loaded in $load_time seconds"
+    # Run load database three times and get median
+    echo "  Loading database (3 runs for median)..."
+    for i in {1..3}; do
+        echo "    Load run $i/3"
+        # Create fresh database for each load test
+        sudo docker run --rm -v umbra-db-load-${i}:/var/db umbradb/umbra:latest \
+            umbra-sql -createdb /var/db/umbra.db > /dev/null
+        
+        local load_time_i=$(/usr/bin/time -f "%e" \
+            bash -c "sudo docker run --rm \
+                --cpuset-cpus='$CPUSET' \
+                --memory='250g' \
+                -v umbra-db-load-${i}:/var/db \
+                -v \"$PWD\":/hostdata \
+                --user root \
+                umbradb/umbra:latest \
+                bash -c 'umbra-sql /var/db/umbra.db < /hostdata/${TEMP_SQL}_load.sql' \
+                > /dev/null 2>&1" 2>&1)
+        
+        load_times+=("$load_time_i")
+        echo "      Load completed in $load_time_i seconds"
+        
+        # Clean up load test database
+        sudo docker volume rm umbra-db-load-${i} > /dev/null 2>&1 || true
+    done
+    
+    # Calculate median of load times
+    IFS=$'\n' sorted_load_times=($(sort -n <<<"${load_times[*]}"))
+    load_time="${sorted_load_times[1]}"  # Middle value (0-indexed)
+    echo "  Load times: ${load_times[*]}"
+    echo "  Median load time: $load_time seconds"
+
+    # Create final database for execution tests
+    echo "  Creating final database for execution tests..."
+    sudo docker run --rm -v umbra-db:/var/db umbradb/umbra:latest \
+        umbra-sql -createdb /var/db/umbra.db > /dev/null
+    
+    # Load data into final database
+    sudo docker run --rm \
+        --cpuset-cpus="$CPUSET" \
+        --memory='250g' \
+        -v umbra-db:/var/db \
+        -v "$PWD":/hostdata \
+        --user root \
+        umbradb/umbra:latest \
+        bash -c "umbra-sql /var/db/umbra.db < /hostdata/${TEMP_SQL}_load.sql" \
+        > /dev/null 2>&1
 
     # Run logging execution
     echo "  Running logging execution..."
-    echo "=== Umbra Execute Log for $base on $dataset ===" > "./log/benchmark/umbra_${base}_${dataset}.log"
+    echo "=== Umbra Execute Log for $base on $dataset ===" > "./log/benchmark/${THREAD_COUNT}/umbra_${base}_${dataset}.log"
     timeout "$TIMEOUT_SECONDS" sudo docker run --rm \
         --cpuset-cpus="$CPUSET" \
         --memory='250g' \
@@ -345,7 +391,7 @@ run_umbra() {
         --user root \
         umbradb/umbra:latest \
         bash -c "umbra-sql /var/db/umbra.db < /hostdata/${TEMP_SQL}_exec.sql" \
-        >> "./log/benchmark/umbra_${base}_${dataset}.log" 2>&1 || \
+        >> "./log/benchmark/${THREAD_COUNT}/umbra_${base}_${dataset}.log" 2>&1 || \
         echo "  WARNING: Logging execution failed or timed out"
 
     # Run timing executions

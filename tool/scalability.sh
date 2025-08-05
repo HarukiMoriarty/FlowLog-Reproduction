@@ -305,28 +305,56 @@ run_umbra_scalability() {
     sed "s|{{DATASET_PATH}}|/hostdata/dataset/${dataset}|g" "$load_tpl" > "${TEMP_SQL}_${thread_count}_load.sql"
     cp "$exec_tpl" "${TEMP_SQL}_${thread_count}_exec.sql"
 
-    # Create database
-    echo "  Creating database..."
+    local fastest_exec=""
+    local load_times=()
+
+    # Run load database three times and get median
+    echo "  Loading database (3 runs for median)..."
+    for i in {1..3}; do
+        echo "    Load run $i/3"
+        # Create fresh database for each load test
+        sudo docker run --rm -v umbra-db-${thread_count}-load-${i}:/var/db umbradb/umbra:latest \
+            umbra-sql -createdb /var/db/umbra.db > /dev/null
+        
+        local load_time_i=$(/usr/bin/time -f "%e" \
+            bash -c "sudo docker run --rm \
+                --cpuset-cpus='$cpuset' \
+                --memory='250g' \
+                -v umbra-db-${thread_count}-load-${i}:/var/db \
+                -v \"$PWD\":/hostdata \
+                --user root \
+                umbradb/umbra:latest \
+                bash -c 'umbra-sql /var/db/umbra.db < /hostdata/${TEMP_SQL}_${thread_count}_load.sql' \
+                > /dev/null 2>&1" 2>&1)
+        
+        load_times+=("$load_time_i")
+        echo "      Load completed in $load_time_i seconds"
+        
+        # Clean up load test database
+        sudo docker volume rm umbra-db-${thread_count}-load-${i} > /dev/null 2>&1 || true
+    done
+    
+    # Calculate median of load times
+    IFS=$'\n' sorted_load_times=($(sort -n <<<"${load_times[*]}"))
+    load_time="${sorted_load_times[1]}"  # Middle value (0-indexed)
+    echo "  Load times: ${load_times[*]}"
+    echo "  Median load time: $load_time seconds"
+
+    # Create final database for execution tests
+    echo "  Creating final database for execution tests..."
     sudo docker run --rm -v umbra-db-${thread_count}:/var/db umbradb/umbra:latest \
         umbra-sql -createdb /var/db/umbra.db > /dev/null
-
-    local fastest_exec=""
-
-    local fastest_exec=""
-
-    # Load database
-    echo "  Loading database..."
-    load_time=$(/usr/bin/time -f "%e" \
-        bash -c "sudo docker run --rm \
-            --cpuset-cpus='$cpuset' \
-            --memory='250g' \
-            -v umbra-db-${thread_count}:/var/db \
-            -v \"$PWD\":/hostdata \
-            --user root \
-            umbradb/umbra:latest \
-            bash -c 'umbra-sql /var/db/umbra.db < /hostdata/${TEMP_SQL}_${thread_count}_load.sql' \
-            > /dev/null 2>&1" 2>&1)
-    echo "  Database loaded in $load_time seconds"
+    
+    # Load data into final database
+    sudo docker run --rm \
+        --cpuset-cpus="$cpuset" \
+        --memory='250g' \
+        -v umbra-db-${thread_count}:/var/db \
+        -v "$PWD":/hostdata \
+        --user root \
+        umbradb/umbra:latest \
+        bash -c "umbra-sql /var/db/umbra.db < /hostdata/${TEMP_SQL}_${thread_count}_load.sql" \
+        > /dev/null 2>&1
 
     # Run logging execution
     echo "  Running logging execution..."
