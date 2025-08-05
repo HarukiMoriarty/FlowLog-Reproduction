@@ -66,13 +66,13 @@ echo ""
 
 # Initialize result file with headers
 if [[ ! -f "$RESULT_FILE" ]]; then
-    printf "%-20s %-20s %-12s %-12s %-12s %-12s %-12s %-12s\n" \
+    printf "%-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
         "Program" "Dataset" "Duck_Load(s)" "Duck_Exec(s)" \
         "Umbra_Load(s)" "Umbra_Exec(s)" "FlowLog_Load(s)" "FlowLog_Exec(s)" \
         > "$RESULT_FILE"
     printf "%-20s %-20s %-12s %-12s %-12s %-12s %-12s %-12s\n" \
-        "--------------------" "--------------------" "------------" "------------" \
-        "------------" "------------" "------------" "------------" \
+        "--------------------" "--------------------" "--------------------" "--------------------" \
+        "--------------------" "--------------------" "--------------------" "--------------------" \
         >> "$RESULT_FILE"
 fi
 
@@ -166,7 +166,10 @@ run_duckdb() {
     rm -f "$duckdb_db"
 
     # Write results to temp file
-    echo "$load_time $fastest_exec" > "$TEMP_RESULT_FILE"
+    {
+        echo "$load_time"
+        echo "$fastest_exec"
+    } > "$TEMP_RESULT_FILE"
     echo "  Results: load=$load_time exec=$fastest_exec"
 }
 
@@ -286,7 +289,10 @@ run_flowlog() {
     fi
 
     # Write results to temp file
-    echo "$formatted_load $formatted_exec" > "$TEMP_RESULT_FILE"
+    {
+        echo "$formatted_load"
+        echo "$formatted_exec"
+    } > "$TEMP_RESULT_FILE"
     echo "  Results: load=$formatted_load exec=$formatted_exec"
 }
 
@@ -452,7 +458,10 @@ run_umbra() {
     sudo docker volume rm umbra-db > /dev/null 2>&1 || echo "  WARNING: Could not remove volume"
 
     # Write results to temp file
-    echo "$load_time $fastest_exec" > "$TEMP_RESULT_FILE"
+    {
+        echo "$load_time" 
+        echo "$fastest_exec" 
+    } > "$TEMP_RESULT_FILE"
     echo "  Results: load=$load_time exec=$fastest_exec"
 }
 
@@ -483,25 +492,31 @@ while IFS='=' read -r program dataset; do
     echo ""
     echo "--- DuckDB Benchmark ---"
     run_duckdb "$program" "$dataset"
-    read duck_load duck_exec < "$TEMP_RESULT_FILE"
+    mapfile -t lines < "$TEMP_RESULT_FILE"
+    duck_load="${lines[0]}"
+    duck_exec="${lines[1]}"
     echo "DuckDB completed: load=$duck_load exec=$duck_exec"
     
     # Run Umbra benchmark
     echo ""
     echo "--- Umbra Benchmark ---"
     run_umbra "$program" "$dataset"
-    read umbra_load umbra_exec < "$TEMP_RESULT_FILE"
+    mapfile -t lines < "$TEMP_RESULT_FILE"
+    umbra_load="${lines[0]}"
+    umbra_exec="${lines[1]}"
     echo "Umbra completed: load=$umbra_load exec=$umbra_exec"
     
     # Run FlowLog benchmark
     echo ""
     echo "--- FlowLog Benchmark ---"
     run_flowlog "$program" "$dataset"
-    read flowlog_load flowlog_exec < "$TEMP_RESULT_FILE"
+    mapfile -t lines < "$TEMP_RESULT_FILE"
+    flowlog_load="${lines[0]}"
+    flowlog_exec="${lines[1]}"
     echo "FlowLog completed: load=$flowlog_load exec=$flowlog_exec"
 
     # Write results to file
-    printf "%-20s %-20s %-12s %-12s %-12s %-12s %-12s %-12s\n" \
+    printf "%-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
         "$program" "$dataset" "$duck_load" "$duck_exec" \
         "$umbra_load" "$umbra_exec" "$flowlog_load" "$flowlog_exec" \
         >> "$RESULT_FILE"
