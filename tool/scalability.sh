@@ -51,15 +51,14 @@ echo ""
 
 # Initialize result file with headers
 if [[ ! -f "$RESULT_FILE" ]]; then
-    printf "%-20s %-20s %-8s %-12s %-12s %-12s %-12s %-12s %-12s\n" \
+    printf "%-20s %-20s %-8s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
         "Program" "Dataset" "Threads" "Duck_Load(s)" "Duck_Exec(s)" \
         "Umbra_Load(s)" "Umbra_Exec(s)" "FlowLog_Load(s)" "FlowLog_Exec(s)" \
         > "$RESULT_FILE"
-    printf "%-20s %-20s %-8s %-12s %-12s %-12s %-12s %-12s %-12s\n" \
-        "--------------------" "--------------------" "--------" "------------" "------------" \
-        "------------" "------------" "------------" "------------" \
+    printf "%-20s %-20s %-8s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
+        "--------------------" "--------------------" "--------" "--------------------" "--------------------" \
+        "--------------------" "--------------------" "--------------------" "--------------------" \
         >> "$RESULT_FILE"
-fi
 fi
 
 # =============================================================================
@@ -156,7 +155,10 @@ run_duckdb_scalability() {
     rm -f "${TEMP_SQL}_${thread_count}_load.sql" "${TEMP_SQL}_${thread_count}_exec.sql"
 
     # Write results to temp file
-    echo "$load_time $fastest_exec" > "$TEMP_RESULT_FILE"
+    {
+        echo "$load_time"
+        echo "$fastest_exec"
+    } > "$TEMP_RESULT_FILE"
     echo "  Results: load=$load_time exec=$fastest_exec"
 }
 
@@ -270,7 +272,10 @@ run_flowlog_scalability() {
     echo "  Fastest times: load=$formatted_load exec=$formatted_exec"
 
     # Write results to temp file
-    echo "$formatted_load $formatted_exec" > "$TEMP_RESULT_FILE"
+    {
+        echo "$formatted_load"
+        echo "$formatted_exec"
+    } > "$TEMP_RESULT_FILE"
     echo "  Results: load=$formatted_load exec=$formatted_exec"
 }
 
@@ -424,15 +429,25 @@ run_umbra_scalability() {
     
     # Clean up Docker resources
     echo "  Waiting for Docker cleanup to complete..."
-    sleep 5
-    echo "  Removing Docker volume..."
-    sudo docker volume rm umbra-db-${thread_count} > /dev/null 2>&1 || echo "  WARNING: Could not remove volume"
+    sleep 10
 
-    # Cleanup SQL files
-    rm -f "${TEMP_SQL}_${thread_count}_load.sql" "${TEMP_SQL}_${thread_count}_exec.sql"
+    CONTAINER_ID=$(sudo docker ps -q --filter ancestor=umbradb/umbra:latest)
+
+    if [ -n "$CONTAINER_ID" ]; then
+        echo "[INFO] Stopping Umbra container: $CONTAINER_ID"
+        sudo docker stop "$CONTAINER_ID"
+    else
+        echo "[INFO] No running Umbra container found."
+    fi
+    
+    echo "  Removing Docker volume..."
+    sudo docker volume rm umbra-db > /dev/null 2>&1 || echo "  WARNING: Could not remove volume"
 
     # Write results to temp file
-    echo "$load_time $fastest_exec" > "$TEMP_RESULT_FILE"
+    {
+        echo "$load_time" 
+        echo "$fastest_exec" 
+    } > "$TEMP_RESULT_FILE"
     echo "  Results: load=$load_time exec=$fastest_exec"
 }
 
@@ -468,25 +483,31 @@ while IFS='=' read -r program dataset; do
         echo ""
         echo "DuckDB ($thread_count threads):"
         run_duckdb_scalability "$program" "$dataset" "$thread_count"
-        read duck_load duck_exec < "$TEMP_RESULT_FILE"
+        mapfile -t lines < "$TEMP_RESULT_FILE"
+        duck_load="${lines[0]}"
+        duck_exec="${lines[1]}"
         echo "DuckDB completed: load=$duck_load exec=$duck_exec"
         
         # Run Umbra scalability test
         echo ""
         echo "Umbra ($thread_count CPUs):"
         run_umbra_scalability "$program" "$dataset" "$thread_count"
-        read umbra_load umbra_exec < "$TEMP_RESULT_FILE"
+        mapfile -t lines < "$TEMP_RESULT_FILE"
+        umbra_load="${lines[0]}"
+        umbra_exec="${lines[1]}"
         echo "Umbra completed: load=$umbra_load exec=$umbra_exec"
         
         # Run FlowLog scalability test
         echo ""
         echo "FlowLog ($thread_count workers):"
         run_flowlog_scalability "$program" "$dataset" "$thread_count"
-        read flowlog_load flowlog_exec < "$TEMP_RESULT_FILE"
+        mapfile -t lines < "$TEMP_RESULT_FILE"
+        flowlog_load="${lines[0]}"
+        flowlog_exec="${lines[1]}"
         echo "FlowLog completed: load=$flowlog_load exec=$flowlog_exec"
 
         # Write results to file
-        printf "%-20s %-20s %-8s %-12s %-12s %-12s %-12s %-12s %-12s\n" \
+        printf "%-20s %-20s %-8s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
             "$program" "$dataset" "$thread_count" "$duck_load" "$duck_exec" \
             "$umbra_load" "$umbra_exec" "$flowlog_load" "$flowlog_exec" \
             >> "$RESULT_FILE"
