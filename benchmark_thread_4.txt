@@ -26,3 +26,4 @@ sssp                           G5K-0.001-sssp   0.11            0.07            
 sssp                           livejournal-sssp 5.29            163.46          13.83           7.77            4.7195          12.573         
 sssp                           orkut-sssp       6.75            76.24           24.45           6.36            7.7208          20.061         
 sssp                           twitter-sssp     TIMEOUT         TIMEOUT         244.31          70.52           113.9612        283.5111 
+sssp                           arabic-sssp      TIMEOUT         TIMEOUT         109.30          62.57           45.5618         84.8773        
