@@ -454,6 +454,16 @@ run_umbra() {
     # Clean up Docker resources
     echo "  Waiting for Docker cleanup to complete..."
     sleep 10
+
+    CONTAINER_ID=$(sudo docker ps -q --filter ancestor=umbradb/umbra:latest)
+
+    if [ -n "$CONTAINER_ID" ]; then
+        echo "[INFO] Stopping Umbra container: $CONTAINER_ID"
+        sudo docker stop "$CONTAINER_ID"
+    else
+        echo "[INFO] No running Umbra container found."
+    fi
+    
     echo "  Removing Docker volume..."
     sudo docker volume rm umbra-db > /dev/null 2>&1 || echo "  WARNING: Could not remove volume"
 
