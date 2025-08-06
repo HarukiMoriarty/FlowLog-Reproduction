@@ -1,4 +1,0 @@
-=== Umbra Execute Log for reach on livejournal ===
-count
-4400347
-INFO:    [s] execution: (1.963394 min, 1.963394 max, 1.963394 median, 0.0% relMAD, 1.963394 avg, 0.000000 sdev, 68993784 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.002076 min, 0.002076 max, 0.002076 median, 0.0% relMAD, 0.002076 avg, 0.000000 sdev)

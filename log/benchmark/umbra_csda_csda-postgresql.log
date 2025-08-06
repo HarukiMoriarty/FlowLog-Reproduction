@@ -1,4 +1,0 @@
-=== Umbra Execute Log for csda on csda-postgresql ===
-count
-21503813
-INFO:    [s] execution: (18.484198 min, 18.484198 max, 18.484198 median, 0.0% relMAD, 18.484198 avg, 0.000000 sdev, 34798151 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.002219 min, 0.002219 max, 0.002219 median, 0.0% relMAD, 0.002219 avg, 0.000000 sdev)

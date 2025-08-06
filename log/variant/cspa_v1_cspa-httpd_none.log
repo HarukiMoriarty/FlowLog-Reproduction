@@ -1,8 +1,0 @@
-[2m2025-07-29T02:20:48.461049Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 13.112277ms:	Dataflow assembled
-[2m2025-07-29T02:20:48.633611Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 185.679533ms:	Data loaded for Assign
-[2m2025-07-29T02:20:48.633662Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 185.738764ms:	Data loaded for Dereference
-[2m2025-07-29T02:21:03.589087Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [MemoryAlias]: ((), (), 88905342)
-[2m2025-07-29T02:21:03.596332Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [ValueAlias]: ((), (), 234237608)
-[2m2025-07-29T02:21:03.596417Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [ValueFlow]: ((), (), 1365306)
-[2m2025-07-29T02:21:03.686710Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 15.23187952s:	Dataflow executed
-[2m2025-07-29T02:21:03.951443Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

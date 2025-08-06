@@ -1,0 +1,4 @@
+=== Umbra Execute Log for sssp on orkut-sssp ===
+count
+3072441
+INFO:    [s] execution: (2.412021 min, 2.412021 max, 2.412021 median, 0.0% relMAD, 2.412021 avg, 0.000000 sdev, 117185085 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.003588 min, 0.003588 max, 0.003588 median, 0.0% relMAD, 0.003588 avg, 0.000000 sdev)

@@ -1,7 +1,0 @@
-=== DuckDB Execute Log for reach on web-BerkStan ===
-┌───────────────┐
-│ num_reachable │
-│     int64     │
-├───────────────┤
-│        459831 │
-└───────────────┘

@@ -1,4 +1,0 @@
-=== Umbra Execute Log for cc on web-BerkStan ===
-count
-685230
-INFO:    [s] execution: (19.601171 min, 19.601171 max, 19.601171 median, 0.0% relMAD, 19.601171 avg, 0.000000 sdev, 15201191 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.004153 min, 0.004153 max, 0.004153 median, 0.0% relMAD, 0.004153 avg, 0.000000 sdev)

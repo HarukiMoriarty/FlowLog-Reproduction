@@ -1,4 +1,0 @@
-=== Umbra Execute Log for bipartite on netflix ===
-zero_count one_count intersection_count
-480189 17770 0
-INFO:    [s] execution: (1.985258 min, 1.985258 max, 1.985258 median, 0.0% relMAD, 1.985258 avg, 0.000000 sdev, 200961016 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.003672 min, 0.003672 max, 0.003672 median, 0.0% relMAD, 0.003672 avg, 0.000000 sdev)

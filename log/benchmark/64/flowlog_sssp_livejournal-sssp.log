@@ -1,0 +1,8 @@
+=== FlowLog Execute Log for sssp on livejournal-sssp ===
+[2m2025-08-06T02:17:52.894483Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 33.74935ms:	Dataflow assembled
+[2m2025-08-06T02:18:00.707771Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 7.847039698s:	Data loaded for arc
+[2m2025-08-06T02:18:00.707828Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 7.847103648s:	Data loaded for id
+[2m2025-08-06T02:18:02.168099Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [sssp2]: ((), (), 4400347)
+[2m2025-08-06T02:18:02.194544Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) sssp: ((), (), 4400347)
+[2m2025-08-06T02:18:02.194837Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 9.334105731s:	Dataflow executed
+[2m2025-08-06T02:18:02.200658Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

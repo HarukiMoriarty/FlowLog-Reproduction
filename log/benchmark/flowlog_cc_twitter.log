@@ -1,7 +1,0 @@
-=== FlowLog Execute Log for cc on twitter ===
-[2m2025-07-27T06:13:50.766623Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 20.306349ms:	Dataflow assembled
-[2m2025-07-27T06:15:35.394652Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 104.648339052s:	Data loaded for Arc
-[2m2025-07-27T06:16:58.051923Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [CC]: ((), (), 208951146)
-[2m2025-07-27T06:16:58.472720Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) CC2: ((), (), 41652230)
-[2m2025-07-27T06:16:58.474110Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 187.727793672s:	Dataflow executed
-[2m2025-07-27T06:16:58.502422Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

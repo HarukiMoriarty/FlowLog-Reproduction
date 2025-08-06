@@ -1,9 +1,0 @@
-=== FlowLog Execute Log for bipartite on web-BerkStan ===
-[2m2025-07-25T17:37:38.390412Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 11.224553ms:	Dataflow assembled
-[2m2025-07-25T17:37:39.199837Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 820.652979ms:	Data loaded for Arc
-[2m2025-07-25T17:37:39.199901Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 820.72803ms:	Data loaded for Source
-[2m2025-07-25T17:37:39.784408Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [One]: ((), (), 654782)
-[2m2025-07-25T17:37:39.784506Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Zero]: ((), (), 654782)
-[2m2025-07-25T17:37:39.788460Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) BipartiteViolation: ((), (), 654782)
-[2m2025-07-25T17:37:39.788623Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 1.409439313s:	Dataflow executed
-[2m2025-07-25T17:37:39.791080Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

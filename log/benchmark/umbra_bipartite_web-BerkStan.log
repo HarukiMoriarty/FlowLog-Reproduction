@@ -1,4 +1,0 @@
-=== Umbra Execute Log for bipartite on web-BerkStan ===
-zero_count one_count intersection_count
-654782 654782 654782
-INFO:    [s] execution: (4.357697 min, 4.357697 max, 4.357697 median, 0.0% relMAD, 4.357697 avg, 0.000000 sdev, 15201192 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.003623 min, 0.003623 max, 0.003623 median, 0.0% relMAD, 0.003623 avg, 0.000000 sdev)

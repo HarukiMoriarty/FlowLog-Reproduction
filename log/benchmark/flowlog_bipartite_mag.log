@@ -1,8 +1,0 @@
-=== FlowLog Execute Log for bipartite on mag ===
-[2m2025-07-25T18:11:39.737475Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 10.161086ms:	Dataflow assembled
-[2m2025-07-25T18:12:50.449544Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 70.722237329s:	Data loaded for Arc
-[2m2025-07-25T18:12:50.449591Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 70.722289126s:	Data loaded for Source
-[2m2025-07-25T18:13:21.843719Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Zero]: ((), (), 10541556)
-[2m2025-07-25T18:13:21.844089Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [One]: ((), (), 2763016)
-[2m2025-07-25T18:13:21.844251Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 102.116928738s:	Dataflow executed
-[2m2025-07-25T18:13:21.861221Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

@@ -1,4 +1,0 @@
-=== Umbra Execute Log for sg on G5K-0.001 ===
-count
-24730729
-INFO:    [s] execution: (2.665572 min, 2.665572 max, 2.665572 median, 0.0% relMAD, 2.665572 avg, 0.000000 sdev, 100185 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.002680 min, 0.002680 max, 0.002680 median, 0.0% relMAD, 0.002680 avg, 0.000000 sdev)

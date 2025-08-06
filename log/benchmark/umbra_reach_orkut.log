@@ -1,4 +1,0 @@
-=== Umbra Execute Log for reach on orkut ===
-count
-3056659
-INFO:    [s] execution: (2.785847 min, 2.785847 max, 2.785847 median, 0.0% relMAD, 2.785847 avg, 0.000000 sdev, 117185094 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.002120 min, 0.002120 max, 0.002120 median, 0.0% relMAD, 0.002120 avg, 0.000000 sdev)

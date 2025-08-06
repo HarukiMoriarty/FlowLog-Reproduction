@@ -1,7 +1,0 @@
-=== DuckDB Execute Log for sssp on G5K-0.001-sssp ===
-┌──────────────┐
-│ count_star() │
-│    int64     │
-├──────────────┤
-│         4973 │
-└──────────────┘
