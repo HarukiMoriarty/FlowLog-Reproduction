@@ -1,8 +1,8 @@
 === FlowLog Execute Log for bipartite on mag ===
-[2m2025-08-05T19:35:07.274764Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 10.281888ms:	Dataflow assembled
-[2m2025-08-05T19:36:29.454208Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 82.189728449s:	Data loaded for Arc
-[2m2025-08-05T19:36:29.454902Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 82.190426952s:	Data loaded for Source
-[2m2025-08-05T19:36:57.510059Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Zero]: ((), (), 10541556)
-[2m2025-08-05T19:36:57.511124Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [One]: ((), (), 2763016)
-[2m2025-08-05T19:36:57.511407Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 110.246924174s:	Dataflow executed
-[2m2025-08-05T19:36:57.524355Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query
+[2m2025-08-06T06:42:12.259364Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 8.868251ms:	Dataflow assembled
+[2m2025-08-06T06:43:06.323980Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 54.073484494s:	Data loaded for Arc
+[2m2025-08-06T06:43:06.324014Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 54.073523557s:	Data loaded for Source
+[2m2025-08-06T06:43:36.176489Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Zero]: ((), (), 10541556)
+[2m2025-08-06T06:43:36.177240Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [One]: ((), (), 2763016)
+[2m2025-08-06T06:43:36.183331Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 83.932833873s:	Dataflow executed
+[2m2025-08-06T06:43:36.194976Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

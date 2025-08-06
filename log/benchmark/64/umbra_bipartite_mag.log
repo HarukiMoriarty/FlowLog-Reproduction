@@ -1,4 +1,4 @@
 === Umbra Execute Log for bipartite on mag ===
 zero_count one_count intersection_count
 10541556 2763016 0
-INFO:    [s] execution: (15.332546 min, 15.332546 max, 15.332546 median, 0.0% relMAD, 15.332546 avg, 0.000000 sdev, 2190630214 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.004024 min, 0.004024 max, 0.004024 median, 0.0% relMAD, 0.004024 avg, 0.000000 sdev)
+INFO:    [s] execution: (14.426576 min, 14.426576 max, 14.426576 median, 0.0% relMAD, 14.426576 avg, 0.000000 sdev, 2190630214 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.003303 min, 0.003303 max, 0.003303 median, 0.0% relMAD, 0.003303 avg, 0.000000 sdev)

@@ -1,9 +1,9 @@
 === FlowLog Execute Log for bipartite on roadNet-CA ===
-[2m2025-08-05T18:51:09.683261Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 11.061786ms:	Dataflow assembled
-[2m2025-08-05T18:51:10.302695Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 630.498415ms:	Data loaded for Arc
-[2m2025-08-05T18:51:10.302796Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 630.604996ms:	Data loaded for Source
-[2m2025-08-05T18:51:11.428377Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [One]: ((), (), 1957027)
-[2m2025-08-05T18:51:11.428662Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Zero]: ((), (), 1957027)
-[2m2025-08-05T18:51:11.440665Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) BipartiteViolation: ((), (), 1957027)
-[2m2025-08-05T18:51:11.440910Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 1.76870837s:	Dataflow executed
-[2m2025-08-05T18:51:11.443783Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query
+[2m2025-08-06T06:08:22.320499Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 8.786254ms:	Dataflow assembled
+[2m2025-08-06T06:08:22.826890Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 515.176476ms:	Data loaded for Arc
+[2m2025-08-06T06:08:22.827009Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 515.304778ms:	Data loaded for Source
+[2m2025-08-06T06:08:23.788427Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [One]: ((), (), 1957027)
+[2m2025-08-06T06:08:23.788561Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Zero]: ((), (), 1957027)
+[2m2025-08-06T06:08:23.798390Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) BipartiteViolation: ((), (), 1957027)
+[2m2025-08-06T06:08:23.798585Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 1.486878258s:	Dataflow executed
+[2m2025-08-06T06:08:23.801405Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

@@ -1,4 +1,4 @@
 === Umbra Execute Log for reach on twitter ===
-INFO:    [s] execution: (21.369696 min, 21.369696 max, 21.369696 median, 0.0% relMAD, 21.369696 avg, 0.000000 sdev, 1468365283 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.002081 min, 0.002081 max, 0.002081 median, 0.0% relMAD, 0.002081 avg, 0.000000 sdev)
+INFO:    [s] execution: (20.472942 min, 20.472942 max, 20.472942 median, 0.0% relMAD, 20.472942 avg, 0.000000 sdev, 1468365283 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.001956 min, 0.001956 max, 0.001956 median, 0.0% relMAD, 0.001956 avg, 0.000000 sdev)
 count
 35016157

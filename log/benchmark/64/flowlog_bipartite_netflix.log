@@ -1,8 +1,8 @@
 === FlowLog Execute Log for bipartite on netflix ===
-[2m2025-08-05T18:46:28.642104Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 132.625423ms:	Dataflow assembled
-[2m2025-08-05T18:46:40.179312Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 11.669837607s:	Data loaded for Arc
-[2m2025-08-05T18:46:40.179372Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 11.669901818s:	Data loaded for Source
-[2m2025-08-05T18:46:43.325974Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [One]: ((), (), 17770)
-[2m2025-08-05T18:46:43.326034Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Zero]: ((), (), 480189)
-[2m2025-08-05T18:46:43.326278Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 14.816800736s:	Dataflow executed
-[2m2025-08-05T18:46:43.351884Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query
+[2m2025-08-06T06:04:17.622460Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 7.233182ms:	Dataflow assembled
+[2m2025-08-06T06:04:23.632470Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 6.0172427s:	Data loaded for Arc
+[2m2025-08-06T06:04:23.632528Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 6.017307943s:	Data loaded for Source
+[2m2025-08-06T06:04:29.454062Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [One]: ((), (), 17770)
+[2m2025-08-06T06:04:29.454296Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Zero]: ((), (), 480189)
+[2m2025-08-06T06:04:29.455090Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 11.839867844s:	Dataflow executed
+[2m2025-08-06T06:04:29.471450Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

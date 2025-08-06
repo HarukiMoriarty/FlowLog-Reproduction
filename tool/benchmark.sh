@@ -307,16 +307,6 @@ run_umbra() {
 
     echo "  Starting Umbra benchmark: $base on $dataset"
     
-    # Skip specific program-dataset combinations
-    if [[ "$base" == "cc" && "$dataset" == "arabic" ]] || \
-       [[ "$base" == "cc" && "$dataset" == "twitter" ]] || \
-       [[ "$base" == "tc" && "$dataset" == "G20K-0.001" ]] || \
-       [[ "$base" == "sg" && "$dataset" == "G10K-0.001" ]]; then
-        echo "  SKIP: Skipping Umbra for $base on $dataset (known problematic combination)"
-        echo "-1 -1" > "$TEMP_RESULT_FILE"
-        return
-    fi
-    
     echo "  Using CPU set: $CPUSET"
 
     # Check if template files exist
