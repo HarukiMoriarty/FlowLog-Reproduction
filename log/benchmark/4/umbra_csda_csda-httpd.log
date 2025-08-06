@@ -1,0 +1,4 @@
+=== Umbra Execute Log for csda on csda-httpd ===
+count
+9393283
+INFO:    [s] execution: (14.448246 min, 14.448246 max, 14.448246 median, 0.0% relMAD, 14.448246 avg, 0.000000 sdev, 10043956 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.001644 min, 0.001644 max, 0.001644 median, 0.0% relMAD, 0.001644 avg, 0.000000 sdev)

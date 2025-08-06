@@ -1,0 +1,6 @@
+=== FlowLog Execute Log for tc on G10K-0.001 ===
+[2m2025-08-06T00:35:15.852900Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 1.891734ms:	Dataflow assembled
+[2m2025-08-06T00:35:15.857217Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 6.213981ms:	Data loaded for Arc
+[2m2025-08-06T00:36:36.604524Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Tc]: ((), (), 100000000)
+[2m2025-08-06T00:36:36.604614Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 80.753603647s:	Dataflow executed
+[2m2025-08-06T00:36:36.619063Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

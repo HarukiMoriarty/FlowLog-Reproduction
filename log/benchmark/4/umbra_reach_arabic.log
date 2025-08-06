@@ -1,0 +1,4 @@
+=== Umbra Execute Log for reach on arabic ===
+count
+22359925
+INFO:    [s] execution: (29.489300 min, 29.489300 max, 29.489300 median, 0.0% relMAD, 29.489300 avg, 0.000000 sdev, 639999460 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.001570 min, 0.001570 max, 0.001570 median, 0.0% relMAD, 0.001570 avg, 0.000000 sdev)

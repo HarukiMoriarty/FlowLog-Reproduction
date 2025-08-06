@@ -25,3 +25,4 @@ SELECT COUNT(*) FROM (
     FROM Sssp
     GROUP BY x
 ) AS deduped;
+

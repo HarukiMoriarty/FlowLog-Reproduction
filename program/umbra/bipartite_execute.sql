@@ -22,3 +22,4 @@ SELECT
     COUNT(DISTINCT x) FILTER (WHERE color = 0 AND x IN (SELECT x FROM coloring WHERE color = 1)) AS intersection_count
 FROM coloring;
 
+
