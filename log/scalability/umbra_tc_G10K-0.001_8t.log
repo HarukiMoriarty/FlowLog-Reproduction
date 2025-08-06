@@ -1,0 +1,4 @@
+=== Umbra Scalability Log for tc on G10K-0.001 (8 CPUs) ===
+INFO:    [s] execution: (15.432694 min, 15.432694 max, 15.432694 median, 0.0% relMAD, 15.432694 avg, 0.000000 sdev, 199611 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.002409 min, 0.002409 max, 0.002409 median, 0.0% relMAD, 0.002409 avg, 0.000000 sdev)
+count
+100000000

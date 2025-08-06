@@ -1,0 +1,4 @@
+=== Umbra Scalability Log for cc on orkut (16 CPUs) ===
+total_nodes
+3072441
+INFO:    [s] execution: (10.708186 min, 10.708186 max, 10.708186 median, 0.0% relMAD, 10.708186 avg, 0.000000 sdev, 234370167 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.002681 min, 0.002681 max, 0.002681 median, 0.0% relMAD, 0.002681 avg, 0.000000 sdev)

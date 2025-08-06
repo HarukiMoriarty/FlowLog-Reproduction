@@ -1,0 +1,7 @@
+=== FlowLog Scalability Log for cc on orkut (32 workers) ===
+[2m2025-08-06T22:39:54.629267Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 3.387778ms:	Dataflow assembled
+[2m2025-08-06T22:40:01.641458Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 7.015578664s:	Data loaded for Arc
+[2m2025-08-06T22:40:14.639247Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [CC]: ((), (), 17281478)
+[2m2025-08-06T22:40:14.677512Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) CC2: ((), (), 3072441)
+[2m2025-08-06T22:40:14.677678Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 20.05178817s:	Dataflow executed
+[2m2025-08-06T22:40:14.686300Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query
