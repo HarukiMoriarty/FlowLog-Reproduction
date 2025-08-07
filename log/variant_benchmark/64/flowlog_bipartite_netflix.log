@@ -1,0 +1,8 @@
+=== FlowLog Execute Log for bipartite on netflix ===
+[2m2025-08-07T11:49:00.276464Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 147.910897ms:	Dataflow assembled
+[2m2025-08-07T11:49:07.832696Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 7.704145566s:	Data loaded for Arc
+[2m2025-08-07T11:49:07.832735Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 7.704188747s:	Data loaded for Source
+[2m2025-08-07T11:49:11.804082Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [One]: ((), (), 17770)
+[2m2025-08-07T11:49:11.804219Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Zero]: ((), (), 480189)
+[2m2025-08-07T11:49:11.804768Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 11.676215953s:	Dataflow executed
+[2m2025-08-07T11:49:11.815901Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

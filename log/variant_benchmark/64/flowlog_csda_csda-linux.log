@@ -1,0 +1,7 @@
+=== FlowLog Execute Log for csda on csda-linux ===
+[2m2025-08-07T12:39:11.108101Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 6.93541ms:	Dataflow assembled
+[2m2025-08-07T12:39:15.426761Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 4.325566701s:	Data loaded for NullEdge
+[2m2025-08-07T12:39:15.426905Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 4.325745599s:	Data loaded for Edge
+[2m2025-08-07T12:39:19.021471Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [NullNode]: ((), (), 55751178)
+[2m2025-08-07T12:39:19.062437Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 7.961252365s:	Dataflow executed
+[2m2025-08-07T12:39:19.075517Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

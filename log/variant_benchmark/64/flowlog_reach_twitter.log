@@ -1,0 +1,7 @@
+=== FlowLog Execute Log for reach on twitter ===
+[2m2025-08-07T07:35:45.957947Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 5.114539ms:	Dataflow assembled
+[2m2025-08-07T07:37:02.678520Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 76.725695382s:	Data loaded for Source
+[2m2025-08-07T07:37:02.678561Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 76.725742862s:	Data loaded for Arc
+[2m2025-08-07T07:37:20.291754Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Reach]: ((), (), 35016157)
+[2m2025-08-07T07:37:20.300731Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 94.347901782s:	Dataflow executed
+[2m2025-08-07T07:37:20.332778Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

@@ -43,7 +43,7 @@ echo ""
 
 echo "=== Building FlowLog ==="
 cd FlowLog
-git checkout nemo_arithmetic
+git checkout nemo_aggregation
 cargo build --release
 cd ..
 echo "FlowLog build completed"
@@ -88,7 +88,7 @@ run_flowlog() {
     
     # Run logging execution
     echo "  Running logging execution..."
-    local log_file="./log/benchmark/${THREAD_COUNT}/flowlog_${base}_${dataset}.log"
+    local log_file="./log/variant_benchmark/${THREAD_COUNT}/flowlog_${base}_${dataset}.log"
     echo "=== FlowLog Execute Log for $base on $dataset ===" > "$log_file"
     RUST_LOG=info "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" -O3 \
         >> "$log_file" 2>&1 || echo "  WARNING: Logging execution failed"
@@ -100,10 +100,10 @@ run_flowlog() {
     
     for i in {1..3}; do
         echo "    Timing run $i/3"
-        local temp_log="./log/benchmark/${THREAD_COUNT}/flowlog_${base}_${dataset}_${i}.log"
+        local temp_log="./log/variant_benchmark/${THREAD_COUNT}/flowlog_${base}_${dataset}_${i}.log"
         
         # Run FlowLog and capture output
-        if RUST_LOG=info "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" -O3\
+        if RUST_LOG=info "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" -O3 \
             > "$temp_log" 2>&1; then
             echo "      Completed successfully"
         else
