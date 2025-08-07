@@ -1,4 +1,4 @@
 === Umbra Execute Log for sssp on arabic-sssp ===
-INFO:    [s] execution: (35.975586 min, 35.975586 max, 35.975586 median, 0.0% relMAD, 35.975586 avg, 0.000000 sdev, 639999460 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.003439 min, 0.003439 max, 0.003439 median, 0.0% relMAD, 0.003439 avg, 0.000000 sdev)
 count
 22359925
+INFO:    [s] execution: (33.780045 min, 33.780045 max, 33.780045 median, 0.0% relMAD, 33.780045 avg, 0.000000 sdev, 639999460 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.002625 min, 0.002625 max, 0.002625 median, 0.0% relMAD, 0.002625 avg, 0.000000 sdev)
