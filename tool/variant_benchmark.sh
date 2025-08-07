@@ -1,497 +1,239 @@
 #!/bin/bash
-# Exit immediately if a command exits with a non-zero status
 set -e
 
-############################################################
-# VARIANT BENCHMARK SCRIPT
-# This script measures execution time for different variants
-# of FlowLog programs with O3 optimization only
-# 
-# For each program family (e.g., tc.dl, tc_v1.dl), it runs
-# all variants 3 times each, keeps the fastest time per variant,
-# and calculates the median execution time across variants
-# 
-# Execution logs are saved to ./log/ directory
-# Results include individual variant times (fastest of 3 runs) and medians
-############################################################
+# =============================================================================
+# FlowLog Variants Benchmark Script
+# =============================================================================
 
-############################################################
-# CONFIGURATION
-# Define paths and parameters for benchmark tests
-############################################################
+# Thread count
+THREAD_COUNT=${1:-64}
 
-CONFIG_FILE="./tool/config/variant_benchmark.txt"     # Program/dataset pairs configuration
-PROG_DIR="./program"                                    # Program files directory
-FACT_DIR="./dataset"                                    # Dataset files directory
-LOG_DIR="./log/variant_benchmark"                       # Log output directory
-BINARY_PATH="./FlowLog/target/release/executing"        # Path to compiled binary
-DEFAULT_WORKERS=64                                      # Default number of worker threads
-OPTIMIZATION_FLAG="-O3"                                 # Only use O3 optimization
+# Display usage if help is requested
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    echo "Usage: $0 [THREAD_COUNT]"
+    echo ""
+    echo "Run FlowLog benchmarks with configurable thread count."
+    echo ""
+    echo "Arguments:"
+    echo "  THREAD_COUNT     Number of threads/workers to use (default: 64)"
+    echo ""
+    echo "Examples:"
+    echo "  $0                # Use default 64 threads"
+    echo "  $0 4              # Use 4 threads"
+    exit 0
+fi
 
-############################################################
-# DATASET SETUP
-# Functions to download, extract, and clean up datasets
-############################################################
+# =============================================================================
+# Configuration and Setup
+# =============================================================================
 
-setup_dataset() {
-    # Download and extract dataset if not already present
-    local dataset_name="$1"
-    local dataset_zip="/dev/shm/${dataset_name}.zip"
-    local extract_path="${FACT_DIR}/${dataset_name}"
-    local dataset_url="https://pages.cs.wisc.edu/~m0riarty/dataset/${dataset_name}.zip"
+CONFIG_FILE="./tool/config/variant_benchmark.txt"
+DATASET_DIR="./dataset"
+RESULT_FILE="variant.txt"
+TEMP_RESULT_FILE="/tmp/benchmark_result.tmp"
 
-    # Check if dataset is already extracted
-    if [ -d "$extract_path" ]; then
-        echo "[OK] Dataset $dataset_name already extracted. Skipping."
+# Initialize directories and files
+mkdir -p "$DATASET_DIR"
+rm -rf "$RESULT_FILE"
+mkdir -p "./log/variant_benchmark/${THREAD_COUNT}"
+
+echo "=== FlowLog Benchmark Configuration ==="
+echo "Thread count: ${THREAD_COUNT}"
+echo ""
+
+echo "=== Building FlowLog ==="
+cd FlowLog
+git checkout nemo_arithmetic
+cargo build --release
+cd ..
+echo "FlowLog build completed"
+echo ""
+
+# Initialize result file with headers
+if [[ ! -f "$RESULT_FILE" ]]; then
+    printf "%-20s %-20s %-20s %-20s\n" \
+        "Program" "Dataset" "FlowLog_Load(s)" "FlowLog_Exec(s)" \
+        > "$RESULT_FILE"
+    printf "%-20s %-20s %-20s %-20s\n" \
+        "--------------------" "--------------------" "--------------------" "--------------------" \
+        >> "$RESULT_FILE"
+fi
+
+# -----------------------------------------------------------------------------
+# FlowLog Benchmark Function
+# -----------------------------------------------------------------------------
+run_flowlog() {
+    local base=$1
+    local dataset=$2
+    local prog_file="program/flowlog/${base}.dl"
+    local fact_path="dataset/${dataset}"
+    local flowlog_binary="./FlowLog/target/release/executing"
+    local workers=$THREAD_COUNT
+    
+    echo "  Starting FlowLog benchmark: $base on $dataset"
+    echo "  Using $workers workers"
+    
+    # Check if required files exist
+    [[ ! -f "$prog_file" ]] && { 
+        echo "  ERROR: Program file not found: $prog_file"
+        echo "-1 -1" > "$TEMP_RESULT_FILE"
         return
-    fi
-
-    mkdir -p "$FACT_DIR"
-
-    # Download dataset if zip file doesn't exist
-    if [ ! -f "$dataset_zip" ]; then
-        echo "[DOWNLOAD] Downloading $dataset_name.zip from $dataset_url..."
-        mkdir -p "$(dirname "$dataset_zip")"
-        wget -O "$dataset_zip" "$dataset_url" || {
-            echo "[ERROR] Failed to download dataset: $dataset_name"
-            exit 1
-        }
-    fi
-
-    # Extract the dataset
-    echo "[EXTRACT] Extracting $dataset_name..."
-    unzip -q "$dataset_zip" -d "$FACT_DIR"
-    rm -f "$dataset_zip"  # Remove zip file after extraction
-    echo "[OK] Dataset $dataset_name ready."
-}
-
-cleanup_dataset() {
-    # Remove extracted dataset to save space
-    local dataset_name="$1"
-    local extract_path="${FACT_DIR}/${dataset_name}"
-
-    echo "[CLEANUP] Removing dataset $dataset_name..."
-    rm -rf "$extract_path"
-}
-
-############################################################
-# BENCHMARK FUNCTIONS
-# Functions to run benchmark tests and measure performance
-############################################################
-
-run_single_benchmark_test() {
-    # Run a single benchmark test for a program/dataset combination (3 times, keep fastest)
-    local prog_name="$1"
-    local dataset_name="$2"
-
-    # Set up program file paths
-    local prog_file=$(basename "$prog_name")
-    local prog_path="${PROG_DIR}/flowlog/${prog_file}"
+    }
     
-    # Set up paths for benchmark test
-    local fact_path="${FACT_DIR}/${dataset_name}"
-    local program_stem="${prog_name%.*}"
-    local log_file="${LOG_DIR}/${program_stem}_${dataset_name}_O3.log"
-
-    echo "[BENCHMARK] Running $prog_name with $dataset_name (O3) - 3 runs, keeping fastest"
-
-    # Ensure log directory exists
-    mkdir -p "$LOG_DIR"
-
-    local best_time=""
-    local best_run=0
-    local run_times=()
-
-    # Run 3 times and keep the fastest
-    for run in 1 2 3; do
-        echo "[RUN $run/3] Benchmark test: $prog_name (O3)"
-        local temp_log="${log_file}.run${run}"
+    [[ ! -d "$fact_path" ]] && { 
+        echo "  ERROR: Dataset path not found: $fact_path"
+        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        return
+    }
+    
+    # Run logging execution
+    echo "  Running logging execution..."
+    local log_file="./log/benchmark/${THREAD_COUNT}/flowlog_${base}_${dataset}.log"
+    echo "=== FlowLog Execute Log for $base on $dataset ===" > "$log_file"
+    RUST_LOG=info "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" -O3 \
+        >> "$log_file" 2>&1 || echo "  WARNING: Logging execution failed"
+    
+    # Run timing executions
+    echo "  Running timing executions..."
+    local fastest_load=""
+    local fastest_exec=""
+    
+    for i in {1..3}; do
+        echo "    Timing run $i/3"
+        local temp_log="./log/benchmark/${THREAD_COUNT}/flowlog_${base}_${dataset}_${i}.log"
         
-        RUST_LOG=info "$BINARY_PATH" --program "$prog_path" --facts "$fact_path" --workers "$WORKERS" "$OPTIMIZATION_FLAG" > "$temp_log" 2>&1
-
-        local exit_code=$?
-
-        if [ $exit_code -ne 0 ]; then
-            echo "[ERROR] Run $run failed with exit code $exit_code: $prog_name"
-            echo "ERROR: Run $run failed with exit code $exit_code" > "$temp_log"
-            run_times+=("ERROR")
+        # Run FlowLog and capture output
+        if RUST_LOG=info "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" -O3\
+            > "$temp_log" 2>&1; then
+            echo "      Completed successfully"
         else
-            # Extract time from this run
-            local run_time=$(extract_time_from_temp_log "$temp_log")
-            run_times+=("$run_time")
-            
-            if [[ "$run_time" =~ ^[0-9]+\.[0-9]+$ ]]; then
-                if [ -z "$best_time" ] || (( $(echo "$run_time < $best_time" | bc -l) )); then
-                    best_time="$run_time"
-                    best_run=$run
-                fi
-            fi
-            echo "[RUN $run/3] Completed in ${run_time}s"
-        fi
-        
-        sleep 1 # Brief pause between runs
-    done
-
-    # Copy the best run to the final log file
-    if [ $best_run -gt 0 ]; then
-        cp "${log_file}.run${best_run}" "$log_file"
-        echo "[BEST] Run $best_run was fastest (${best_time}s) for $prog_name"
-    else
-        # All runs failed, copy the first run's log
-        cp "${log_file}.run1" "$log_file"
-        echo "[ERROR] All runs failed for $prog_name"
-    fi
-
-    # Clean up temporary log files
-    rm -f "${log_file}".run*
-
-    echo "[BENCHMARK] Completed $prog_name (best: ${best_time:-ERROR}s)"
-}
-
-get_program_base_name() {
-    # Extract base program name (e.g., "tc" from "tc.dl" or "tc_v1.dl")
-    local prog_name="$1"
-    local base_name="${prog_name%.*}"  # Remove .dl extension
-    
-    # Remove version suffix if present (e.g., _v1, _v2, etc.)
-    echo "$base_name" | sed 's/_v[0-9]\+$//'
-}
-
-group_programs_by_base() {
-    # Group programs by their base name AND dataset, return unique program-dataset variant groups
-    declare -A program_groups
-    declare -A datasets_for_program
-    
-    # Read config file and group by base program name AND dataset
-    while IFS='=' read -r prog_name dataset_name; do
-        # Skip empty lines and comment lines starting with #
-        if [ -z "$prog_name" ] || [ -z "$dataset_name" ] || [[ "$prog_name" =~ ^#.* ]]; then
+            echo "      Execution failed"
+            rm -f "$temp_log"
             continue
         fi
         
-        local base_name=$(get_program_base_name "$prog_name")
-        # Key is base_program + dataset combination
-        local key="${base_name}_${dataset_name}"
-        
-        # Add this variant to the group
-        if [ -z "${program_groups[$key]}" ]; then
-            program_groups["$key"]="$prog_name"
-            datasets_for_program["$key"]="$dataset_name"
-        else
-            program_groups["$key"]="${program_groups[$key]} $prog_name"
+        # Extract timing information
+        local load_line=$(grep "Data loaded for" "$temp_log" | tail -1)
+        local load_time="-1"
+        if [[ -n "$load_line" ]]; then
+            if [[ "$load_line" =~ ([0-9]+\.?[0-9]*)ms ]]; then
+                load_time=$(echo "${BASH_REMATCH[1]} / 1000" | bc -l)
+            elif [[ "$load_line" =~ ([0-9]+\.?[0-9]*)s ]]; then
+                load_time="${BASH_REMATCH[1]}"
+            fi
         fi
-    done < "$CONFIG_FILE"
-    
-    # Output the grouped results
-    for key in "${!program_groups[@]}"; do
-        echo "$key|${program_groups[$key]}|${datasets_for_program[$key]}"
-    done
-}
-
-run_all_benchmark_tests() {
-    # Run benchmark tests for all program variants
-    echo "[BENCHMARK] Running variant benchmark tests..."
-
-    # Clean previous logs
-    rm -rf "$LOG_DIR"
-    mkdir -p "$LOG_DIR"
-
-    # Group programs and run tests
-    group_programs_by_base | while IFS='|' read -r key variants dataset_name; do
-        local base_name="${key%_*}"
         
-        echo "[PROGRAM GROUP] Benchmarking $base_name variants with $dataset_name"
-        echo "Variants: $variants"
-        echo "========================================"
-
-        # Setup dataset once for all variants
-        setup_dataset "$dataset_name"
-
-        # Run tests for all variants in this group
-        for variant in $variants; do
-            run_single_benchmark_test "$variant" "$dataset_name"
-            sleep 2 # Brief pause between tests
-        done
-
-        # Cleanup dataset after all variant tests
-        cleanup_dataset "$dataset_name"
-    done
-
-    echo "[OK] All benchmark tests completed!"
-}
-
-############################################################
-# TIMING EXTRACTION FUNCTIONS
-# Functions to extract timing information from log files
-############################################################
-
-extract_time_from_temp_log() {
-    # Extract timing information from temporary log file (used during multiple runs)
-    local log_file="$1"
-    
-    if [ ! -f "$log_file" ]; then
-        echo "N/A"
-        return
-    fi
-    
-    # Look for the "Dataflow executed" line and extract the duration
-    local time_line=$(grep "Dataflow executed" "$log_file" 2>/dev/null | tail -1)
-    
-    if [ -z "$time_line" ]; then
-        echo "N/A"
-        return
-    fi
-    
-    # Extract time value using grep and sed
-    local extracted_time=$(echo "$time_line" | grep -oE '[0-9]+\.[0-9]+s:' | sed 's/s://' 2>/dev/null || echo "N/A")
-    echo "$extracted_time"
-}
-
-extract_time_from_log() {
-    # Extract timing information from log file by parsing "Dataflow executed" line
-    local log_file="$1"
-    
-    if [ ! -f "$log_file" ]; then
-        echo "N/A"
-        return
-    fi
-    
-    # Check for timeout or error messages first
-    if grep -q "TIMEOUT:" "$log_file" 2>/dev/null; then
-        echo "TIMEOUT"
-        return
-    fi
-    
-    if grep -q "ERROR:" "$log_file" 2>/dev/null; then
-        echo "ERROR"
-        return
-    fi
-    
-    # Look for the "Dataflow executed" line and extract the duration
-    local time_line=$(grep "Dataflow executed" "$log_file" 2>/dev/null | tail -1)
-    
-    if [ -z "$time_line" ]; then
-        echo "N/A"
-        return
-    fi
-    
-    # Extract time value using grep and sed
-    local extracted_time=$(echo "$time_line" | grep -oE '[0-9]+\.[0-9]+s:' | sed 's/s://' 2>/dev/null || echo "N/A")
-    echo "$extracted_time"
-}
-
-calculate_median_time() {
-    # Calculate median time for a list of time values
-    local times=("$@")
-    local valid_times=()
-    
-    # Filter valid numeric times
-    for time in "${times[@]}"; do
-        if [[ "$time" =~ ^[0-9]+\.[0-9]+$ ]]; then
-            valid_times+=("$time")
+        local exec_line=$(grep -E "(Dataflow executed|Fixpoint reached)" "$temp_log")
+        local total_time="-1"
+        if [[ -n "$exec_line" ]]; then
+            if [[ "$exec_line" =~ ([0-9]+\.?[0-9]*)ms ]]; then
+                total_time=$(echo "${BASH_REMATCH[1]} / 1000" | bc -l)
+            elif [[ "$exec_line" =~ ([0-9]+\.?[0-9]*)s ]]; then
+                total_time="${BASH_REMATCH[1]}"
+            fi
         fi
+        
+        # Calculate execution time
+        local exec_time="-1"
+        if [[ "$load_time" != "-1" && "$total_time" != "-1" ]]; then
+            exec_time=$(echo "$total_time - $load_time" | bc -l)
+        fi
+        
+        # Track fastest times
+        if [[ "$load_time" != "-1" ]]; then
+            if [[ -z "$fastest_load" || $(echo "$load_time < $fastest_load" | bc -l) -eq 1 ]]; then
+                fastest_load="$load_time"
+            fi
+        fi
+        
+        if [[ "$exec_time" != "-1" ]]; then
+            if [[ -z "$fastest_exec" || $(echo "$exec_time < $fastest_exec" | bc -l) -eq 1 ]]; then
+                fastest_exec="$exec_time"
+            fi
+        fi
+        
+        rm -f "$temp_log"
     done
     
-    local count=${#valid_times[@]}
+    # Format results
+    local formatted_load="${fastest_load:-"-1"}"
+    local formatted_exec="${fastest_exec:-"-1"}"
     
-    if [ $count -eq 0 ]; then
-        echo "N/A"
-        return
+    if [[ "$formatted_load" != "-1" ]]; then
+        formatted_load=$(printf "%.4f" "$formatted_load")
     fi
     
-    # Sort the times using sort command
-    local sorted_times=($(printf '%s\n' "${valid_times[@]}" | sort -n))
-    
-    if [ $((count % 2)) -eq 1 ]; then
-        # Odd number of elements, take the middle one
-        local middle_index=$((count / 2))
-        echo "${sorted_times[$middle_index]}"
+    if [[ "$formatted_exec" != "-1" ]]; then
+        formatted_exec=$(printf "%.4f" "$formatted_exec")
+    fi
+
+    # Write results to temp file
+    {
+        echo "$formatted_load"
+        echo "$formatted_exec"
+    } > "$TEMP_RESULT_FILE"
+    echo "  Results: load=$formatted_load exec=$formatted_exec"
+}
+
+# =============================================================================
+# Main Benchmark Loop
+# =============================================================================
+
+while IFS='=' read -r program dataset; do
+    [[ -z "$program" || "$program" =~ ^# ]] && continue
+
+    DATASET_PATH="${DATASET_DIR}/${dataset}"
+    ZIP_URL="https://pages.cs.wisc.edu/~m0riarty/dataset/${dataset}.zip"
+    ZIP_PATH="/dev/shm/${dataset}.zip"
+
+    # Download and extract dataset if needed
+    if [[ -d "$DATASET_PATH" ]]; then
+        echo "SKIP: Dataset already exists: $DATASET_PATH"
     else
-        # Even number of elements, take average of two middle elements
-        local middle1_index=$((count / 2 - 1))
-        local middle2_index=$((count / 2))
-        local median=$(echo "scale=6; (${sorted_times[$middle1_index]} + ${sorted_times[$middle2_index]}) / 2" | bc -l)
-        echo "$median"
-    fi
-}
-
-############################################################
-# RESULT GENERATION FUNCTIONS
-# Functions to generate benchmark results table and CSV
-############################################################
-
-generate_benchmark_table() {
-    # Generate and display a formatted table of benchmark results
-    echo ""
-    echo "============================"
-    echo "[SUMMARY] Variant Benchmark Results"
-    echo "============================"
-
-    # Group programs and display results
-    group_programs_by_base | while IFS='|' read -r key variants dataset_name; do
-        local base_name="${key%_*}"
-        
-        echo ""
-        echo "Program: $base_name, Dataset: $dataset_name"
-        echo "----------------------------------------"
-        printf "| %-25s | %-17s |\n" "Variant" "Time (seconds)"
-        printf "|---------------------------|-------------------|\n"
-        
-        local times=()
-        
-        # Display timing for each variant
-        for variant in $variants; do
-            local variant_stem="${variant%.*}"
-            local log_file="${LOG_DIR}/${variant_stem}_${dataset_name}_O3.log"
-            local elapsed_time=$(extract_time_from_log "$log_file")
-            
-            printf "| %-25s " "$variant_stem"
-            if [[ "$elapsed_time" =~ ^[0-9] ]]; then
-                printf "| %17.6f |\n" "$elapsed_time"
-                times+=("$elapsed_time")
-            else
-                printf "| %-17s |\n" "$elapsed_time"
-            fi
-        done
-        
-        # Calculate and display median
-        local median=$(calculate_median_time "${times[@]}")
-        printf "|---------------------------|-------------------|\n"
-        printf "| %-25s " "MEDIAN"
-        if [[ "$median" =~ ^[0-9] ]]; then
-            printf "| %17.6f |\n" "$median"
-        else
-            printf "| %-17s |\n" "$median"
-        fi
-        
-        echo ""
-    done
-}
-
-generate_benchmark_csv() {
-    # Generate CSV file with benchmark results for analysis
-    echo ""
-    echo "[CSV] Generating benchmark CSV file..."
-
-    local csv_file="${LOG_DIR}/variant_benchmark_results.csv"
-
-    # Write CSV header
-    echo "Program_Base,Dataset,Variant,Time_Seconds" > "$csv_file"
-
-    # Group programs and write data
-    group_programs_by_base | while IFS='|' read -r key variants dataset_name; do
-        local base_name="${key%_*}"
-        local times=()
-        
-        # Write data for each variant
-        for variant in $variants; do
-            local variant_stem="${variant%.*}"
-            local log_file="${LOG_DIR}/${variant_stem}_${dataset_name}_O3.log"
-            local elapsed_time=$(extract_time_from_log "$log_file")
-            
-            echo "$base_name,$dataset_name,$variant_stem,$elapsed_time" >> "$csv_file"
-            
-            if [[ "$elapsed_time" =~ ^[0-9] ]]; then
-                times+=("$elapsed_time")
-            fi
-        done
-        
-        # Write median
-        local median=$(calculate_median_time "${times[@]}")
-        echo "$base_name,$dataset_name,MEDIAN,$median" >> "$csv_file"
-    done
-
-    echo "[CSV] Benchmark results saved to: $csv_file"
-}
-
-############################################################
-# USAGE AND PARAMETER HANDLING
-# Functions to handle command line arguments and display usage
-############################################################
-
-show_usage() {
-    echo "Usage: $0 [OPTIONS]"
-    echo ""
-    echo "OPTIONS:"
-    echo "  -t, --threads NUM    Number of worker threads (default: $DEFAULT_WORKERS)"
-    echo "  -h, --help          Show this help message"
-    echo ""
-    echo "Examples:"
-    echo "  $0                   # Run with default $DEFAULT_WORKERS threads"
-    echo "  $0 -t 32            # Run with 32 threads"
-    echo "  $0 --threads 128    # Run with 128 threads"
-}
-
-parse_arguments() {
-    # Set default values
-    WORKERS="$DEFAULT_WORKERS"
-
-    # Parse command line arguments
-    while [[ $# -gt 0 ]]; do
-        case $1 in
-            -t|--threads)
-                if [[ -n "$2" && "$2" =~ ^[0-9]+$ ]]; then
-                    WORKERS="$2"
-                    shift 2
-                else
-                    echo "[ERROR] Invalid thread number: $2"
-                    show_usage
-                    exit 1
-                fi
-                ;;
-            -h|--help)
-                show_usage
-                exit 0
-                ;;
-            *)
-                echo "[ERROR] Unknown option: $1"
-                show_usage
-                exit 1
-                ;;
-        esac
-    done
-
-    echo "[CONFIG] Using $WORKERS worker threads"
-}
-
-############################################################
-# MAIN EXECUTION
-# Entry point for the script
-############################################################
-
-main() {
-    # Parse command line arguments
-    parse_arguments "$@"
-
-    # Print start message
-    echo "[START] FlowLog Variant Benchmark Test"
-
-    echo "=== SETUP COMPLETE ==="
-
-    # Check if bc is available for calculations
-    if ! command -v bc &> /dev/null; then
-        echo "[ERROR] bc (basic calculator) is required but not installed."
-        echo "Please install bc: sudo apt-get install bc"
-        exit 1
+        echo "PREP: Downloading and extracting dataset: $dataset"
+        wget -O "$ZIP_PATH" "$ZIP_URL"
+        unzip "$ZIP_PATH" -d "$DATASET_DIR"
     fi
 
-    # Build the Rust binary
-    echo "[BUILD] Building the project..."
-    cd FlowLog
-    git pull && git checkout nemo_arithmetic
-    cargo clean && cargo build --release
-    cd ..
+    echo ""
+    echo "=== RUNNING: $program on $dataset ==="
+    
+    # Run FlowLog benchmark
+    echo ""
+    echo "--- FlowLog Benchmark ---"
+    run_flowlog "$program" "$dataset"
+    mapfile -t lines < "$TEMP_RESULT_FILE"
+    flowlog_load="${lines[0]}"
+    flowlog_exec="${lines[1]}"
+    echo "FlowLog completed: load=$flowlog_load exec=$flowlog_exec"
 
-    # Run all benchmark tests
-    run_all_benchmark_tests
+    # Write results to file
+    printf "%-20s %-20s %-20s %-20s\n" \
+        "$program" "$dataset" "$flowlog_load" "$flowlog_exec" \
+        >> "$RESULT_FILE"
 
-    # Generate results in table and CSV format
-    generate_benchmark_table
-    generate_benchmark_csv
+    # Cleanup
+    echo ""
+    echo "CLEANUP: Removing dataset: $dataset"
+    rm -rf "$ZIP_PATH" "${DATASET_DIR:?}/${dataset}"
 
-    # Print finish message
-    echo "[FINISH] All variant benchmark tests completed successfully."
-}
+    # Show progress
+    echo ""
+    echo "=== RESULTS SO FAR ==="
+    cat "$RESULT_FILE"
+    echo ""
+done < "$CONFIG_FILE"
 
-# Call main function with all script arguments
-main "$@"
+# =============================================================================
+# Cleanup and Final Results
+# =============================================================================
+
+# Clean up temporary files
+rm -f "$TEMP_RESULT_FILE"
+
+# Display final results
+echo ""
+echo "=============================================="
+echo "           FINAL TIMING RESULTS"
+echo "=============================================="
+cat "$RESULT_FILE"
