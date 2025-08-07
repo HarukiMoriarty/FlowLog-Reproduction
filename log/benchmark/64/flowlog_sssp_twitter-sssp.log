@@ -1,8 +1,8 @@
 === FlowLog Execute Log for sssp on twitter-sssp ===
-[2m2025-08-06T04:22:23.681260Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 31.054209ms:	Dataflow assembled
-[2m2025-08-06T04:24:13.144938Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 109.494734159s:	Data loaded for arc
-[2m2025-08-06T04:24:13.144996Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 109.49479853s:	Data loaded for id
-[2m2025-08-06T04:24:39.240235Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [sssp2]: ((), (), 35016137)
-[2m2025-08-06T04:24:39.501735Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) sssp: ((), (), 35016137)
-[2m2025-08-06T04:24:39.521801Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 135.871592482s:	Dataflow executed
-[2m2025-08-06T04:24:39.550114Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query
+[2m2025-08-07T04:09:06.953331Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 159.175128ms:	Dataflow assembled
+[2m2025-08-07T04:10:40.876932Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 94.082778714s:	Data loaded for arc
+[2m2025-08-07T04:10:40.876970Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 94.082821174s:	Data loaded for id
+[2m2025-08-07T04:10:58.831567Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [sssp2]: ((), (), 35016137)
+[2m2025-08-07T04:10:59.021383Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) sssp: ((), (), 35016137)
+[2m2025-08-07T04:10:59.041859Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 112.247703313s:	Dataflow executed
+[2m2025-08-07T04:10:59.052038Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

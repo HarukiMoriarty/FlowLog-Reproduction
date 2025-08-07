@@ -21,4 +21,6 @@ tc                   G10K-0.001           0.10                 78.44            
 tc                   G20K-0.001           0.13                 712.54               0.89                 OOM                  0.0359               46.5099             
 tc                   G40K-0.001           0.18                 900                  1.20                 OOM                  0.1356               329.6891            
 sssp                 livejournal-sssp     2.08                 73.46                11.17                3.58                 6.1468               1.2398              
-sssp                 orkut-sssp           3.03                 37.38                19.39                3.12                 6.4970               2.1177              
+sssp                 orkut-sssp           3.03                 37.38                19.39                3.12                 6.4970               2.1177 
+sssp                 arabic-sssp          TIMEOUT                                   83.82                34.87                39.1039              6.6308                  
+sssp                 twitter-sssp         TIMEOUT                                   188.55               34.34                91.4266              18.1252                      
