@@ -1,4 +1,2 @@
-bipartite=netflix
-csda=csda-postgresql
-tc=G10K-0.001
-cc=orkut
+cspa=cspa-postgresql
+borrow=borrow

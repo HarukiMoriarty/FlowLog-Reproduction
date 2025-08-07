@@ -1,0 +1,9 @@
+=== FlowLog Scalability Log for cspa on cspa-postgresql (2 workers) ===
+[2m2025-08-07T19:01:19.854019Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 5.660962ms:	Dataflow assembled
+[2m2025-08-07T19:01:20.113427Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 265.070159ms:	Data loaded for Assign
+[2m2025-08-07T19:01:20.113451Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 265.099243ms:	Data loaded for Dereference
+[2m2025-08-07T19:04:15.348881Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [MemoryAlias]: ((), (), 89475479)
+[2m2025-08-07T19:04:15.415866Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [ValueAlias]: ((), (), 223793861)
+[2m2025-08-07T19:04:15.419232Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [ValueFlow]: ((), (), 3712452)
+[2m2025-08-07T19:04:15.419745Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 175.571385892s:	Dataflow executed
+[2m2025-08-07T19:04:15.459000Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query
