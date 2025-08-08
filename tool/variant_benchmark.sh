@@ -2,24 +2,29 @@
 set -e
 
 # =============================================================================
-# FlowLog Variants Benchmark Script
+# Database Benchmark Script
 # =============================================================================
+# Benchmarks FlowLog database with configurable parameters
 
-# Thread count
-THREAD_COUNT=${1:-64}
+# Default timeout in seconds (15 minutes) and thread count
+TIMEOUT_SECONDS=${1:-900}
+THREAD_COUNT=${2:-64}
 
 # Display usage if help is requested
 if [[ "$1" == "-h" || "$1" == "--help" ]]; then
-    echo "Usage: $0 [THREAD_COUNT]"
+    echo "Usage: $0 [TIMEOUT_SECONDS] [THREAD_COUNT]"
     echo ""
-    echo "Run FlowLog benchmarks with configurable thread count."
+    echo "Run FlowLog database benchmarks with configurable timeout and thread count."
     echo ""
     echo "Arguments:"
+    echo "  TIMEOUT_SECONDS  Timeout for each query execution in seconds (default: 900 = 15 minutes)"
     echo "  THREAD_COUNT     Number of threads/workers to use (default: 64)"
     echo ""
     echo "Examples:"
-    echo "  $0                # Use default 64 threads"
-    echo "  $0 4              # Use 4 threads"
+    echo "  $0                # Use default 15-minute timeout and 64 threads"
+    echo "  $0 600            # Use 10-minute timeout and 64 threads"
+    echo "  $0 1800 32        # Use 30-minute timeout and 32 threads"
+    echo "  $0 900 4          # Use 15-minute timeout and 4 threads"
     exit 0
 fi
 
@@ -29,21 +34,30 @@ fi
 
 CONFIG_FILE="./tool/config/variant_benchmark.txt"
 DATASET_DIR="./dataset"
-RESULT_FILE="variant.txt"
+RESULT_FILE="variant_benchmark.txt"
 TEMP_RESULT_FILE="/tmp/benchmark_result.tmp"
 
 # Initialize directories and files
 mkdir -p "$DATASET_DIR"
 rm -rf "$RESULT_FILE"
-mkdir -p "./log/variant_benchmark/${THREAD_COUNT}"
+mkdir -p "./log/benchmark/${THREAD_COUNT}"
 
-echo "=== FlowLog Benchmark Configuration ==="
+echo "=== FlowLog Database Benchmark Configuration ==="
+echo "Timeout: ${TIMEOUT_SECONDS} seconds ($(echo "scale=1; $TIMEOUT_SECONDS/60" | bc -l) minutes)"
 echo "Thread count: ${THREAD_COUNT}"
+
+# Generate CPU set (keeping for potential FlowLog optimizations)
+if [[ $THREAD_COUNT -eq 1 ]]; then
+    CPUSET="0"
+else
+    CPUSET="0-$((THREAD_COUNT-1))"
+fi
+echo "CPU set: ${CPUSET}"
 echo ""
 
 echo "=== Building FlowLog ==="
 cd FlowLog
-git checkout nemo_aggregation
+git checkout nemo_arithmetic
 cargo build --release
 cd ..
 echo "FlowLog build completed"
@@ -54,11 +68,14 @@ if [[ ! -f "$RESULT_FILE" ]]; then
     printf "%-20s %-20s %-20s %-20s\n" \
         "Program" "Dataset" "FlowLog_Load(s)" "FlowLog_Exec(s)" \
         > "$RESULT_FILE"
-    printf "%-20s %-20s %-20s %-20s\n" \
+    printf "%-20s %-20s %-12s %-12s\n" \
         "--------------------" "--------------------" "--------------------" "--------------------" \
         >> "$RESULT_FILE"
 fi
 
+# =============================================================================
+# Database Benchmark Functions
+# =============================================================================
 # -----------------------------------------------------------------------------
 # FlowLog Benchmark Function
 # -----------------------------------------------------------------------------
@@ -90,8 +107,8 @@ run_flowlog() {
     echo "  Running logging execution..."
     local log_file="./log/variant_benchmark/${THREAD_COUNT}/flowlog_${base}_${dataset}.log"
     echo "=== FlowLog Execute Log for $base on $dataset ===" > "$log_file"
-    RUST_LOG=info "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" -O3 \
-        >> "$log_file" 2>&1 || echo "  WARNING: Logging execution failed"
+    timeout "$TIMEOUT_SECONDS" "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" \
+        >> "$log_file" 2>&1 || echo "  WARNING: Logging execution failed or timed out"
     
     # Run timing executions
     echo "  Running timing executions..."
@@ -100,14 +117,21 @@ run_flowlog() {
     
     for i in {1..3}; do
         echo "    Timing run $i/3"
-        local temp_log="./log/variant_benchmark/${THREAD_COUNT}/flowlog_${base}_${dataset}_${i}.log"
+        local temp_log="./log/benchmark/${THREAD_COUNT}/flowlog_${base}_${dataset}_${i}.log"
         
-        # Run FlowLog and capture output
-        if RUST_LOG=info "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" -O3 \
+        # Run FlowLog with timeout and capture output
+        if timeout "$TIMEOUT_SECONDS" "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" \
             > "$temp_log" 2>&1; then
             echo "      Completed successfully"
         else
-            echo "      Execution failed"
+            echo "      Timed out"
+            # Set timeout values and continue
+            if [[ -z "$fastest_load" || $(echo "$TIMEOUT_SECONDS < $fastest_load" | bc -l) -eq 1 ]]; then
+                fastest_load="$TIMEOUT_SECONDS"
+            fi
+            if [[ -z "$fastest_exec" || $(echo "$TIMEOUT_SECONDS < $fastest_exec" | bc -l) -eq 1 ]]; then
+                fastest_exec="$TIMEOUT_SECONDS"
+            fi
             rm -f "$temp_log"
             continue
         fi
@@ -197,7 +221,7 @@ while IFS='=' read -r program dataset; do
 
     echo ""
     echo "=== RUNNING: $program on $dataset ==="
-    
+
     # Run FlowLog benchmark
     echo ""
     echo "--- FlowLog Benchmark ---"
