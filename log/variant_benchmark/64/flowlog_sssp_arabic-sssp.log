@@ -1,8 +1,8 @@
 === FlowLog Execute Log for sssp on arabic-sssp ===
-[2m2025-08-07T04:28:49.516442Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 6.730015ms:	Dataflow assembled
-[2m2025-08-07T04:29:28.573878Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 39.064164313s:	Data loaded for arc
-[2m2025-08-07T04:29:28.573946Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 39.064240096s:	Data loaded for id
-[2m2025-08-07T04:29:37.449839Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [sssp2]: ((), (), 22359925)
-[2m2025-08-07T04:29:37.562275Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) sssp: ((), (), 22359925)
-[2m2025-08-07T04:29:37.562432Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 48.052714807s:	Dataflow executed
-[2m2025-08-07T04:29:37.586915Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query
+[2m2025-08-08T04:45:25.429002Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 7.464429ms:	Dataflow assembled
+[2m2025-08-08T04:46:05.100867Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 39.679328422s:	Data loaded for arc
+[2m2025-08-08T04:46:05.100920Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 39.679387653s:	Data loaded for id
+[2m2025-08-08T04:46:13.177232Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [sssp2]: ((), (), 22359925)
+[2m2025-08-08T04:46:13.287141Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) sssp: ((), (), 22359925)
+[2m2025-08-08T04:46:13.287355Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 47.865810331s:	Dataflow executed
+[2m2025-08-08T04:46:13.307679Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

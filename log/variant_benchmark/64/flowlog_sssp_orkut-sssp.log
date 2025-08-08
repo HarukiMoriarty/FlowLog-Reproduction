@@ -1,8 +1,8 @@
 === FlowLog Execute Log for sssp on orkut-sssp ===
-[2m2025-08-06T15:33:12.621060Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 5.965179ms:	Dataflow assembled
-[2m2025-08-06T15:33:18.963240Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 6.348144116s:	Data loaded for arc
-[2m2025-08-06T15:33:18.963288Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 6.34819924s:	Data loaded for id
-[2m2025-08-06T15:33:24.931627Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [sssp2]: ((), (), 3072441)
-[2m2025-08-06T15:33:24.948446Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) sssp: ((), (), 3072441)
-[2m2025-08-06T15:33:24.948681Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 12.333580818s:	Dataflow executed
-[2m2025-08-06T15:33:24.951797Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query
+[2m2025-08-08T04:41:16.279258Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 5.191148ms:	Dataflow assembled
+[2m2025-08-08T04:41:23.301864Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 7.027797697s:	Data loaded for arc
+[2m2025-08-08T04:41:23.301912Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 7.027851268s:	Data loaded for id
+[2m2025-08-08T04:41:27.583497Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [sssp2]: ((), (), 3072441)
+[2m2025-08-08T04:41:27.594353Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) sssp: ((), (), 3072441)
+[2m2025-08-08T04:41:27.594606Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 11.32053651s:	Dataflow executed
+[2m2025-08-08T04:41:27.597563Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

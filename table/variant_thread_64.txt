@@ -98,7 +98,9 @@ galen_v4             galen                0.1174               8.0462
 crdt                 crdt                 0.0424               6.8284              
 crdt_v1              crdt                 0.0420               6.8900              
 crdt_v2              crdt                 0.0376               6.6298              
-crdt_v3              crdt                 0.0453               6.6630              
+crdt_v3              crdt                 0.0453               6.6630     
+crdt_slow            crdt                 0.0361               62.5472             
+crdt_slow_v1         crdt                 0.0441               61.9057                      
 borrow               borrow               0.1631               41.2105             
 borrow_v1            borrow               0.1832               40.9757             
 borrow_v2            borrow               0.1780               41.2673             
@@ -133,4 +135,12 @@ zxing                zxing                0.7538               7.3584
 zxing_v1             zxing                0.7552               7.6297              
 zxing_v2             zxing                0.7583               7.3109              
 zxing_v3             zxing                0.7490               7.6784              
-zxing_v4             zxing                0.7716               7.7538              
+zxing_v4             zxing                0.7716               7.7538  
+sssp                 livejournal-sssp     4.3132               2.1077              
+sssp_v1              livejournal-sssp     4.3681               1.7417              
+sssp                 orkut-sssp           6.0983               1.8883              
+sssp_v1              orkut-sssp           6.7701               3.3641              
+sssp                 arabic-sssp          37.7862              7.8787              
+sssp_v1              arabic-sssp          39.4638              6.7558              
+sssp                 twitter-sssp         87.4305              17.2024             
+sssp_v1              twitter-sssp         87.6542              18.1054                         

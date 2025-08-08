@@ -155,7 +155,8 @@ cc                   arabic               2               67.7101
 cc                   livejournal          2               9.0668         
 cc                   orkut                2               13.5492        
 cc                   twitter              2               145.1440       
-crdt                 crdt                 4               6.7896         
+crdt                 crdt                 4               6.7896   
+crdt_slow            crdt                 2               62.2665      
 csda                 csda-httpd           2               1.3123         
 csda                 csda-linux           2               6.3633         
 csda                 csda-postgresql      2               4.8886         
@@ -180,4 +181,8 @@ tc                   G20K-0.001           2               42.3655
 tc                   G40K-0.001           2               305.7256       
 xalan                xalan                5               6.2890         
 z3                   z3                   5               27.8576        
-zxing                zxing                5               8.3849         
+zxing                zxing                5               8.3849   
+sssp                 arabic-sssp          2               45.9423        
+sssp                 livejournal-sssp     2               6.2653         
+sssp                 orkut-sssp           2               9.0604         
+sssp                 twitter-sssp         2               105.1962 
