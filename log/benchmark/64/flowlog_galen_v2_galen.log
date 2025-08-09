@@ -1,0 +1,12 @@
+=== FlowLog Execute Log for galen_v2 on galen ===
+[2m2025-08-07T13:21:00.547455Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 38.021145ms:	Dataflow assembled
+[2m2025-08-07T13:21:00.631539Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 122.112114ms:	Data loaded for P
+[2m2025-08-07T13:21:00.631588Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 122.16799ms:	Data loaded for Q
+[2m2025-08-07T13:21:00.631596Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 122.175544ms:	Data loaded for R
+[2m2025-08-07T13:21:00.631602Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 122.181165ms:	Data loaded for C
+[2m2025-08-07T13:21:00.631607Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 122.186274ms:	Data loaded for U
+[2m2025-08-07T13:21:00.631613Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 122.192176ms:	Data loaded for S
+[2m2025-08-07T13:21:08.801210Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [OutQ]: ((), (), 16595494)
+[2m2025-08-07T13:21:08.801323Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [OutP]: ((), (), 7560179)
+[2m2025-08-07T13:21:08.888986Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 8.379557955s:	Dataflow executed
+[2m2025-08-07T13:21:08.907462Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

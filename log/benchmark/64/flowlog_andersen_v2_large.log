@@ -1,0 +1,9 @@
+=== FlowLog Execute Log for andersen_v2 on large ===
+[2m2025-08-07T12:58:16.246478Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 15.776942ms:	Dataflow assembled
+[2m2025-08-07T12:58:21.768361Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 5.537660742s:	Data loaded for AddressOf
+[2m2025-08-07T12:58:21.768775Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 5.538081357s:	Data loaded for Assign
+[2m2025-08-07T12:58:21.768785Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 5.538092538s:	Data loaded for Load
+[2m2025-08-07T12:58:21.768790Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 5.538096796s:	Data loaded for Store
+[2m2025-08-07T12:58:24.426932Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [PointsTo]: ((), (), 5315019)
+[2m2025-08-07T12:58:24.427237Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 8.196532671s:	Dataflow executed
+[2m2025-08-07T12:58:24.455853Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query
