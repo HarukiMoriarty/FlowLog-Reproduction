@@ -1,0 +1,8 @@
+=== FlowLog Execute Log for crdt_slow_v1 on crdt ===
+[2m2025-08-09T04:37:13.031821Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 3.788259ms:	Dataflow assembled
+[2m2025-08-09T04:37:13.043837Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 15.809323ms:	Data loaded for Insert_input
+[2m2025-08-09T04:37:13.043852Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 15.825113ms:	Data loaded for Remove_input
+[2m2025-08-09T04:37:13.923054Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [nextSiblingAnc]: ((), (), 181836)
+[2m2025-08-09T04:38:38.788342Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) result: ((), (), 104851)
+[2m2025-08-09T04:38:38.788504Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 85.760469177s:	Dataflow executed
+[2m2025-08-09T04:38:38.789076Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

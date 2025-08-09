@@ -1,3 +1,6 @@
+PRAGMA memory_limit='250GB';
+PRAGMA enable_progress_bar=true;
+
 -- Based on borrow.dl Datalog program
 -- Following the exact strata order provided, using separate views for each strata
 -- DuckDB doesn't support CREATE RECURSIVE VIEW, so we'll use CREATE VIEW + WITH RECURSIVE
@@ -301,7 +304,6 @@ CREATE VIEW subset_error_strata20 AS
 -- Strata #21: [6, 7] - Recursive (loan propagation)
 -- Rule 6: origin_contains_loan_on_entry(origin, loan, point2) :- origin_contains_loan_on_entry(origin, loan, point1), cfg_edge(point1, point2), !loan_killed_at(loan, point1), origin_live_on_entry(origin, point2).
 -- Rule 7: origin_contains_loan_on_entry(origin2, loan, point) :- origin_contains_loan_on_entry(origin1, loan, point), subset(origin1, origin2, point).
--- Error: Flowlog report count 1316, but we report 310300
 CREATE VIEW origin_contains_loan_on_entry_strata21 AS 
 WITH RECURSIVE ocle_rec(x, y, z) AS (
     SELECT x, y, z FROM origin_contains_loan_on_entry_strata1
@@ -318,7 +320,7 @@ WITH RECURSIVE ocle_rec(x, y, z) AS (
         JOIN subset_strata19 s ON ocle.x = s.x AND ocle.z = s.z
     )
 )
-SELECT DISTINCT x, y, z FROM ocle_rec;
+SELECT x, y, z FROM ocle_rec;
 
 -- Strata #22: [8] - Non-recursive
 -- Rule 8: loan_live_at(loan, point) :- origin_contains_loan_on_entry(origin, loan, point), origin_live_on_entry(origin, point).

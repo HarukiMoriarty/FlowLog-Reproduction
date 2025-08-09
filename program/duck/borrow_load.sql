@@ -1,3 +1,6 @@
+PRAGMA memory_limit='250GB';
+PRAGMA enable_progress_bar=true;
+
 -- Based on borrow.dl Datalog program
 -- Rust borrow checker analysis
 
@@ -62,7 +65,8 @@ COPY var_used_at FROM '{{DATASET_PATH}}/var_used_at.csv' (FORMAT CSV, HEADER FAL
 COPY loan_killed_at FROM '{{DATASET_PATH}}/loan_killed_at.csv' (FORMAT CSV, HEADER FALSE);
 COPY known_placeholder_subset FROM '{{DATASET_PATH}}/known_placeholder_subset.csv' (FORMAT CSV, HEADER FALSE);
 COPY var_dropped_at FROM '{{DATASET_PATH}}/var_dropped_at.csv' (FORMAT CSV, HEADER FALSE);
-COPY drop_of_var_derefs_origin FROM '{{DATASET_PATH}}/drop_of_var_derefs_origin.csv' (FORMAT CSV, HEADER FALSE);
+-- Skip loading drop_of_var_derefs_origin as it's empty
+-- COPY drop_of_var_derefs_origin FROM '{{DATASET_PATH}}/drop_of_var_derefs_origin.csv' (FORMAT CSV, HEADER FALSE);
 COPY var_defined_at FROM '{{DATASET_PATH}}/var_defined_at.csv' (FORMAT CSV, HEADER FALSE);
 COPY child_path FROM '{{DATASET_PATH}}/child_path.csv' (FORMAT CSV, HEADER FALSE);
 COPY path_moved_at_base FROM '{{DATASET_PATH}}/path_moved_at_base.csv' (FORMAT CSV, HEADER FALSE);

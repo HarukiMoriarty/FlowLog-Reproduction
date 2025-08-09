@@ -1,0 +1,8 @@
+=== Umbra Execute Log for crdt_slow on crdt ===
+INFO:    [s] execution: (0.009087 min, 0.009087 max, 0.009087 median, 0.0% relMAD, 0.009087 avg, 0.000000 sdev, 1 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.000350 min, 0.000350 max, 0.000350 median, 0.0% relMAD, 0.000350 avg, 0.000000 sdev)
+INFO:    [s] execution: (0.010534 min, 0.010534 max, 0.010534 median, 0.0% relMAD, 0.010534 avg, 0.000000 sdev, 1 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.000041 min, 0.000041 max, 0.000041 median, 0.0% relMAD, 0.000041 avg, 0.000000 sdev)
+INFO:    [s] execution: (0.009818 min, 0.009818 max, 0.009818 median, 0.0% relMAD, 0.009818 avg, 0.000000 sdev, 1 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.000728 min, 0.000728 max, 0.000728 median, 0.0% relMAD, 0.000728 avg, 0.000000 sdev)
+INFO:    [s] execution: (0.010372 min, 0.010372 max, 0.010372 median, 0.0% relMAD, 0.010372 avg, 0.000000 sdev, 1 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.000121 min, 0.000121 max, 0.000121 median, 0.0% relMAD, 0.000121 avg, 0.000000 sdev)
+count
+104851
+INFO:    [s] execution: (128.302948 min, 128.302948 max, 128.302948 median, 0.0% relMAD, 128.302948 avg, 0.000000 sdev, 1613447 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.006180 min, 0.006180 max, 0.006180 median, 0.0% relMAD, 0.006180 avg, 0.000000 sdev)

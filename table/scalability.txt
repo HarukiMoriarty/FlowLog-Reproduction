@@ -28,3 +28,10 @@ cc                   orkut                8        3.21                 40.92   
 cc                   orkut                16       2.23                 35.74                19.59                11.95                7.0221               23.9796             
 cc                   orkut                32       2.01                 31.43                19.62                7.81                 6.7531               12.0957             
 cc                   orkut                64       2.25                 34.74                20.09                8.50                 6.9151               10.9978             
+borrow               borrow               1                                                  1.38                 312.72                                                        
+borrow               borrow               2                                                  1.21                 154.62                                                        
+borrow               borrow               4                                                  1.25                 69.17                                                         
+borrow               borrow               8                                                  1.22                 52.57                                                         
+borrow               borrow               16                                                 1.23                 88.62                                                         
+borrow               borrow               32                                                 1.25                 66.59                                                         
+borrow               borrow               64                                                 1.22                 65.48                                                         
