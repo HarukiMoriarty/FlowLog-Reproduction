@@ -1,0 +1,23 @@
+.decl OutP(X: number, Z: number)
+.decl OutQ(X: number, Y: number, Z: number)
+.decl R(R: number, P: number, E: number)
+.decl C(Y: number, Z: number, W: number)
+.decl U(R: number, Z: number, W: number)
+.decl S(R: number, P: number)
+
+.input OutP(IO="file", filename="P.csv", delimiter=",")
+.input OutQ(IO="file", filename="Q.csv", delimiter=",")
+.input R(IO="file", filename="R.csv", delimiter=",")
+.input C(IO="file", filename="C.csv", delimiter=",")
+.input U(IO="file", filename="U.csv", delimiter=",")
+.input S(IO="file", filename="S.csv", delimiter=",")
+
+OutP(?x,?z) :- OutP(?x,?y), OutP(?y,?z).
+OutQ(?x,?r,?z) :- OutQ(?y,?r,?z), OutP(?x,?y).                      // Reordered: change join order
+OutP(?x,?z) :- OutQ(?x,?r,?y), U(?w,?r,?z), OutP(?y,?w).            // Reordered: move OutQ(?x,?r,?y) to first position
+OutP(?x,?z) :- C(?y,?w,?z), OutP(?x,?y), OutP(?x,?w).               // Reordered: move OutP(?x,?y) to second position
+OutQ(?x,?q,?z) :- S(?r,?q), OutQ(?x,?r,?z).                         // Reordered: change join order
+OutQ(?x,?e,?o) :- OutQ(?z,?u,?o), R(?y,?u,?e), OutQ(?x,?y,?z).      // Reordered: move OutQ(?z,?u,?o) to first position
+
+.printsize OutP
+.printsize OutQ

@@ -1,0 +1,10 @@
+.decl Arc(src: number, dest: number)
+.input Arc(IO="file", filename="Arc.csv", delimiter=",")
+
+.decl Sg(src: number, dest: number)
+
+Sg(x, y) :- Arc(a, x), Arc(a, y), x != y.
+// Reordered: moved Arc(b, y) to first position, Sg(a, b) second, Arc(a, x) last
+Sg(x, y) :- Arc(b, y), Sg(a, b), Arc(a, x).
+
+.printsize Sg

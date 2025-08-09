@@ -1,0 +1,18 @@
+.decl Arc(x:number, y:number, l:number)
+.input Arc(IO="file", filename="Arc.csv", delimiter=",")
+
+.decl Zero(x:number, y:number)
+.printsize Zero
+.decl One(x:number, y:number)
+.printsize One
+.decl Dyck(x:number, y:number)
+.printsize Dyck
+
+Zero(x, y) :- Arc(x, y, 0).
+One(x, y) :- Arc(x, y, 1).
+
+Dyck(x, y) :- Zero(x, z), Zero(z, y).
+Dyck(x, y) :- One(x, z), One(z, y).
+Dyck(x, y) :- Dyck(z, w), Zero(w, y), Zero(x, z).       // Reordered: moved Dyck(z, w) to first position, Zero(w, y) second, Zero(x, z) last
+Dyck(x, y) :- One(w, y), Dyck(z, w), One(x, z).         // Reordered: moved One(w, y) to first position, Dyck(z, w) second, One(x, z) last
+Dyck(x, y) :- Dyck(x, z), Dyck(z, y).
