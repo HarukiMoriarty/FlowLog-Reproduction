@@ -1,0 +1,17 @@
+=== FlowLog Execute Log for cvc5 on cvc5 ===
+
+thread 'timely:work-3' panicked at src/executing/src/transformer.rs:74:39:
+set for kv jn k
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'timely:work-1' panicked at src/executing/src/transformer.rs:74:39:
+set for kv jn k
+
+thread 'timely:work-2' panicked at src/executing/src/transformer.rs:74:39:
+set for kv jn k
+
+thread 'timely:work-0' panicked at src/executing/src/transformer.rs:74:39:
+set for kv jn k
+
+thread 'main' panicked at /users/hangdong/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/timely_communication-0.21.5/src/initialize.rs:416:26:
+Worker panic: Any { .. }

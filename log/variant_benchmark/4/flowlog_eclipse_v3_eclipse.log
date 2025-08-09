@@ -1,0 +1,50 @@
+=== FlowLog Execute Log for eclipse_v3 on eclipse ===
+[2m2025-08-09T07:39:38.667688Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 23.727425ms:	Dataflow assembled
+[2m2025-08-09T07:39:38.819764Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 175.81416ms:	Data loaded for DirectSuperclass
+[2m2025-08-09T07:39:38.819802Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 175.855929ms:	Data loaded for DirectSuperinterface
+[2m2025-08-09T07:39:38.819812Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 175.866519ms:	Data loaded for MainClass
+[2m2025-08-09T07:39:38.819822Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 175.876618ms:	Data loaded for FormalParam
+[2m2025-08-09T07:39:38.819829Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 175.883632ms:	Data loaded for ComponentType
+[2m2025-08-09T07:39:38.819835Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 175.888781ms:	Data loaded for AssignReturnValue
+[2m2025-08-09T07:39:38.819839Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 175.893731ms:	Data loaded for ActualParam
+[2m2025-08-09T07:39:38.819846Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 175.899872ms:	Data loaded for Method_Modifier
+[2m2025-08-09T07:39:38.819850Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 175.904351ms:	Data loaded for Var_Type
+[2m2025-08-09T07:39:38.819854Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 175.908629ms:	Data loaded for HeapAllocation_Type
+[2m2025-08-09T07:39:38.819860Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 175.91449ms:	Data loaded for _ClassType
+[2m2025-08-09T07:39:38.819868Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 175.922595ms:	Data loaded for _ArrayType
+[2m2025-08-09T07:39:38.819875Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 175.929699ms:	Data loaded for _InterfaceType
+[2m2025-08-09T07:39:38.819881Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 175.934949ms:	Data loaded for _Var_DeclaringMethod
+[2m2025-08-09T07:39:38.819886Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 175.939858ms:	Data loaded for _ApplicationClass
+[2m2025-08-09T07:39:38.819891Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 175.944807ms:	Data loaded for _ThisVar
+[2m2025-08-09T07:39:38.819895Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 175.949216ms:	Data loaded for _NormalHeap
+[2m2025-08-09T07:39:38.819899Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 175.953584ms:	Data loaded for _StringConstant
+[2m2025-08-09T07:39:38.819923Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 175.977679ms:	Data loaded for _AssignHeapAllocation
+[2m2025-08-09T07:39:38.819935Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 175.989382ms:	Data loaded for _AssignLocal
+[2m2025-08-09T07:39:38.819960Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 176.014519ms:	Data loaded for _AssignCast
+[2m2025-08-09T07:39:38.819966Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 176.020631ms:	Data loaded for _Field
+[2m2025-08-09T07:39:38.819977Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 176.03096ms:	Data loaded for _StaticMethodInvocation
+[2m2025-08-09T07:39:38.819994Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 176.048453ms:	Data loaded for _SpecialMethodInvocation
+[2m2025-08-09T07:39:38.820004Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 176.058272ms:	Data loaded for _VirtualMethodInvocation
+[2m2025-08-09T07:39:38.820013Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 176.06769ms:	Data loaded for _Method
+[2m2025-08-09T07:39:38.820027Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 176.081686ms:	Data loaded for Method_Descriptor
+[2m2025-08-09T07:39:38.820054Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 176.107996ms:	Data loaded for _StoreInstanceField
+[2m2025-08-09T07:39:38.820077Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 176.130789ms:	Data loaded for _LoadInstanceField
+[2m2025-08-09T07:39:38.820084Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 176.138173ms:	Data loaded for _StoreStaticField
+[2m2025-08-09T07:39:38.820120Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 176.17372ms:	Data loaded for _LoadStaticField
+[2m2025-08-09T07:39:38.820135Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 176.1893ms:	Data loaded for _StoreArrayIndex
+[2m2025-08-09T07:39:38.820140Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 176.194509ms:	Data loaded for _LoadArrayIndex
+[2m2025-08-09T07:39:38.820147Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 176.201172ms:	Data loaded for _Return
+[2m2025-08-09T07:39:39.348862Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Subclass]: ((), (), 8281)
+[2m2025-08-09T07:39:39.358514Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Superinterface]: ((), (), 5705)
+[2m2025-08-09T07:39:39.398164Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [MethodLookup]: ((), (), 145584)
+[2m2025-08-09T07:39:39.400954Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [SubtypeOf]: ((), (), 22017)
+[2m2025-08-09T07:40:30.638418Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [InstanceFieldPointsTo]: ((), (), 9896541)
+[2m2025-08-09T07:40:30.638533Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Reachable]: ((), (), 9277)
+[2m2025-08-09T07:40:30.638564Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [StaticFieldPointsTo]: ((), (), 1442)
+[2m2025-08-09T07:40:30.648444Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [VarPointsTo]: ((), (), 41627959)
+[2m2025-08-09T07:40:30.648493Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [ArrayIndexPointsTo]: ((), (), 297294)
+[2m2025-08-09T07:40:30.648505Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Assign]: ((), (), 118258)
+[2m2025-08-09T07:40:30.648514Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [CallGraphEdge]: ((), (), 63141)
+[2m2025-08-09T07:40:30.648524Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [InitializedClass]: ((), (), 1819)
+[2m2025-08-09T07:40:30.663644Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 52.013832475s:	Dataflow executed
+[2m2025-08-09T07:40:30.673419Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

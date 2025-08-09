@@ -1,0 +1,3 @@
+=== FlowLog Execute Log for tc_v1 on G40K-0.001 ===
+[2m2025-08-08T05:20:04.373561Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 1.419301ms:	Dataflow assembled
+[2m2025-08-08T05:20:04.452619Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 80.481443ms:	Data loaded for Arc

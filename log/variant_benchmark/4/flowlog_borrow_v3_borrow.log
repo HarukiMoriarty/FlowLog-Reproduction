@@ -1,0 +1,32 @@
+=== FlowLog Execute Log for borrow_v3 on borrow ===
+[2m2025-08-09T06:14:52.372957Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 9.237749ms:	Dataflow assembled
+[2m2025-08-09T06:14:52.427000Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 63.290604ms:	Data loaded for subset_base
+[2m2025-08-09T06:14:52.427034Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 63.326833ms:	Data loaded for cfg_edge
+[2m2025-08-09T06:14:52.427039Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 63.332544ms:	Data loaded for loan_issued_at
+[2m2025-08-09T06:14:52.427051Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 63.344476ms:	Data loaded for universal_region
+[2m2025-08-09T06:14:52.427055Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 63.348213ms:	Data loaded for var_used_at
+[2m2025-08-09T06:14:52.427059Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 63.3517ms:	Data loaded for loan_killed_at
+[2m2025-08-09T06:14:52.427062Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 63.355237ms:	Data loaded for known_placeholder_subset
+[2m2025-08-09T06:14:52.427065Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 63.358673ms:	Data loaded for var_dropped_at
+[2m2025-08-09T06:14:52.427069Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 63.36238ms:	Data loaded for drop_of_var_derefs_origin
+[2m2025-08-09T06:14:52.427074Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 63.36761ms:	Data loaded for var_defined_at
+[2m2025-08-09T06:14:52.427078Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 63.371467ms:	Data loaded for child_path
+[2m2025-08-09T06:14:52.427082Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 63.375134ms:	Data loaded for path_moved_at_base
+[2m2025-08-09T06:14:52.427086Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 63.378871ms:	Data loaded for path_assigned_at_base
+[2m2025-08-09T06:14:52.427090Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 63.382709ms:	Data loaded for path_accessed_at_base
+[2m2025-08-09T06:14:52.427093Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 63.386185ms:	Data loaded for path_is_var
+[2m2025-08-09T06:14:52.427096Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 63.389612ms:	Data loaded for loan_invalidated_at
+[2m2025-08-09T06:14:52.427100Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 63.392928ms:	Data loaded for use_of_var_derefs_origin
+[2m2025-08-09T06:14:52.583422Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [ancestor_path]: ((), (), 30)
+[2m2025-08-09T06:14:52.591700Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [path_assigned_at]: ((), (), 6793)
+[2m2025-08-09T06:14:52.591743Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [path_begins_with_var]: ((), (), 6372)
+[2m2025-08-09T06:14:52.593739Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [path_moved_at]: ((), (), 16295)
+[2m2025-08-09T06:14:52.599709Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [path_accessed_at]: ((), (), 7838)
+[2m2025-08-09T06:16:30.416275Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [var_live_on_entry]: ((), (), 329734)
+[2m2025-08-09T06:18:16.805141Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [path_maybe_uninitialized_on_exit]: ((), (), 291552229)
+[2m2025-08-09T06:18:19.349627Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [path_maybe_initialized_on_exit]: ((), (), 1048567)
+[2m2025-08-09T06:18:19.481986Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [var_drop_live_on_entry]: ((), (), 3588)
+[2m2025-08-09T06:18:28.608281Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [subset]: ((), (), 5068815)
+[2m2025-08-09T06:18:28.629264Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [origin_contains_loan_on_entry]: ((), (), 1316)
+[2m2025-08-09T06:18:28.629791Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 216.266061843s:	Dataflow executed
+[2m2025-08-09T06:18:28.630107Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

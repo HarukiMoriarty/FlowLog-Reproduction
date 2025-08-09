@@ -1,0 +1,7 @@
+=== FlowLog Execute Log for cc on orkut ===
+[2m2025-08-07T15:08:11.567368Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 2.036695ms:	Dataflow assembled
+[2m2025-08-07T15:08:17.300595Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 5.735264999s:	Data loaded for Arc
+[2m2025-08-07T15:09:18.745350Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [CC]: ((), (), 17281478)
+[2m2025-08-07T15:09:18.891952Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) CC2: ((), (), 3072441)
+[2m2025-08-07T15:09:18.892377Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 67.327038147s:	Dataflow executed
+[2m2025-08-07T15:09:18.895541Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

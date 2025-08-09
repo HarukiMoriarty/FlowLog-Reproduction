@@ -1,0 +1,7 @@
+=== FlowLog Execute Log for reach_v1 on arabic ===
+[2m2025-08-07T19:01:16.031039Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 1.481679ms:	Dataflow assembled
+[2m2025-08-07T19:01:48.934345Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 32.904789598s:	Data loaded for Source
+[2m2025-08-07T19:01:48.934403Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 32.904851555s:	Data loaded for Arc
+[2m2025-08-07T19:02:49.333651Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Reach]: ((), (), 22359925)
+[2m2025-08-07T19:02:49.336601Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 93.307037877s:	Dataflow executed
+[2m2025-08-07T19:02:49.339164Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

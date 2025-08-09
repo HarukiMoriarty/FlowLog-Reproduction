@@ -1,0 +1,3 @@
+=== FlowLog Execute Log for sg_v2 on G40K-0.001 ===
+[2m2025-08-08T11:56:43.436599Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 1.608511ms:	Dataflow assembled
+[2m2025-08-08T11:56:43.504722Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 69.737589ms:	Data loaded for Arc
