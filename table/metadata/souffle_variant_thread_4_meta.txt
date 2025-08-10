@@ -1,0 +1,32 @@
+======================================================================
+Base Program         Dataset              Variants   Median Time(s) 
+----------------------------------------------------------------------
+andersen             large                4          187.7784       
+andersen             medium               4          85.0818        
+batik                batik                5          43.2794        
+biojava              biojava              5          13.8413        
+bipartite            mag                  4          393.9425       
+bipartite            netflix              4          107.5945       
+bipartite            roadNet-CA           4          29.5254        
+crdt                 crdt                 4          8.0590         
+crdt_slow            crdt                 2          177.6726       
+csda                 csda-httpd           2          15.2198        
+csda                 csda-linux           2          145.2080       
+csda                 csda-postgresql      2          125.1447       
+cspa                 cspa-httpd           5          67.7702        
+cspa                 cspa-linux           5          20.8715        
+cspa                 cspa-postgresql      5          76.7312        
+dyck                 kernel               4          17.6686        
+dyck                 postgre              4          12.1366        
+eclipse              eclipse              5          32.0326        
+galen                galen                5          59.2851        
+reach                arabic               2          206.7712       
+reach                livejournal          2          21.4851        
+reach                orkut                2          38.3426        
+reach                twitter              2          900.0000       
+sg                   G10K-0.001           3          379.0435       
+sg                   G20K-0.001           3          900.0000       
+sg                   G40K-0.001           3          900.0000       
+tc                   G10K-0.001           2          112.7068       
+tc                   G20K-0.001           2          629.6137       
+tc                   G40K-0.001           2          900.0000       

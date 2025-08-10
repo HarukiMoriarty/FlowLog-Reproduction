@@ -1,0 +1,13 @@
+=== Souffle Compile Log for cspa_v4 on cspa-httpd ===
+Warning: Variable y only occurs once in file cspa_v4.dl at line 17
+ValueFlow(x, x) :- Assign(x, y).
+-----------------------------^---
+Warning: Variable y only occurs once in file cspa_v4.dl at line 18
+ValueFlow(x, x) :- Assign(y, x).
+--------------------------^------
+Warning: Variable y only occurs once in file cspa_v4.dl at line 19
+MemoryAlias(x, x) :- Assign(y, x).
+----------------------------^------
+Warning: Variable y only occurs once in file cspa_v4.dl at line 20
+MemoryAlias(x, x) :- Assign(x, y).
+-------------------------------^---
