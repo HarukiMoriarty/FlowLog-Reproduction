@@ -1,0 +1,20 @@
+=== Souffle Execute Log for eclipse_v3 on eclipse ===
+MethodImplemented	42271
+ClassInitializer	1197
+DirectSubclass	4373
+Subclass	8281
+Superclass	8281
+MethodLookup	145584
+Superinterface	5705
+MainMethodDeclaration	1
+SubtypeOf	22017
+SupertypeOf	22017
+SubtypeOfDifferent	16604
+ArrayIndexPointsTo	297294
+Assign	118258
+CallGraphEdge	63141
+InitializedClass	1819
+InstanceFieldPointsTo	9896541
+Reachable	9277
+StaticFieldPointsTo	1442
+VarPointsTo	41627959

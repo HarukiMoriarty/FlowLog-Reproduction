@@ -90,7 +90,9 @@ galen_v4             galen                0.0000               36.8437
 crdt                 crdt                 0.0000               2.4636              
 crdt_v1              crdt                 0.0000               1.7279              
 crdt_v2              crdt                 0.0000               3.6088              
-crdt_v3              crdt                 0.0000               2.3793              
+crdt_v3              crdt                 0.0000               2.3793 
+crdt_slow            crdt                 0.0000               229.8428            
+crdt_slow_v1         crdt                 0.0000               230.5271                         
 borrow               borrow               0.0000               331.8411            
 borrow_v1            borrow               0.0000               343.9736            
 borrow_v2            borrow               0.0000               328.1973            
@@ -105,11 +107,11 @@ z3_v1                z3                   0.0000               123.6947
 z3_v2                z3                   0.0000               113.1649            
 z3_v3                z3                   0.0000               109.2096            
 z3_v4                z3                   0.0000               109.9285            
-eclipse              eclipse              -1 -1                                    
-eclipse_v1           eclipse              -1 -1                                    
-eclipse_v2           eclipse              -1 -1                                    
-eclipse_v3           eclipse              -1 -1                                    
-eclipse_v4           eclipse              -1 -1                                    
+eclipse              eclipse              0.0000               22.7762             
+eclipse_v1           eclipse              0.0000               900.0000            
+eclipse_v2           eclipse              0.0000               370.1976            
+eclipse_v3           eclipse              0.0000               24.8570             
+eclipse_v4           eclipse              0.0000               24.5166                    
 xalan                xalan                0.0000               6.2781              
 xalan_v1             xalan                0.0000               433.8660            
 xalan_v2             xalan                0.0000               15.4884             

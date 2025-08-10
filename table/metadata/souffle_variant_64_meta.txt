@@ -1,0 +1,37 @@
+======================================================================
+Base Program         Dataset              Variants   Median Time(s) 
+----------------------------------------------------------------------
+andersen             large                4          69.6373        
+andersen             medium               4          31.0663        
+batik                batik                5          35.2019        
+biojava              biojava              5          10.7454        
+bipartite            mag                  4          306.1884       
+bipartite            netflix              4          103.7505       
+bipartite            roadNet-CA           4          5.9687         
+borrow               borrow               4          337.9073       
+crdt                 crdt                 4          2.4215         
+crdt_slow            crdt                 2          230.1850       
+csda                 csda-httpd           2          9.7988         
+csda                 csda-linux           2          77.3805        
+csda                 csda-postgresql      2          40.4467        
+cspa                 cspa-httpd           5          50.8754        
+cspa                 cspa-linux           5          14.3139        
+cspa                 cspa-postgresql      5          56.1135        
+cvc5                 cvc5                 5          14.5009        
+dyck                 kernel               4          10.2871        
+dyck                 postgre              4          6.0785         
+eclipse              eclipse              5          24.8570        
+galen                galen                5          36.8437        
+reach                arabic               2          179.6530       
+reach                livejournal          2          19.0660        
+reach                orkut                2          32.8666        
+reach                twitter              2          900.0000       
+sg                   G10K-0.001           3          41.3364        
+sg                   G20K-0.001           3          404.4712       
+sg                   G40K-0.001           3          900.0000       
+tc                   G10K-0.001           2          39.6980        
+tc                   G20K-0.001           2          249.1760       
+tc                   G40K-0.001           2          668.4598       
+xalan                xalan                5          6.6074         
+z3                   z3                   5          109.9285       
+zxing                zxing                5          9.0633       
