@@ -1,0 +1,21 @@
+=== Souffle Execute Log for borrow_v3 on borrow ===
+ancestor_path	30
+cfg_node	45912
+placeholder_origin	6
+path_begins_with_var	6372
+path_assigned_at	6793
+path_moved_at	16295
+path_maybe_initialized_on_exit	1048567
+var_maybe_partly_initialized_on_exit	1048423
+var_maybe_partly_initialized_on_entry	1048413
+var_drop_live_on_entry	3588
+path_maybe_uninitialized_on_exit	291552229
+move_error	291546023
+var_live_on_entry	329734
+origin_live_on_entry	1033354
+subset	5068815
+origin_contains_loan_on_entry	1316
+loan_live_at	0
+errors	0
+subset_error	0
+path_accessed_at	7838

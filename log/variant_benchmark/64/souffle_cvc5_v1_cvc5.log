@@ -1,0 +1,12 @@
+=== Souffle Execute Log for cvc5_v1 on cvc5 ===
+Reg_def_use_def_used	65950
+Reg_def_use_live_var_at_block_end	84775
+Reg_def_use_live_var_at_prior_used	46552
+Reg_def_use_live_var_used	41186
+Reg_def_use_return_val_used	4442
+Stack_def_use_live_var_at_block_end	21236205
+Stack_def_use_live_var_at_prior_used	4289196
+Stack_def_use_def_used	2065369
+Def_used_for_address	10299
+Reg_reg_arithmetic_operation_defs	117
+Jump_table_target	811
