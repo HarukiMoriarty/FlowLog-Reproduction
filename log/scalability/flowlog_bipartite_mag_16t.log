@@ -1,0 +1,8 @@
+=== FlowLog Scalability Log for bipartite on mag (16 workers) ===
+[2m2025-08-11T12:58:47.230591Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 2.258282ms:	Dataflow assembled
+[2m2025-08-11T12:59:39.793792Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 52.565456596s:	Data loaded for Arc
+[2m2025-08-11T12:59:39.793919Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 52.56559151s:	Data loaded for Source
+[2m2025-08-11T13:00:50.047954Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [One]: ((), (), 2763016)
+[2m2025-08-11T13:00:50.048540Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Zero]: ((), (), 10541556)
+[2m2025-08-11T13:00:50.054699Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 122.826359572s:	Dataflow executed
+[2m2025-08-11T13:00:50.059861Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

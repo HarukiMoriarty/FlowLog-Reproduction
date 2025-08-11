@@ -1,0 +1,4 @@
+=== Umbra Scalability Log for bipartite on mag (16 CPUs) ===
+INFO:    [s] execution: (17.862148 min, 17.862148 max, 17.862148 median, 0.0% relMAD, 17.862148 avg, 0.000000 sdev, 2190630214 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.002976 min, 0.002976 max, 0.002976 median, 0.0% relMAD, 0.002976 avg, 0.000000 sdev)
+zero_count one_count intersection_count
+10541556 2763016 0
