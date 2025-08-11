@@ -1,3 +1,4 @@
+VARIANT GROUPS - MEDIAN TIMES
 ======================================================================
 Base Program         Dataset              Variants   Median Time(s) 
 ----------------------------------------------------------------------
@@ -8,6 +9,7 @@ biojava              biojava              5          13.8413
 bipartite            mag                  4          393.9425       
 bipartite            netflix              4          107.5945       
 bipartite            roadNet-CA           4          29.5254        
+borrow               borrow               4          202.4468       
 crdt                 crdt                 4          8.0590         
 crdt_slow            crdt                 2          177.6726       
 csda                 csda-httpd           2          15.2198        
@@ -16,6 +18,7 @@ csda                 csda-postgresql      2          125.1447
 cspa                 cspa-httpd           5          67.7702        
 cspa                 cspa-linux           5          20.8715        
 cspa                 cspa-postgresql      5          76.7312        
+cvc5                 cvc5                 5          27.2550        
 dyck                 kernel               4          17.6686        
 dyck                 postgre              4          12.1366        
 eclipse              eclipse              5          32.0326        
@@ -30,3 +33,6 @@ sg                   G40K-0.001           3          900.0000
 tc                   G10K-0.001           2          112.7068       
 tc                   G20K-0.001           2          629.6137       
 tc                   G40K-0.001           2          900.0000       
+xalan                xalan                5          9.1066         
+z3                   z3                   5          125.8605    
+zxing                zxing                5          10.5232   
