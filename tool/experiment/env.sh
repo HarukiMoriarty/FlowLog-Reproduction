@@ -92,3 +92,34 @@ sudo docker pull umbradb/umbra:latest
 echo "[DONE] Environment setup complete. Restart your terminal or run:"
 echo "  export PATH=\"$HOME/bin:\$PATH\""
 echo "  export PATH=\"$HOME/.cargo/bin:\$PATH\""
+
+# ============================================
+# DDLOG SETUP
+# ============================================
+
+echo "[SETUP] Installing DDlog..."
+DDLOG_VERSION="v1.2.3"
+DDLOG_TAR="ddlog-v1.2.3-20211213235218-Linux.tar.gz"
+DDLOG_URL="https://github.com/vmware-archive/differential-datalog/releases/download/${DDLOG_VERSION}/${DDLOG_TAR}"
+DDLOG_INSTALL_DIR="$HOME/ddlog"
+
+mkdir -p "$DDLOG_INSTALL_DIR"
+curl -L "$DDLOG_URL" -o "$HOME/$DDLOG_TAR"
+tar -xzf "$HOME/$DDLOG_TAR" -C "$DDLOG_INSTALL_DIR" --strip-components=1
+rm "$HOME/$DDLOG_TAR"
+
+# Add ddlog/bin to PATH in .bashrc if missing
+if ! grep -q 'export PATH="$HOME/ddlog/bin:$PATH"' "$HOME/.bashrc"; then
+    echo 'export PATH="$HOME/ddlog/bin:$PATH"' >> "$HOME/.bashrc"
+fi
+
+# Set DDLOG_HOME in .bashrc if missing
+if ! grep -q 'export DDLOG_HOME="$HOME/ddlog"' "$HOME/.bashrc"; then
+    echo 'export DDLOG_HOME="$HOME/ddlog"' >> "$HOME/.bashrc"
+fi
+
+# Export for current session
+export PATH="$HOME/ddlog/bin:$PATH"
+export DDLOG_HOME="$HOME/ddlog"
+
+echo "[SETUP] DDlog environment ready!"

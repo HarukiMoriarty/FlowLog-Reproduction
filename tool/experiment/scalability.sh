@@ -523,6 +523,8 @@ run_ddlog_scalability() {
 
     echo "  Fastest execution time: $fastest_exec seconds"
 
+    rm -f "${base}_ddlog"
+
     # Write results to temp file
     {
         echo "$load_time"
@@ -562,28 +564,28 @@ while IFS='=' read -r program dataset; do
         # Run DuckDB scalability test
         echo ""
         echo "DuckDB ($thread_count threads):"
-        # run_duckdb_scalability "$program" "$dataset" "$thread_count"
-        # mapfile -t lines < "$TEMP_RESULT_FILE"
-        # duck_load="${lines[0]}"
-        # duck_exec="${lines[1]}"
+        run_duckdb_scalability "$program" "$dataset" "$thread_count"
+        mapfile -t lines < "$TEMP_RESULT_FILE"
+        duck_load="${lines[0]}"
+        duck_exec="${lines[1]}"
         echo "DuckDB completed: load=$duck_load exec=$duck_exec"
         
         # Run Umbra scalability test
         echo ""
         echo "Umbra ($thread_count CPUs):"
-        # run_umbra_scalability "$program" "$dataset" "$thread_count"
-        # mapfile -t lines < "$TEMP_RESULT_FILE"
-        # umbra_load="${lines[0]}"
-        # umbra_exec="${lines[1]}"
+        run_umbra_scalability "$program" "$dataset" "$thread_count"
+        mapfile -t lines < "$TEMP_RESULT_FILE"
+        umbra_load="${lines[0]}"
+        umbra_exec="${lines[1]}"
         echo "Umbra completed: load=$umbra_load exec=$umbra_exec"
         
         # Run FlowLog scalability test
         echo ""
         echo "FlowLog ($thread_count workers):"
-        # run_flowlog_scalability "$program" "$dataset" "$thread_count"
-        # mapfile -t lines < "$TEMP_RESULT_FILE"
-        # flowlog_load="${lines[0]}"
-        # flowlog_exec="${lines[1]}"
+        run_flowlog_scalability "$program" "$dataset" "$thread_count"
+        mapfile -t lines < "$TEMP_RESULT_FILE"
+        flowlog_load="${lines[0]}"
+        flowlog_exec="${lines[1]}"
         echo "FlowLog completed: load=$flowlog_load exec=$flowlog_exec"
 
         echo ""
