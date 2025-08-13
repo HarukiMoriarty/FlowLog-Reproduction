@@ -25,11 +25,8 @@
 .decl Var_Type(var:number, type:number)
 .input Var_Type.csv
 .decl HeapAllocation_Type(heap:number, type:number)
-.input HeapAllocation_Type.csv # modified to be an EDB now
+.input HeapAllocation_Type.csv
 
-
-# Main schema
-# .decl Method_Descriptor(method:number, descriptor:number)
 .printsize
 .decl isType(t:number)
 .decl isReferenceType(t:number)
@@ -44,9 +41,6 @@
 .decl Method_Params(method:number, params:number)
 .decl ThisVar(method:number, var:number)
 .decl Var_DeclaringMethod(var:number, method:number)
-# .decl HeapAllocation_Type(heap:number, type:number) move into input
-# .decl MainMethodArgArray(heap:number) redundant
-# .decl MainMethodArgArrayContent(heap:number) redundant
 .decl Instruction_Method(insn:number, inMethod:number)
 .decl isVirtualMethodInvocation_Insn(insn:number)
 .decl isStaticMethodInvocation_Insn(insn:number)
@@ -74,7 +68,6 @@
 .decl SpecialMethodInvocation_Base(invocation:number, base:number)
 .decl MethodInvocation_Base(invocation:number, base:number)
 
-# Fat schema
 .decl LoadInstanceField(base:number, sig:number, to:number, inmethod:number)
 .decl StoreInstanceField(from:number, base:number, signature:number, inmethod:number)
 .decl LoadStaticField(sig:number, to:number, inmethod:number)
@@ -87,8 +80,6 @@
 .decl ReturnVar(var:number, method:number)
 .decl StaticMethodInvocation(invocation:number, signature:number, inmethod:number)
 
-
-# imports
 .in
 .decl _ClassType(class:number)
 .input ClassType.csv
@@ -97,7 +88,7 @@
 .decl _InterfaceType(interface:number)
 .input InterfaceType.csv
 .decl _Var_DeclaringMethod(var:number, method:number)
-.input Var_DeclaringMethod.csv 
+.input Var_DeclaringMethod.csv
 .decl _ApplicationClass(type:number)
 .input ApplicationClass.csv
 .decl _ThisVar(method:number, var:number)
@@ -128,7 +119,7 @@ isType(interface) :- _InterfaceType(interface).
 isReferenceType(interface) :- _InterfaceType(interface).
 isInterfaceType(interface) :- _InterfaceType(interface).
 
-Var_DeclaringMethod(var, method) :- _Var_DeclaringMethod(var, method). # redundant Var_DeclaringMethod
+Var_DeclaringMethod(var, method) :- _Var_DeclaringMethod(var, method).
 
 isType(type) :- _ApplicationClass(type).
 isReferenceType(type) :- _ApplicationClass(type).
@@ -137,8 +128,6 @@ ApplicationClass(type) :- _ApplicationClass(type).
 ThisVar(method, var) :- _ThisVar(method, var).
 
 isType(type) :- _NormalHeap(_, type).
-# HeapAllocation_Type(id, type) :- _NormalHeap(id, type).
-# HeapAllocation_Type(id, 434817) :- _StringConstant(id).
 
 Instruction_Method(instruction, method) :-
   _AssignHeapAllocation(instruction, index, heap, to, method, linenumber).
@@ -151,7 +140,7 @@ Instruction_Method(instruction, method) :-
   _AssignLocal(instruction, index, from, to, method).
 AssignLocal_From(instruction, from) :-
   _AssignLocal(instruction, index, from, to, method).
-AssignInstruction_To(instruction, to) :- 
+AssignInstruction_To(instruction, to) :-
   _AssignLocal(instruction, index, from, to, method).
 
 Instruction_Method(instruction, method) :-
@@ -160,7 +149,7 @@ AssignCast_Type(instruction, type) :-
   _AssignCast(instruction, index, from, to, type, method).
 AssignCast_From(instruction, from) :-
   _AssignCast(instruction, index, from, to, type, method).
-AssignInstruction_To(instruction, to) :- 
+AssignInstruction_To(instruction, to) :-
   _AssignCast(instruction, index, from, to, type, method).
 
 Field_DeclaringType(signature, declaringType) :- _Field(signature, declaringType, _, _).
@@ -202,7 +191,7 @@ Instruction_Method(instruction, method) :-
   _StaticMethodInvocation(instruction, index, signature, method).
 isStaticMethodInvocation_Insn(instruction) :-
   _StaticMethodInvocation(instruction, index, signature, method).
-MethodInvocation_Method(instruction, signature) :- 
+MethodInvocation_Method(instruction, signature) :-
   _StaticMethodInvocation(instruction, index, signature, method).
 
 Instruction_Method(instruction, method) :-
@@ -225,12 +214,6 @@ Method_SimpleName(method, simplename) :-
   _Method(method, simplename, params, declaringType, returnType, jvmDescriptor, arity).
 Method_DeclaringType(method, declaringType) :-
   _Method(method, simplename, params, declaringType, returnType, jvmDescriptor, arity).
-
-# direct import of Method_Descriptor
-# Method_Descriptor(method, descriptor) :- 
-#   Method_ReturnType(method, returnType),
-#   Method_Params(method, params),
-#   descriptor = cat(returnType, params).
 
 Instruction_Method(instruction, method) :-
   _StoreInstanceField(instruction, index, from, base, signature, method).
@@ -283,8 +266,6 @@ Instruction_Method(instruction, method) :-
 ReturnNonvoid_Var(instruction, var) :-
   _Return(instruction, index, var, method).
 
-
-# fat schema population
 LoadInstanceField(base, sig, to, inmethod) :-
   Instruction_Method(insn, inmethod),
   LoadInstanceField_Base(insn, base),
@@ -331,14 +312,6 @@ StaticMethodInvocation(invocation, signature, inmethod) :-
   isStaticMethodInvocation_Insn(invocation),
   Instruction_Method(invocation, inmethod),
   MethodInvocation_Method(invocation, signature).
-# HeapAllocation_Type(heap, type),
-# MainMethodArgArray(heap) :-
-#   heap = 2523804,
-#   type = 522475.
-# HeapAllocation_Type(heap, type),
-# MainMethodArgArrayContent(heap) :-
-#   heap = 2523482,
-#   type = 434817.
 VirtualMethodInvocation_SimpleName(invocation, simplename) :-
   isVirtualMethodInvocation_Insn(invocation),
   MethodInvocation_Method(invocation, signature),
@@ -350,9 +323,6 @@ VirtualMethodInvocation_Descriptor(invocation, descriptor) :-
   Method_SimpleName(signature, simplename),
   Method_Descriptor(signature, descriptor).
 
-  
-# Basic (type-based) analysis
-# .comp Basic {
 .printsize
 .decl MethodLookup(simplename:number, descriptor:number, type:number, method:number)
 .decl MethodImplemented(simplename:number, descriptor:number, type:number, method:number)
@@ -443,13 +413,6 @@ SubtypeOf(s, t) :-
 SubtypeOf(s, t) :-
   isInterfaceType(s),
   Superinterface(t, s).
-# cross-product warning
-# SubtypeOf(s, t) :-
-#   ComponentType(s, sc),
-#   ComponentType(t, tc),
-#   isReferenceType(sc),
-#   isReferenceType(tc),
-#   SubtypeOf(sc, tc).
 SubtypeOf(s, t) :-
   SubtypeOf(sc, tc),
   ComponentType(s, sc),
@@ -472,20 +435,10 @@ SupertypeOf(s, t) :-
 SubtypeOfDifferent(s, t) :-
   SubtypeOf(s, t),
   s != t.
-# }
-# .init basic = Basic
 
-
-
-
-
-# class initialization
 .printsize
 .decl ClassInitializer(type:number, method:number)
 .decl InitializedClass(classOrInterface:number)
-
-
-
 
 .rule
 ClassInitializer(type, method) :-
@@ -521,9 +474,6 @@ Reachable(clinit) :-
    InitializedClass(class),
    ClassInitializer(class, clinit).
 
-
-# Main (value-based) analysis
-# basic.MethodImplemented, basic.MainMethodDeclaration, basic.SupertypeOf, basic.MethodLookup
 .printsize
 .decl Assign(to:number, from:number)
 .decl VarPointsTo(heap:number, var:number)
@@ -533,19 +483,10 @@ Reachable(clinit) :-
 .decl ArrayIndexPointsTo(baseheap:number, heap:number)
 .decl Reachable(method:number)
 
-
-
-
-
-
-
-
-
+# Expensive 6 (Line 486)
 .rule
-Assign(actual, formal) :-
-  CallGraphEdge(invocation, method),
-  FormalParam(index, method, formal),
-  ActualParam(index, invocation, actual).
+Assign(actual, formal) :- CallGraphEdge(invocation, method), FormalParam(index, method, formal), ActualParam(index, invocation, actual).
+
 Assign(return, local) :-
   CallGraphEdge(invocation, method),
   ReturnVar(return, method),
@@ -560,66 +501,39 @@ VarPointsTo(heap, to) :-
   Reachable(inmethod),
   AssignLocal(from, to, inmethod),
   VarPointsTo(heap, from).
-# .plan 1:(3,2,1)
-VarPointsTo(heap, to) :-
-  Reachable(inmethod),
-  AssignCast(type, from, to, inmethod),
-  SupertypeOf(type, heaptype),
-  HeapAllocation_Type(heap, heaptype),
-  VarPointsTo(heap, from).
-#  .plan 1:(5,2,1,4,3)
-ArrayIndexPointsTo(baseheap, heap) :-
-  Reachable(inmethod),
-  StoreArrayIndex(from, base, inmethod),
-  VarPointsTo(baseheap, base),
-  VarPointsTo(heap, from),
-  HeapAllocation_Type(heap, heaptype),
-  HeapAllocation_Type(baseheap, baseheaptype),
-  ComponentType(baseheaptype, componenttype),
-  SupertypeOf(componenttype, heaptype).
-VarPointsTo(heap, to) :-
-  Reachable(inmethod),
-  LoadArrayIndex(base, to, inmethod),
-  VarPointsTo(baseheap, base),
-  ArrayIndexPointsTo(baseheap, heap),
-  Var_Type(to, type),
-  HeapAllocation_Type(baseheap, baseheaptype),
-  ComponentType(baseheaptype, basecomponenttype),
-  SupertypeOf(type, basecomponenttype).
-# .plan 1:(3,2,1,4,5,6,7,8), 2:(4,3,2,1,5,6,7,8)
-VarPointsTo(heap, to) :-
-  Reachable(inmethod),
-  VarPointsTo(baseheap, base),
-  InstanceFieldPointsTo(heap, signature, baseheap),
-  LoadInstanceField(base, signature, to, inmethod).
-# .plan 1:(3,2,1,4), 2:(4,2,1,3)
+
+
+
+# Expensive 2 (Line 507)
+VarPointsTo(heap, to) :- Reachable(inmethod), AssignCast(type, from, to, inmethod), VarPointsTo(heap, from), HeapAllocation_Type(heap, heaptype), SupertypeOf(type, heaptype).#mod
+
+# Expensive 5
+ArrayIndexPointsTo(baseheap, heap) :- Reachable(inmethod), StoreArrayIndex(from, base, inmethod), VarPointsTo(baseheap, base), VarPointsTo(heap, from), HeapAllocation_Type(heap, heaptype), HeapAllocation_Type(baseheap, baseheaptype), ComponentType(baseheaptype, componenttype), SupertypeOf(componenttype, heaptype).
+
+# Expensive 3 (in paper)
+VarPointsTo(heap, to) :- Reachable(inmethod), LoadArrayIndex(base, to, inmethod), VarPointsTo(baseheap, base), ArrayIndexPointsTo(baseheap, heap), Var_Type(to, type), HeapAllocation_Type(baseheap, baseheaptype), ComponentType(baseheaptype, basecomponenttype), SupertypeOf(type, basecomponenttype).
+
+# Expensive 1
+VarPointsTo(heap, to) :- Reachable(inmethod), LoadInstanceField(base, signature, to, inmethod), VarPointsTo(baseheap, base), InstanceFieldPointsTo(heap, signature, baseheap).
+
 VarPointsTo(heap, to) :-
   Reachable(inmethod),
   LoadStaticField(fld, to, inmethod),
   StaticFieldPointsTo(heap, fld).
-VarPointsTo(heap, this) :-
-  Reachable(inMethod),
-  Instruction_Method(invocation, inMethod),
-  VirtualMethodInvocation_Base(invocation, base),
-  VarPointsTo(heap, base),
-  HeapAllocation_Type(heap, heaptype),
-  VirtualMethodInvocation_SimpleName(invocation, simplename),
-  VirtualMethodInvocation_Descriptor(invocation, descriptor),
-  MethodLookup(simplename, descriptor, heaptype, toMethod),
-  ThisVar(toMethod, this).
-# .plan 1:(4,3,2,1,5,6,7,8,9)
+
+# Expensive 4
+VarPointsTo(heap, this) :- Reachable(inMethod), Instruction_Method(invocation, inMethod), VirtualMethodInvocation_Base(invocation, base), VarPointsTo(heap, base), HeapAllocation_Type(heap, heaptype), VirtualMethodInvocation_SimpleName(invocation, simplename), VirtualMethodInvocation_Descriptor(invocation, descriptor), MethodLookup(simplename, descriptor, heaptype, toMethod), ThisVar(toMethod, this).
+
 InstanceFieldPointsTo(heap, fld, baseheap) :-
   Reachable(inmethod),
   StoreInstanceField(from, base, fld, inmethod),
   VarPointsTo(heap, from),
   VarPointsTo(baseheap, base).
-# .plan 1:(3,2,1,4), 2:(4,2,1,3)
 StaticFieldPointsTo(heap, fld) :-
   Reachable(inmethod),
   StoreStaticField(from, fld, inmethod),
   VarPointsTo(heap, from).
 
-# Reachable(toMethod), CallGraphEdge(invocation, toMethod)
 Reachable(toMethod) :-
   Reachable(inMethod),
   Instruction_Method(invocation, inMethod),
@@ -629,18 +543,11 @@ Reachable(toMethod) :-
   VirtualMethodInvocation_SimpleName(invocation, simplename),
   VirtualMethodInvocation_Descriptor(invocation, descriptor),
   MethodLookup(simplename, descriptor, heaptype, toMethod).
-CallGraphEdge(invocation, toMethod) :-
-  Reachable(inMethod),
-  Instruction_Method(invocation, inMethod),
-  VirtualMethodInvocation_Base(invocation, base),
-  VarPointsTo(heap, base),
-  HeapAllocation_Type(heap, heaptype),
-  VirtualMethodInvocation_SimpleName(invocation, simplename),
-  VirtualMethodInvocation_Descriptor(invocation, descriptor),
-  MethodLookup(simplename, descriptor, heaptype, toMethod).
-# .plan 1:(4,3,2,1,5,6,7,8)
 
-# Reachable(tomethod), CallGraphEdge(invocation, tomethod)
+# Expensive 7 (Line 547)
+CallGraphEdge(invocation, toMethod) :- Reachable(inMethod), Instruction_Method(invocation, inMethod), VirtualMethodInvocation_Base(invocation, base), VarPointsTo(heap, base), HeapAllocation_Type(heap, heaptype), VirtualMethodInvocation_SimpleName(invocation, simplename), VirtualMethodInvocation_Descriptor(invocation, descriptor), MethodLookup(simplename, descriptor, heaptype, toMethod).
+
+
 Reachable(tomethod) :-
   Reachable(inmethod),
   StaticMethodInvocation(invocation, tomethod, inmethod).
@@ -648,7 +555,6 @@ CallGraphEdge(invocation, tomethod) :-
   Reachable(inmethod),
   StaticMethodInvocation(invocation, tomethod, inmethod).
 
-# Reachable(tomethod), CallGraphEdge(invocation, tomethod), VarPointsTo(heap, this)
 Reachable(tomethod) :-
   Reachable(inmethod),
   Instruction_Method(invocation, inmethod),
@@ -670,15 +576,6 @@ VarPointsTo(heap, this) :-
   VarPointsTo(heap, base),
   MethodInvocation_Method(invocation, tomethod),
   ThisVar(tomethod, this).
-# .plan 1:(4,3,2,1,5,6)
 
 Reachable(method) :-
   MainMethodDeclaration(method).
-
-
-
-
-
-# souffle -o doop ./doop.dl -j 16
-# time ./doop -F./doop-data -D./idbs/ -j 16
-
