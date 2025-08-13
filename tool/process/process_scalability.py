@@ -10,12 +10,12 @@ This script:
 
 import re
 from collections import defaultdict
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 
-def parse_scalability_file(filename: str) -> List[Tuple[str, str, int, float, float, float, float, float, float]]:
+def parse_scalability_file(filename: str) -> List[Tuple[str, str, int, Optional[float], Optional[float], Optional[float], Optional[float], Optional[float], Optional[float], Optional[float], Optional[float], Optional[float], Optional[float]]]:
     """
     Parse the scalability table file and return a list of tuples containing:
-    (program, dataset, threads, duck_load, duck_exec, umbra_load, umbra_exec, flowlog_load, flowlog_exec)
+    (program, dataset, threads, duck_load, duck_exec, umbra_load, umbra_exec, flowlog_load, flowlog_exec, souffle_load, souffle_exec, ddlog_load, ddlog_exec)
     Handle missing data by using None for missing values
     """
     results = []
@@ -37,34 +37,42 @@ def parse_scalability_file(filename: str) -> List[Tuple[str, str, int, float, fl
             
             # Initialize all values as None
             duck_load = duck_exec = umbra_load = umbra_exec = flowlog_load = flowlog_exec = None
+            souffle_load = souffle_exec = ddlog_load = ddlog_exec = None
             
             # Try to parse available columns, handling missing data gracefully
+            # Order: program, dataset, threads, duck_load, duck_exec, umbra_load, umbra_exec, flowlog_load, flowlog_exec, souffle_load, souffle_exec, ddlog_load, ddlog_exec
             try:
                 if len(parts) >= 5:
-                    duck_load = float(parts[3]) if parts[3] != 'N/A' and parts[3] != '-' else None
-                    duck_exec = float(parts[4]) if parts[4] != 'N/A' and parts[4] != '-' else None
+                    duck_load = float(parts[3]) if parts[3] not in ['N/A', '-', 'NULL', ''] else None
+                    duck_exec = float(parts[4]) if parts[4] not in ['N/A', '-', 'NULL', ''] else None
                 if len(parts) >= 7:
-                    umbra_load = float(parts[5]) if parts[5] != 'N/A' and parts[5] != '-' else None
-                    umbra_exec = float(parts[6]) if parts[6] != 'N/A' and parts[6] != '-' else None
+                    umbra_load = float(parts[5]) if parts[5] not in ['N/A', '-', 'NULL', ''] else None
+                    umbra_exec = float(parts[6]) if parts[6] not in ['N/A', '-', 'NULL', ''] else None
                 if len(parts) >= 9:
-                    flowlog_load = float(parts[7]) if parts[7] != 'N/A' and parts[7] != '-' else None
-                    flowlog_exec = float(parts[8]) if parts[8] != 'N/A' and parts[8] != '-' else None
+                    flowlog_load = float(parts[7]) if parts[7] not in ['N/A', '-', 'NULL', ''] else None
+                    flowlog_exec = float(parts[8]) if parts[8] not in ['N/A', '-', 'NULL', ''] else None
+                if len(parts) >= 11:
+                    souffle_load = float(parts[9]) if parts[9] not in ['N/A', '-', 'NULL', ''] else None
+                    souffle_exec = float(parts[10]) if parts[10] not in ['N/A', '-', 'NULL', ''] else None
+                if len(parts) >= 13:
+                    ddlog_load = float(parts[11]) if parts[11] not in ['N/A', '-', 'NULL', ''] else None
+                    ddlog_exec = float(parts[12]) if parts[12] not in ['N/A', '-', 'NULL', ''] else None
             except ValueError:
                 continue  # Skip lines with invalid data
             
-            results.append((program, dataset, threads, duck_load, duck_exec, 
-                          umbra_load, umbra_exec, flowlog_load, flowlog_exec))
+            results.append((program, dataset, threads, duck_load, duck_exec, umbra_load, umbra_exec, 
+                          flowlog_load, flowlog_exec, souffle_load, souffle_exec, ddlog_load, ddlog_exec))
     
     return results
 
-def calculate_total_times(results: List[Tuple[str, str, int, float, float, float, float, float, float]]):
+def calculate_total_times(results: List[Tuple[str, str, int, Optional[float], Optional[float], Optional[float], Optional[float], Optional[float], Optional[float], Optional[float], Optional[float], Optional[float], Optional[float]]]):
     """
     Calculate total times and organize by program-dataset pairs
     Handle None values for missing systems
     """
     data = defaultdict(list)
     
-    for program, dataset, threads, duck_load, duck_exec, umbra_load, umbra_exec, flowlog_load, flowlog_exec in results:
+    for program, dataset, threads, duck_load, duck_exec, umbra_load, umbra_exec, flowlog_load, flowlog_exec, souffle_load, souffle_exec, ddlog_load, ddlog_exec in results:
         # Calculate totals, handling None values
         duck_total = None
         if duck_load is not None and duck_exec is not None:
@@ -77,13 +85,23 @@ def calculate_total_times(results: List[Tuple[str, str, int, float, float, float
         flowlog_total = None
         if flowlog_load is not None and flowlog_exec is not None:
             flowlog_total = flowlog_load + flowlog_exec
+            
+        souffle_total = None
+        if souffle_load is not None and souffle_exec is not None:
+            souffle_total = souffle_load + souffle_exec
+            
+        ddlog_total = None
+        if ddlog_load is not None and ddlog_exec is not None:
+            ddlog_total = ddlog_load + ddlog_exec
         
         key = (program, dataset)
         data[key].append({
             'threads': threads,
             'duck_total': duck_total,
             'umbra_total': umbra_total,
-            'flowlog_total': flowlog_total
+            'flowlog_total': flowlog_total,
+            'souffle_total': souffle_total,
+            'ddlog_total': ddlog_total
         })
     
     # Sort by thread count for each program-dataset pair
@@ -124,12 +142,22 @@ def calculate_speedups(data: Dict[Tuple[str, str], List[Dict]]):
             flowlog_speedup = None
             if baseline['flowlog_total'] is not None and entry['flowlog_total'] is not None:
                 flowlog_speedup = baseline['flowlog_total'] / entry['flowlog_total']
+                
+            souffle_speedup = None
+            if baseline['souffle_total'] is not None and entry['souffle_total'] is not None:
+                souffle_speedup = baseline['souffle_total'] / entry['souffle_total']
+                
+            ddlog_speedup = None
+            if baseline['ddlog_total'] is not None and entry['ddlog_total'] is not None:
+                ddlog_speedup = baseline['ddlog_total'] / entry['ddlog_total']
             
             speedups.append({
                 'threads': entry['threads'],
                 'duck_speedup': duck_speedup,
                 'umbra_speedup': umbra_speedup,
-                'flowlog_speedup': flowlog_speedup
+                'flowlog_speedup': flowlog_speedup,
+                'souffle_speedup': souffle_speedup,
+                'ddlog_speedup': ddlog_speedup
             })
         
         speedup_data[(program, dataset)] = speedups
@@ -142,50 +170,56 @@ def print_speedup_table(speedup_data: Dict[Tuple[str, str], List[Dict]]):
     Handle None values by displaying N/A
     """
     print("SCALABILITY ANALYSIS - SPEEDUP RATIOS")
-    print("="*80)
+    print("="*100)
     
     for (program, dataset), speedups in sorted(speedup_data.items()):
         print(f"\n{program.upper()} + {dataset}")
-        print("-" * 60)
-        print(f"{'Threads':<8} {'DuckDB':<12} {'Umbra':<12} {'FlowLog':<12}")
-        print("-" * 60)
+        print("-" * 80)
+        print(f"{'Threads':<8} {'DuckDB':<12} {'Umbra':<12} {'FlowLog':<12} {'Souffle':<12} {'DDlog':<12}")
+        print("-" * 80)
         
         for entry in speedups:
             threads = entry['threads']
             duck_speedup = f"{entry['duck_speedup']:.2f}" if entry['duck_speedup'] is not None else "N/A"
             umbra_speedup = f"{entry['umbra_speedup']:.2f}" if entry['umbra_speedup'] is not None else "N/A"
             flowlog_speedup = f"{entry['flowlog_speedup']:.2f}" if entry['flowlog_speedup'] is not None else "N/A"
+            souffle_speedup = f"{entry['souffle_speedup']:.2f}" if entry['souffle_speedup'] is not None else "N/A"
+            ddlog_speedup = f"{entry['ddlog_speedup']:.2f}" if entry['ddlog_speedup'] is not None else "N/A"
             
-            print(f"{threads:<8} {duck_speedup:<12} {umbra_speedup:<12} {flowlog_speedup:<12}")
+            print(f"{threads:<8} {duck_speedup:<12} {umbra_speedup:<12} {flowlog_speedup:<12} {souffle_speedup:<12} {ddlog_speedup:<12}")
 
 def print_summary_table(speedup_data: Dict[Tuple[str, str], List[Dict]]):
     """
     Print a summary table showing best speedups achieved
     Handle None values by displaying N/A
     """
-    print("\n" + "="*80)
+    print("\n" + "="*100)
     print("SUMMARY - BEST SPEEDUPS ACHIEVED")
-    print("="*80)
-    print(f"{'Program':<15} {'Dataset':<20} {'DuckDB Best':<12} {'Umbra Best':<12} {'FlowLog Best':<12}")
-    print("-" * 80)
+    print("="*100)
+    print(f"{'Program':<15} {'Dataset':<20} {'DuckDB Best':<12} {'Umbra Best':<12} {'FlowLog Best':<12} {'Souffle Best':<12} {'DDlog Best':<12}")
+    print("-" * 100)
     
     for (program, dataset), speedups in sorted(speedup_data.items()):
         # Calculate best speedups, handling None values
         duck_speedups = [entry['duck_speedup'] for entry in speedups if entry['duck_speedup'] is not None]
         umbra_speedups = [entry['umbra_speedup'] for entry in speedups if entry['umbra_speedup'] is not None]
         flowlog_speedups = [entry['flowlog_speedup'] for entry in speedups if entry['flowlog_speedup'] is not None]
+        souffle_speedups = [entry['souffle_speedup'] for entry in speedups if entry['souffle_speedup'] is not None]
+        ddlog_speedups = [entry['ddlog_speedup'] for entry in speedups if entry['ddlog_speedup'] is not None]
         
         duck_best = f"{max(duck_speedups):.2f}" if duck_speedups else "N/A"
         umbra_best = f"{max(umbra_speedups):.2f}" if umbra_speedups else "N/A"
         flowlog_best = f"{max(flowlog_speedups):.2f}" if flowlog_speedups else "N/A"
+        souffle_best = f"{max(souffle_speedups):.2f}" if souffle_speedups else "N/A"
+        ddlog_best = f"{max(ddlog_speedups):.2f}" if ddlog_speedups else "N/A"
         
-        print(f"{program:<15} {dataset:<20} {duck_best:<12} {umbra_best:<12} {flowlog_best:<12}")
+        print(f"{program:<15} {dataset:<20} {duck_best:<12} {umbra_best:<12} {flowlog_best:<12} {souffle_best:<12} {ddlog_best:<12}")
 
 def main():
     """
     Main function to process the scalability benchmark results
     """
-    filename = "/users/hangdong/Datalog-DB-benchmark/scalability.txt"
+    filename = "/users/hangdong/Datalog-DB-benchmark/table/scalability.txt"
     
     try:
         # Parse the table file

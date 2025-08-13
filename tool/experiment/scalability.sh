@@ -41,23 +41,24 @@ echo "Thread counts: ${THREAD_COUNTS[*]}"
 echo "No timeout - all queries run to completion"
 echo ""
 
-echo "=== Building FlowLog ==="
-cd FlowLog
-git checkout nemo_arithmetic
-cargo build --release
-cd ..
-echo "FlowLog build completed"
-echo ""
+# echo "=== Building FlowLog ==="
+# cd FlowLog
+# git checkout nemo_arithmetic
+# cargo build --release
+# cd ..
+# echo "FlowLog build completed"
+# echo ""
 
 # Initialize result file with headers
 if [[ ! -f "$RESULT_FILE" ]]; then
-    printf "%-20s %-20s %-8s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
+    printf "%-20s %-20s %-8s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
         "Program" "Dataset" "Threads" "Duck_Load(s)" "Duck_Exec(s)" \
         "Umbra_Load(s)" "Umbra_Exec(s)" "FlowLog_Load(s)" "FlowLog_Exec(s)" \
-        > "$RESULT_FILE"
-    printf "%-20s %-20s %-8s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
+        "DDlog_Load(s)" "DDlog_Exec(s)" \
+    printf "%-20s %-20s %-8s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
         "--------------------" "--------------------" "--------" "--------------------" "--------------------" \
         "--------------------" "--------------------" "--------------------" "--------------------" \
+        "--------------------" "--------------------" \
         >> "$RESULT_FILE"
 fi
 
@@ -451,6 +452,85 @@ run_umbra_scalability() {
     echo "  Results: load=$load_time exec=$fastest_exec"
 }
 
+# -----------------------------------------------------------------------------
+# DDlog Scalability Test Function
+# -----------------------------------------------------------------------------
+run_ddlog_scalability() {
+    local base=$1
+    local dataset=$2
+    local thread_count=$3
+    local ddlog_prog="program/ddlog/${base}.dl"
+    local fact_path="dataset/${dataset}/data.ddin"
+    local build_dir="${base}_ddlog"
+    local exe="${build_dir}/target/release/${base}_cli"
+    local rust_v=1.76
+
+    echo "  Starting DDlog test: $base on $dataset (${thread_count} workers)"
+
+    # Check if required files exist
+    [[ ! -f "$ddlog_prog" ]] && { 
+        echo "  ERROR: DDlog program file not found: $ddlog_prog"
+        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        return
+    }
+    [[ ! -f "$fact_path" ]] && { 
+        echo "  ERROR: Dataset file not found: $fact_path"
+        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        return
+    }
+
+    # Compile DDlog program if not already compiled
+    if [[ ! -x "$exe" ]]; then
+        echo "  Compiling DDlog program..."
+        rm -rf "${build_dir}" || true
+        ddlog -i "$ddlog_prog" -o ./
+        pushd "$build_dir" >/dev/null
+        RUSTFLAGS=-Awarnings cargo +$rust_v build --release --quiet
+        popd >/dev/null
+    fi
+
+    # Run logging execution
+    local log_file="./log/scalability/ddlog_${base}_${dataset}_${thread_count}t.log"
+    echo "=== DDlog Scalability Log for $base on $dataset (${thread_count} workers) ===" > "$log_file"
+    "$exe" -w "$thread_count" < "$fact_path" >> "$log_file" 2>&1 || echo "  WARNING: Logging execution failed"
+
+    # Run timing executions
+    echo "  Running timing executions..."
+    local fastest_exec=""
+    for i in {1..3}; do
+        echo "    Timing run $i/3"
+        local temp_log="./log/scalability/ddlog_${base}_${dataset}_${thread_count}t_${i}.log"
+        /usr/bin/time -f "LinuxRT: %e" "$exe" -w "$thread_count" < "$fact_path" > "$temp_log" 2>&1
+        # Extract execution time
+        local exec_time=$(grep "LinuxRT:" "$temp_log" | tail -1 | awk '{print $2}')
+        if [[ "$exec_time" =~ ^[0-9]+\.?[0-9]*$ ]]; then
+            echo "      Completed in $exec_time seconds"
+            if [[ -z "$fastest_exec" || $(echo "$exec_time < $fastest_exec" | bc -l) -eq 1 ]]; then
+                fastest_exec="$exec_time"
+            fi
+        else
+            echo "      Invalid or missing time, skipping"
+        fi
+        rm -f "$temp_log"
+    done
+
+    if [[ -z "$fastest_exec" ]]; then
+        fastest_exec="-1"
+    fi
+
+    # DDlog does not have a separate load phase, so set load_time to -1
+    local load_time="-1"
+
+    echo "  Fastest execution time: $fastest_exec seconds"
+
+    # Write results to temp file
+    {
+        echo "$load_time"
+        echo "$fastest_exec"
+    } > "$TEMP_RESULT_FILE"
+    echo "  Results: load=$load_time exec=$fastest_exec"
+}
+
 # =============================================================================
 # Main Scalability Testing Loop
 # =============================================================================
@@ -463,13 +543,13 @@ while IFS='=' read -r program dataset; do
     ZIP_PATH="/dev/shm/${dataset}.zip"
 
     # Download and extract dataset if needed
-    if [[ -d "$DATASET_PATH" ]]; then
-        echo "SKIP: Dataset already exists: $DATASET_PATH"
-    else
-        echo "PREP: Downloading and extracting dataset: $dataset"
-        wget -O "$ZIP_PATH" "$ZIP_URL"
-        unzip "$ZIP_PATH" -d "$DATASET_DIR"
-    fi
+    # if [[ -d "$DATASET_PATH" ]]; then
+    #     echo "SKIP: Dataset already exists: $DATASET_PATH"
+    # else
+    #     echo "PREP: Downloading and extracting dataset: $dataset"
+    #     wget -O "$ZIP_PATH" "$ZIP_URL"
+    #     unzip "$ZIP_PATH" -d "$DATASET_DIR"
+    # fi
 
     echo ""
     echo "=== SCALABILITY TESTING: $program on $dataset ==="
@@ -500,16 +580,25 @@ while IFS='=' read -r program dataset; do
         # Run FlowLog scalability test
         echo ""
         echo "FlowLog ($thread_count workers):"
-        run_flowlog_scalability "$program" "$dataset" "$thread_count"
-        mapfile -t lines < "$TEMP_RESULT_FILE"
-        flowlog_load="${lines[0]}"
-        flowlog_exec="${lines[1]}"
+        # run_flowlog_scalability "$program" "$dataset" "$thread_count"
+        # mapfile -t lines < "$TEMP_RESULT_FILE"
+        # flowlog_load="${lines[0]}"
+        # flowlog_exec="${lines[1]}"
         echo "FlowLog completed: load=$flowlog_load exec=$flowlog_exec"
 
+        echo ""
+        echo "DDlog ($thread_count workers):"
+        run_ddlog_scalability "$program" "$dataset" "$thread_count"
+        mapfile -t lines < "$TEMP_RESULT_FILE"
+        ddlog_load="${lines[0]}"
+        ddlog_exec="${lines[1]}"
+        echo "DDlog completed: load=$ddlog_load exec=$ddlog_exec"
+
         # Write results to file
-        printf "%-20s %-20s %-8s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
+        printf "%-20s %-20s %-8s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
             "$program" "$dataset" "$thread_count" "$duck_load" "$duck_exec" \
             "$umbra_load" "$umbra_exec" "$flowlog_load" "$flowlog_exec" \
+            "$ddlog_load" "$ddlog_exec" \
             >> "$RESULT_FILE"
 
         echo "Results written for $thread_count threads"
