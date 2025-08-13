@@ -74,7 +74,8 @@ echo ""
 if [[ "$BENCHMARK_TYPE" == "flowlog" || "$BENCHMARK_TYPE" == "both" ]]; then
     echo "=== Building FlowLog ==="
     cd FlowLog
-    git checkout nemo_arithmetic
+    git checkout nemo_aggregation
+    git pull
     cargo build --release
     cd ..
     echo "FlowLog build completed"
@@ -145,7 +146,7 @@ run_flowlog() {
     echo "  Running logging execution..."
     local log_file="./log/variant_benchmark/${THREAD_COUNT}/flowlog_${base}_${dataset}.log"
     echo "=== FlowLog Execute Log for $base on $dataset ===" > "$log_file"
-    timeout "$TIMEOUT_SECONDS" "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" \
+    timeout "$TIMEOUT_SECONDS" "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" -O3 \
         >> "$log_file" 2>&1 || echo "  WARNING: Logging execution failed or timed out"
     
     # Run timing executions
@@ -158,7 +159,7 @@ run_flowlog() {
         local temp_log="./log/benchmark/${THREAD_COUNT}/flowlog_${base}_${dataset}_${i}.log"
         
         # Run FlowLog with timeout and capture output
-        if timeout "$TIMEOUT_SECONDS" "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" \
+        if timeout "$TIMEOUT_SECONDS" "$flowlog_binary" --program "$prog_file" --facts "$fact_path" --workers "$workers" -O3 \
             > "$temp_log" 2>&1; then
             echo "      Completed successfully"
         else
