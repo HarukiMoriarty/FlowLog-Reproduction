@@ -1,0 +1,20 @@
+=== Souffle Execute Log for xalan-39 on xalan ===
+MethodImplemented	74474
+ClassInitializer	1731
+DirectSubclass	7661
+Subclass	15793
+Superclass	15793
+MethodLookup	355148
+Superinterface	12562
+MainMethodDeclaration	1
+SubtypeOf	41551
+SupertypeOf	41551
+SubtypeOfDifferent	32343
+ArrayIndexPointsTo	21216
+Assign	45066
+CallGraphEdge	20419
+InitializedClass	990
+InstanceFieldPointsTo	1444699
+Reachable	4416
+StaticFieldPointsTo	2304
+VarPointsTo	2867913

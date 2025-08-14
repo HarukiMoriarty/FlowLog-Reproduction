@@ -1,0 +1,9 @@
+VARIANT GROUPS - MEDIAN TIMES
+======================================================================
+Base Program         Dataset              Variants   Median Time(s) 
+----------------------------------------------------------------------
+batik                batik                43         160.1811       
+biojava              biojava              43         71.8813        
+eclipse              eclipse              43         102.4335       
+xalan                xalan                43         26.2969        
+zxing                zxing                43         31.8507        

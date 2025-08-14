@@ -1,0 +1,472 @@
+=== Souffle Compile Log for xalan-27 on xalan ===
+Warning: No rules/facts defined for relation Method_ReturnType in file xalan-27.dl at line 30
+.decl Method_ReturnType(method:number, returnType:number)
+------^----------------------------------------------------
+Warning: No rules/facts defined for relation Method_Params in file xalan-27.dl at line 32
+.decl Method_Params(method:number, params:number)
+------^--------------------------------------------
+Warning: Variable index only occurs once in file xalan-27.dl at line 122
+  _AssignHeapAllocation(instruction, index, heap, to, method, linenumber).
+-------------------------------------^--------------------------------------
+Warning: Variable heap only occurs once in file xalan-27.dl at line 122
+  _AssignHeapAllocation(instruction, index, heap, to, method, linenumber).
+--------------------------------------------^-------------------------------
+Warning: Variable to only occurs once in file xalan-27.dl at line 122
+  _AssignHeapAllocation(instruction, index, heap, to, method, linenumber).
+--------------------------------------------------^-------------------------
+Warning: Variable linenumber only occurs once in file xalan-27.dl at line 122
+  _AssignHeapAllocation(instruction, index, heap, to, method, linenumber).
+--------------------------------------------------------------^-------------
+Warning: Variable index only occurs once in file xalan-27.dl at line 124
+  _AssignHeapAllocation(instruction, index, heap, to, method, linenumber).
+-------------------------------------^--------------------------------------
+Warning: Variable heap only occurs once in file xalan-27.dl at line 124
+  _AssignHeapAllocation(instruction, index, heap, to, method, linenumber).
+--------------------------------------------^-------------------------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 124
+  _AssignHeapAllocation(instruction, index, heap, to, method, linenumber).
+------------------------------------------------------^---------------------
+Warning: Variable linenumber only occurs once in file xalan-27.dl at line 124
+  _AssignHeapAllocation(instruction, index, heap, to, method, linenumber).
+--------------------------------------------------------------^-------------
+Warning: Variable index only occurs once in file xalan-27.dl at line 126
+  _AssignHeapAllocation(instruction, index, heap, to, method, linenumber).
+-------------------------------------^--------------------------------------
+Warning: Variable to only occurs once in file xalan-27.dl at line 126
+  _AssignHeapAllocation(instruction, index, heap, to, method, linenumber).
+--------------------------------------------------^-------------------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 126
+  _AssignHeapAllocation(instruction, index, heap, to, method, linenumber).
+------------------------------------------------------^---------------------
+Warning: Variable linenumber only occurs once in file xalan-27.dl at line 126
+  _AssignHeapAllocation(instruction, index, heap, to, method, linenumber).
+--------------------------------------------------------------^-------------
+Warning: Variable index only occurs once in file xalan-27.dl at line 129
+  _AssignLocal(instruction, index, from, to, method).
+----------------------------^--------------------------
+Warning: Variable from only occurs once in file xalan-27.dl at line 129
+  _AssignLocal(instruction, index, from, to, method).
+-----------------------------------^-------------------
+Warning: Variable to only occurs once in file xalan-27.dl at line 129
+  _AssignLocal(instruction, index, from, to, method).
+-----------------------------------------^-------------
+Warning: Variable index only occurs once in file xalan-27.dl at line 131
+  _AssignLocal(instruction, index, from, to, method).
+----------------------------^--------------------------
+Warning: Variable to only occurs once in file xalan-27.dl at line 131
+  _AssignLocal(instruction, index, from, to, method).
+-----------------------------------------^-------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 131
+  _AssignLocal(instruction, index, from, to, method).
+---------------------------------------------^---------
+Warning: Variable index only occurs once in file xalan-27.dl at line 133
+  _AssignLocal(instruction, index, from, to, method).
+----------------------------^--------------------------
+Warning: Variable from only occurs once in file xalan-27.dl at line 133
+  _AssignLocal(instruction, index, from, to, method).
+-----------------------------------^-------------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 133
+  _AssignLocal(instruction, index, from, to, method).
+---------------------------------------------^---------
+Warning: Variable index only occurs once in file xalan-27.dl at line 136
+  _AssignCast(instruction, index, from, to, type, method).
+---------------------------^--------------------------------
+Warning: Variable from only occurs once in file xalan-27.dl at line 136
+  _AssignCast(instruction, index, from, to, type, method).
+----------------------------------^-------------------------
+Warning: Variable to only occurs once in file xalan-27.dl at line 136
+  _AssignCast(instruction, index, from, to, type, method).
+----------------------------------------^-------------------
+Warning: Variable type only occurs once in file xalan-27.dl at line 136
+  _AssignCast(instruction, index, from, to, type, method).
+--------------------------------------------^---------------
+Warning: Variable index only occurs once in file xalan-27.dl at line 138
+  _AssignCast(instruction, index, from, to, type, method).
+---------------------------^--------------------------------
+Warning: Variable from only occurs once in file xalan-27.dl at line 138
+  _AssignCast(instruction, index, from, to, type, method).
+----------------------------------^-------------------------
+Warning: Variable to only occurs once in file xalan-27.dl at line 138
+  _AssignCast(instruction, index, from, to, type, method).
+----------------------------------------^-------------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 138
+  _AssignCast(instruction, index, from, to, type, method).
+--------------------------------------------------^---------
+Warning: Variable index only occurs once in file xalan-27.dl at line 140
+  _AssignCast(instruction, index, from, to, type, method).
+---------------------------^--------------------------------
+Warning: Variable to only occurs once in file xalan-27.dl at line 140
+  _AssignCast(instruction, index, from, to, type, method).
+----------------------------------------^-------------------
+Warning: Variable type only occurs once in file xalan-27.dl at line 140
+  _AssignCast(instruction, index, from, to, type, method).
+--------------------------------------------^---------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 140
+  _AssignCast(instruction, index, from, to, type, method).
+--------------------------------------------------^---------
+Warning: Variable index only occurs once in file xalan-27.dl at line 142
+  _AssignCast(instruction, index, from, to, type, method).
+---------------------------^--------------------------------
+Warning: Variable from only occurs once in file xalan-27.dl at line 142
+  _AssignCast(instruction, index, from, to, type, method).
+----------------------------------^-------------------------
+Warning: Variable type only occurs once in file xalan-27.dl at line 142
+  _AssignCast(instruction, index, from, to, type, method).
+--------------------------------------------^---------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 142
+  _AssignCast(instruction, index, from, to, type, method).
+--------------------------------------------------^---------
+Warning: Variable index only occurs once in file xalan-27.dl at line 175
+  _StaticMethodInvocation(instruction, index, signature, method).
+---------------------------------------^---------------------------
+Warning: Variable signature only occurs once in file xalan-27.dl at line 175
+  _StaticMethodInvocation(instruction, index, signature, method).
+----------------------------------------------^--------------------
+Warning: Variable index only occurs once in file xalan-27.dl at line 177
+  _StaticMethodInvocation(instruction, index, signature, method).
+---------------------------------------^---------------------------
+Warning: Variable signature only occurs once in file xalan-27.dl at line 177
+  _StaticMethodInvocation(instruction, index, signature, method).
+----------------------------------------------^--------------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 177
+  _StaticMethodInvocation(instruction, index, signature, method).
+---------------------------------------------------------^---------
+Warning: Variable index only occurs once in file xalan-27.dl at line 179
+  _StaticMethodInvocation(instruction, index, signature, method).
+---------------------------------------^---------------------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 179
+  _StaticMethodInvocation(instruction, index, signature, method).
+---------------------------------------------------------^---------
+Warning: Variable index only occurs once in file xalan-27.dl at line 182
+  _SpecialMethodInvocation(instruction, index, signature, base, method).
+----------------------------------------^---------------------------------
+Warning: Variable signature only occurs once in file xalan-27.dl at line 182
+  _SpecialMethodInvocation(instruction, index, signature, base, method).
+-----------------------------------------------^--------------------------
+Warning: Variable base only occurs once in file xalan-27.dl at line 182
+  _SpecialMethodInvocation(instruction, index, signature, base, method).
+----------------------------------------------------------^---------------
+Warning: Variable index only occurs once in file xalan-27.dl at line 184
+  _SpecialMethodInvocation(instruction, index, signature, base, method).
+----------------------------------------^---------------------------------
+Warning: Variable signature only occurs once in file xalan-27.dl at line 184
+  _SpecialMethodInvocation(instruction, index, signature, base, method).
+-----------------------------------------------^--------------------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 184
+  _SpecialMethodInvocation(instruction, index, signature, base, method).
+----------------------------------------------------------------^---------
+Warning: Variable index only occurs once in file xalan-27.dl at line 186
+  _SpecialMethodInvocation(instruction, index, signature, base, method).
+----------------------------------------^---------------------------------
+Warning: Variable base only occurs once in file xalan-27.dl at line 186
+  _SpecialMethodInvocation(instruction, index, signature, base, method).
+----------------------------------------------------------^---------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 186
+  _SpecialMethodInvocation(instruction, index, signature, base, method).
+----------------------------------------------------------------^---------
+Warning: Variable index only occurs once in file xalan-27.dl at line 189
+  _VirtualMethodInvocation(instruction, index, signature, base, method).
+----------------------------------------^---------------------------------
+Warning: Variable signature only occurs once in file xalan-27.dl at line 189
+  _VirtualMethodInvocation(instruction, index, signature, base, method).
+-----------------------------------------------^--------------------------
+Warning: Variable base only occurs once in file xalan-27.dl at line 189
+  _VirtualMethodInvocation(instruction, index, signature, base, method).
+----------------------------------------------------------^---------------
+Warning: Variable index only occurs once in file xalan-27.dl at line 191
+  _VirtualMethodInvocation(instruction, index, signature, base, method).
+----------------------------------------^---------------------------------
+Warning: Variable signature only occurs once in file xalan-27.dl at line 191
+  _VirtualMethodInvocation(instruction, index, signature, base, method).
+-----------------------------------------------^--------------------------
+Warning: Variable base only occurs once in file xalan-27.dl at line 191
+  _VirtualMethodInvocation(instruction, index, signature, base, method).
+----------------------------------------------------------^---------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 191
+  _VirtualMethodInvocation(instruction, index, signature, base, method).
+----------------------------------------------------------------^---------
+Warning: Variable index only occurs once in file xalan-27.dl at line 193
+  _VirtualMethodInvocation(instruction, index, signature, base, method).
+----------------------------------------^---------------------------------
+Warning: Variable signature only occurs once in file xalan-27.dl at line 193
+  _VirtualMethodInvocation(instruction, index, signature, base, method).
+-----------------------------------------------^--------------------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 193
+  _VirtualMethodInvocation(instruction, index, signature, base, method).
+----------------------------------------------------------------^---------
+Warning: Variable index only occurs once in file xalan-27.dl at line 195
+  _VirtualMethodInvocation(instruction, index, signature, base, method).
+----------------------------------------^---------------------------------
+Warning: Variable base only occurs once in file xalan-27.dl at line 195
+  _VirtualMethodInvocation(instruction, index, signature, base, method).
+----------------------------------------------------------^---------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 195
+  _VirtualMethodInvocation(instruction, index, signature, base, method).
+----------------------------------------------------------------^---------
+Warning: Variable params only occurs once in file xalan-27.dl at line 198
+  _Method(method, simplename, params, declaringType, returnType, jvmDescriptor, arity).
+------------------------------^----------------------------------------------------------
+Warning: Variable declaringType only occurs once in file xalan-27.dl at line 198
+  _Method(method, simplename, params, declaringType, returnType, jvmDescriptor, arity).
+--------------------------------------^--------------------------------------------------
+Warning: Variable returnType only occurs once in file xalan-27.dl at line 198
+  _Method(method, simplename, params, declaringType, returnType, jvmDescriptor, arity).
+-----------------------------------------------------^-----------------------------------
+Warning: Variable jvmDescriptor only occurs once in file xalan-27.dl at line 198
+  _Method(method, simplename, params, declaringType, returnType, jvmDescriptor, arity).
+-----------------------------------------------------------------^-----------------------
+Warning: Variable arity only occurs once in file xalan-27.dl at line 198
+  _Method(method, simplename, params, declaringType, returnType, jvmDescriptor, arity).
+--------------------------------------------------------------------------------^--------
+Warning: Variable simplename only occurs once in file xalan-27.dl at line 200
+  _Method(method, simplename, params, declaringType, returnType, jvmDescriptor, arity).
+------------------^----------------------------------------------------------------------
+Warning: Variable params only occurs once in file xalan-27.dl at line 200
+  _Method(method, simplename, params, declaringType, returnType, jvmDescriptor, arity).
+------------------------------^----------------------------------------------------------
+Warning: Variable returnType only occurs once in file xalan-27.dl at line 200
+  _Method(method, simplename, params, declaringType, returnType, jvmDescriptor, arity).
+-----------------------------------------------------^-----------------------------------
+Warning: Variable jvmDescriptor only occurs once in file xalan-27.dl at line 200
+  _Method(method, simplename, params, declaringType, returnType, jvmDescriptor, arity).
+-----------------------------------------------------------------^-----------------------
+Warning: Variable arity only occurs once in file xalan-27.dl at line 200
+  _Method(method, simplename, params, declaringType, returnType, jvmDescriptor, arity).
+--------------------------------------------------------------------------------^--------
+Warning: Variable index only occurs once in file xalan-27.dl at line 203
+  _StoreInstanceField(instruction, index, from, base, signature, method).
+-----------------------------------^---------------------------------------
+Warning: Variable from only occurs once in file xalan-27.dl at line 203
+  _StoreInstanceField(instruction, index, from, base, signature, method).
+------------------------------------------^--------------------------------
+Warning: Variable base only occurs once in file xalan-27.dl at line 203
+  _StoreInstanceField(instruction, index, from, base, signature, method).
+------------------------------------------------^--------------------------
+Warning: Variable signature only occurs once in file xalan-27.dl at line 203
+  _StoreInstanceField(instruction, index, from, base, signature, method).
+------------------------------------------------------^--------------------
+Warning: Variable index only occurs once in file xalan-27.dl at line 205
+  _StoreInstanceField(instruction, index, from, base, signature, method).
+-----------------------------------^---------------------------------------
+Warning: Variable from only occurs once in file xalan-27.dl at line 205
+  _StoreInstanceField(instruction, index, from, base, signature, method).
+------------------------------------------^--------------------------------
+Warning: Variable base only occurs once in file xalan-27.dl at line 205
+  _StoreInstanceField(instruction, index, from, base, signature, method).
+------------------------------------------------^--------------------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 205
+  _StoreInstanceField(instruction, index, from, base, signature, method).
+-----------------------------------------------------------------^---------
+Warning: Variable index only occurs once in file xalan-27.dl at line 207
+  _StoreInstanceField(instruction, index, from, base, signature, method).
+-----------------------------------^---------------------------------------
+Warning: Variable from only occurs once in file xalan-27.dl at line 207
+  _StoreInstanceField(instruction, index, from, base, signature, method).
+------------------------------------------^--------------------------------
+Warning: Variable signature only occurs once in file xalan-27.dl at line 207
+  _StoreInstanceField(instruction, index, from, base, signature, method).
+------------------------------------------------------^--------------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 207
+  _StoreInstanceField(instruction, index, from, base, signature, method).
+-----------------------------------------------------------------^---------
+Warning: Variable index only occurs once in file xalan-27.dl at line 209
+  _StoreInstanceField(instruction, index, from, base, signature, method).
+-----------------------------------^---------------------------------------
+Warning: Variable base only occurs once in file xalan-27.dl at line 209
+  _StoreInstanceField(instruction, index, from, base, signature, method).
+------------------------------------------------^--------------------------
+Warning: Variable signature only occurs once in file xalan-27.dl at line 209
+  _StoreInstanceField(instruction, index, from, base, signature, method).
+------------------------------------------------------^--------------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 209
+  _StoreInstanceField(instruction, index, from, base, signature, method).
+-----------------------------------------------------------------^---------
+Warning: Variable index only occurs once in file xalan-27.dl at line 212
+  _LoadInstanceField(instruction, index, to, base, signature, method).
+----------------------------------^-------------------------------------
+Warning: Variable to only occurs once in file xalan-27.dl at line 212
+  _LoadInstanceField(instruction, index, to, base, signature, method).
+-----------------------------------------^------------------------------
+Warning: Variable base only occurs once in file xalan-27.dl at line 212
+  _LoadInstanceField(instruction, index, to, base, signature, method).
+---------------------------------------------^--------------------------
+Warning: Variable signature only occurs once in file xalan-27.dl at line 212
+  _LoadInstanceField(instruction, index, to, base, signature, method).
+---------------------------------------------------^--------------------
+Warning: Variable index only occurs once in file xalan-27.dl at line 214
+  _LoadInstanceField(instruction, index, to, base, signature, method).
+----------------------------------^-------------------------------------
+Warning: Variable to only occurs once in file xalan-27.dl at line 214
+  _LoadInstanceField(instruction, index, to, base, signature, method).
+-----------------------------------------^------------------------------
+Warning: Variable base only occurs once in file xalan-27.dl at line 214
+  _LoadInstanceField(instruction, index, to, base, signature, method).
+---------------------------------------------^--------------------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 214
+  _LoadInstanceField(instruction, index, to, base, signature, method).
+--------------------------------------------------------------^---------
+Warning: Variable index only occurs once in file xalan-27.dl at line 216
+  _LoadInstanceField(instruction, index, to, base, signature, method).
+----------------------------------^-------------------------------------
+Warning: Variable to only occurs once in file xalan-27.dl at line 216
+  _LoadInstanceField(instruction, index, to, base, signature, method).
+-----------------------------------------^------------------------------
+Warning: Variable signature only occurs once in file xalan-27.dl at line 216
+  _LoadInstanceField(instruction, index, to, base, signature, method).
+---------------------------------------------------^--------------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 216
+  _LoadInstanceField(instruction, index, to, base, signature, method).
+--------------------------------------------------------------^---------
+Warning: Variable index only occurs once in file xalan-27.dl at line 218
+  _LoadInstanceField(instruction, index, to, base, signature, method).
+----------------------------------^-------------------------------------
+Warning: Variable base only occurs once in file xalan-27.dl at line 218
+  _LoadInstanceField(instruction, index, to, base, signature, method).
+---------------------------------------------^--------------------------
+Warning: Variable signature only occurs once in file xalan-27.dl at line 218
+  _LoadInstanceField(instruction, index, to, base, signature, method).
+---------------------------------------------------^--------------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 218
+  _LoadInstanceField(instruction, index, to, base, signature, method).
+--------------------------------------------------------------^---------
+Warning: Variable index only occurs once in file xalan-27.dl at line 221
+  _StoreStaticField(instruction, index, from, signature, method).
+---------------------------------^---------------------------------
+Warning: Variable from only occurs once in file xalan-27.dl at line 221
+  _StoreStaticField(instruction, index, from, signature, method).
+----------------------------------------^--------------------------
+Warning: Variable signature only occurs once in file xalan-27.dl at line 221
+  _StoreStaticField(instruction, index, from, signature, method).
+----------------------------------------------^--------------------
+Warning: Variable index only occurs once in file xalan-27.dl at line 223
+  _StoreStaticField(instruction, index, from, signature, method).
+---------------------------------^---------------------------------
+Warning: Variable from only occurs once in file xalan-27.dl at line 223
+  _StoreStaticField(instruction, index, from, signature, method).
+----------------------------------------^--------------------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 223
+  _StoreStaticField(instruction, index, from, signature, method).
+---------------------------------------------------------^---------
+Warning: Variable index only occurs once in file xalan-27.dl at line 225
+  _StoreStaticField(instruction, index, from, signature, method).
+---------------------------------^---------------------------------
+Warning: Variable signature only occurs once in file xalan-27.dl at line 225
+  _StoreStaticField(instruction, index, from, signature, method).
+----------------------------------------------^--------------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 225
+  _StoreStaticField(instruction, index, from, signature, method).
+---------------------------------------------------------^---------
+Warning: Variable index only occurs once in file xalan-27.dl at line 228
+  _LoadStaticField(instruction, index, to, signature, method).
+--------------------------------^-------------------------------
+Warning: Variable to only occurs once in file xalan-27.dl at line 228
+  _LoadStaticField(instruction, index, to, signature, method).
+---------------------------------------^------------------------
+Warning: Variable signature only occurs once in file xalan-27.dl at line 228
+  _LoadStaticField(instruction, index, to, signature, method).
+-------------------------------------------^--------------------
+Warning: Variable index only occurs once in file xalan-27.dl at line 230
+  _LoadStaticField(instruction, index, to, signature, method).
+--------------------------------^-------------------------------
+Warning: Variable to only occurs once in file xalan-27.dl at line 230
+  _LoadStaticField(instruction, index, to, signature, method).
+---------------------------------------^------------------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 230
+  _LoadStaticField(instruction, index, to, signature, method).
+------------------------------------------------------^---------
+Warning: Variable index only occurs once in file xalan-27.dl at line 232
+  _LoadStaticField(instruction, index, to, signature, method).
+--------------------------------^-------------------------------
+Warning: Variable signature only occurs once in file xalan-27.dl at line 232
+  _LoadStaticField(instruction, index, to, signature, method).
+-------------------------------------------^--------------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 232
+  _LoadStaticField(instruction, index, to, signature, method).
+------------------------------------------------------^---------
+Warning: Variable index only occurs once in file xalan-27.dl at line 235
+  _StoreArrayIndex(instruction, index, from, base, method).
+--------------------------------^----------------------------
+Warning: Variable from only occurs once in file xalan-27.dl at line 235
+  _StoreArrayIndex(instruction, index, from, base, method).
+---------------------------------------^---------------------
+Warning: Variable base only occurs once in file xalan-27.dl at line 235
+  _StoreArrayIndex(instruction, index, from, base, method).
+---------------------------------------------^---------------
+Warning: Variable index only occurs once in file xalan-27.dl at line 237
+  _StoreArrayIndex(instruction, index, from, base, method).
+--------------------------------^----------------------------
+Warning: Variable from only occurs once in file xalan-27.dl at line 237
+  _StoreArrayIndex(instruction, index, from, base, method).
+---------------------------------------^---------------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 237
+  _StoreArrayIndex(instruction, index, from, base, method).
+---------------------------------------------------^---------
+Warning: Variable index only occurs once in file xalan-27.dl at line 239
+  _StoreArrayIndex(instruction, index, from, base, method).
+--------------------------------^----------------------------
+Warning: Variable base only occurs once in file xalan-27.dl at line 239
+  _StoreArrayIndex(instruction, index, from, base, method).
+---------------------------------------------^---------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 239
+  _StoreArrayIndex(instruction, index, from, base, method).
+---------------------------------------------------^---------
+Warning: Variable index only occurs once in file xalan-27.dl at line 242
+  _LoadArrayIndex(instruction, index, to, base, method).
+-------------------------------^--------------------------
+Warning: Variable to only occurs once in file xalan-27.dl at line 242
+  _LoadArrayIndex(instruction, index, to, base, method).
+--------------------------------------^-------------------
+Warning: Variable base only occurs once in file xalan-27.dl at line 242
+  _LoadArrayIndex(instruction, index, to, base, method).
+------------------------------------------^---------------
+Warning: Variable index only occurs once in file xalan-27.dl at line 244
+  _LoadArrayIndex(instruction, index, to, base, method).
+-------------------------------^--------------------------
+Warning: Variable to only occurs once in file xalan-27.dl at line 244
+  _LoadArrayIndex(instruction, index, to, base, method).
+--------------------------------------^-------------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 244
+  _LoadArrayIndex(instruction, index, to, base, method).
+------------------------------------------------^---------
+Warning: Variable index only occurs once in file xalan-27.dl at line 246
+  _LoadArrayIndex(instruction, index, to, base, method).
+-------------------------------^--------------------------
+Warning: Variable base only occurs once in file xalan-27.dl at line 246
+  _LoadArrayIndex(instruction, index, to, base, method).
+------------------------------------------^---------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 246
+  _LoadArrayIndex(instruction, index, to, base, method).
+------------------------------------------------^---------
+Warning: Variable index only occurs once in file xalan-27.dl at line 249
+  _Return(instruction, index, var, method).
+-----------------------^---------------------
+Warning: Variable var only occurs once in file xalan-27.dl at line 249
+  _Return(instruction, index, var, method).
+------------------------------^--------------
+Warning: Variable index only occurs once in file xalan-27.dl at line 251
+  _Return(instruction, index, var, method).
+-----------------------^---------------------
+Warning: Variable method only occurs once in file xalan-27.dl at line 251
+  _Return(instruction, index, var, method).
+-----------------------------------^---------
+Warning: Variable descriptor only occurs once in file xalan-27.dl at line 303
+  Method_Descriptor(signature, descriptor).
+-------------------------------^-------------
+Warning: Variable simplename only occurs once in file xalan-27.dl at line 307
+  Method_SimpleName(signature, simplename),
+-------------------------------^-------------
+Warning: Variable invocation only occurs once in file xalan-27.dl at line 552
+  StaticMethodInvocation(invocation, tomethod, inmethod).
+-------------------------^---------------------------------
+Warning: Variable heap only occurs once in file xalan-27.dl at line 561
+  VarPointsTo(heap, base),
+--------------^-------------
+Warning: Variable this only occurs once in file xalan-27.dl at line 563
+  ThisVar(tomethod, this).
+--------------------^-------
+Warning: Variable heap only occurs once in file xalan-27.dl at line 568
+  VarPointsTo(heap, base),
+--------------^-------------
+Warning: Variable this only occurs once in file xalan-27.dl at line 570
+  ThisVar(tomethod, this).
+--------------------^-------
