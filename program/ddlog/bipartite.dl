@@ -1,0 +1,23 @@
+typedef int = signed<32>
+
+input relation Source(id: int)
+input relation Arc(x: int, y: int)
+
+output relation BipartiteViolation(x: int)
+output relation Zero(x: int)
+output relation MOne(x: int)
+
+Zero(x) :- Source(x).
+
+MOne(y) :- Arc(x, y), Zero(x).
+MOne(x) :- Arc(x, y), Zero(y).
+
+Zero(y) :- Arc(x, y), MOne(x).
+Zero(x) :- Arc(x, y), MOne(y).
+
+BipartiteViolation(x) :- MOne(x), Zero(x).
+
+output relation RelationSizes(rel: string, size:bit<64>)
+RelationSizes("Zero", size) :- Zero(x),  var size = (x).group_by(()).count_distinct().
+RelationSizes("MOne", size) :- MOne(x),  var size = (x).group_by(()).count_distinct().
+RelationSizes("BipartiteViolation", size) :- BipartiteViolation(x),  var size = (x).group_by(()).count_distinct().
