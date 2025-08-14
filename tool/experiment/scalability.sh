@@ -7,7 +7,7 @@ set -e
 # Tests DuckDB, Umbra, and FlowLog databases across different thread counts
 
 # Thread counts to test
-THREAD_COUNTS=(1 2 4 8 16 32 64)
+THREAD_COUNTS=(8 16 32 64)
 
 # Display usage if help is requested
 if [[ "$1" == "-h" || "$1" == "--help" ]]; then
@@ -54,11 +54,11 @@ if [[ ! -f "$RESULT_FILE" ]]; then
     printf "%-20s %-20s %-8s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
         "Program" "Dataset" "Threads" "Duck_Load(s)" "Duck_Exec(s)" \
         "Umbra_Load(s)" "Umbra_Exec(s)" "FlowLog_Load(s)" "FlowLog_Exec(s)" \
-        "DDlog_Load(s)" "DDlog_Exec(s)" \
-    printf "%-20s %-20s %-8s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
+        "DDlog_Load(s)" "DDlog_Exec(s)" "RecStep_Load(s)" "RecStep_Exec(s)" \
+    printf "%-20s %-20s %-8s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
         "--------------------" "--------------------" "--------" "--------------------" "--------------------" \
         "--------------------" "--------------------" "--------------------" "--------------------" \
-        "--------------------" "--------------------" \
+        "--------------------" "--------------------" "--------------------" "--------------------" \
         >> "$RESULT_FILE"
 fi
 
@@ -533,6 +533,93 @@ run_ddlog_scalability() {
     echo "  Results: load=$load_time exec=$fastest_exec"
 }
 
+# -----------------------------------------------------------------------------
+# RecStep Scalability Test Function
+# -----------------------------------------------------------------------------
+run_recstep_scalability() {
+    source "$HOME/recstep_env"
+    local base=$1
+    local dataset=$2
+    local thread_count=$3
+
+    # RecStep expects .dl programs and input directory of facts
+    local prog_file="program/recstep/${base}.dl"
+    local fact_path="dataset/${dataset}"
+
+    echo "  Starting RecStep test: $base on $dataset (${thread_count} jobs)"
+
+    if ! command -v recstep >/dev/null 2>&1; then
+        echo "  ERROR: recstep CLI not found in PATH. Run tool/experiment/env.sh first."
+        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        return
+    fi
+    [[ ! -f "$prog_file" ]] && { echo "  ERROR: Program not found: $prog_file"; echo "-1 -1" > "$TEMP_RESULT_FILE"; return; }
+    [[ ! -d "$fact_path" ]] && { echo "  ERROR: Dataset path not found: $fact_path"; echo "-1 -1" > "$TEMP_RESULT_FILE"; return; }
+
+    # Prepare command
+    local cmd="recstep --program $prog_file --input $fact_path --jobs $thread_count"
+
+    # Run logging execution
+    echo "  Running logging execution..."
+    local log_file="./log/scalability/recstep_${base}_${dataset}_${thread_count}t.log"
+    echo "=== RecStep Scalability Log for $base on $dataset (${thread_count} jobs) ===" > "$log_file"
+    $cmd >> "$log_file" 2>&1 || echo "  WARNING: Logging execution failed"
+
+    # Run timing executions
+    echo "  Running timing executions..."
+    local fastest_exec=""
+    for i in {1..5}; do
+        echo "    Timing run $i/3"
+        local etime=""
+        
+        if /usr/bin/time -f "%e" -o /tmp/recstep_time_${thread_count}.tmp \
+                $cmd > /dev/null 2>&1; then
+            if [[ -f /tmp/recstep_time_${thread_count}.tmp ]]; then
+                etime=$(cat /tmp/recstep_time_${thread_count}.tmp)
+                rm -f /tmp/recstep_time_${thread_count}.tmp
+                # Validate that etime is a valid number
+                if [[ "$etime" =~ ^[0-9]+\.?[0-9]*$ ]]; then
+                    echo "      Completed in $etime seconds"
+                else
+                    echo "      Invalid time value, skipping"
+                    continue
+                fi
+            else
+                echo "      No time file found, skipping"
+                continue
+            fi
+        else
+            rm -f /tmp/recstep_time_${thread_count}.tmp
+            echo "      Execution failed, skipping"
+            continue
+        fi
+        
+        # Track fastest execution time
+        if [[ -n "$etime" ]]; then
+            if [[ -z "$fastest_exec" || $(echo "$etime < $fastest_exec" | bc -l) -eq 1 ]]; then
+                fastest_exec="$etime"
+            fi
+        fi
+    done
+
+    # Set fallback if no valid execution time was recorded
+    if [[ -z "$fastest_exec" ]]; then
+        fastest_exec="-1"
+    fi
+
+    echo "  Fastest execution time: $fastest_exec seconds"
+
+    # RecStep doesn't expose a distinct load phase currently
+    local load_time="-1"
+
+    # Write results to temp file
+    {
+        echo "$load_time"
+        echo "$fastest_exec"
+    } > "$TEMP_RESULT_FILE"
+    echo "  Results: load=$load_time exec=$fastest_exec"
+}
+
 # =============================================================================
 # Main Scalability Testing Loop
 # =============================================================================
@@ -545,13 +632,13 @@ while IFS='=' read -r program dataset; do
     ZIP_PATH="/dev/shm/${dataset}.zip"
 
     # Download and extract dataset if needed
-    # if [[ -d "$DATASET_PATH" ]]; then
-    #     echo "SKIP: Dataset already exists: $DATASET_PATH"
-    # else
-    #     echo "PREP: Downloading and extracting dataset: $dataset"
-    #     wget -O "$ZIP_PATH" "$ZIP_URL"
-    #     unzip "$ZIP_PATH" -d "$DATASET_DIR"
-    # fi
+    if [[ -d "$DATASET_PATH" ]]; then
+        echo "SKIP: Dataset already exists: $DATASET_PATH"
+    else
+        echo "PREP: Downloading and extracting dataset: $dataset"
+        wget -O "$ZIP_PATH" "$ZIP_URL"
+        unzip "$ZIP_PATH" -d "$DATASET_DIR"
+    fi
 
     echo ""
     echo "=== SCALABILITY TESTING: $program on $dataset ==="
@@ -561,46 +648,55 @@ while IFS='=' read -r program dataset; do
         echo ""
         echo "--- Testing with $thread_count threads ---"
 
-        # Run DuckDB scalability test
-        echo ""
-        echo "DuckDB ($thread_count threads):"
-        run_duckdb_scalability "$program" "$dataset" "$thread_count"
-        mapfile -t lines < "$TEMP_RESULT_FILE"
-        duck_load="${lines[0]}"
-        duck_exec="${lines[1]}"
-        echo "DuckDB completed: load=$duck_load exec=$duck_exec"
+        # # Run DuckDB scalability test
+        # echo ""
+        # echo "DuckDB ($thread_count threads):"
+        # run_duckdb_scalability "$program" "$dataset" "$thread_count"
+        # mapfile -t lines < "$TEMP_RESULT_FILE"
+        # duck_load="${lines[0]}"
+        # duck_exec="${lines[1]}"
+        # echo "DuckDB completed: load=$duck_load exec=$duck_exec"
         
-        # Run Umbra scalability test
-        echo ""
-        echo "Umbra ($thread_count CPUs):"
-        run_umbra_scalability "$program" "$dataset" "$thread_count"
-        mapfile -t lines < "$TEMP_RESULT_FILE"
-        umbra_load="${lines[0]}"
-        umbra_exec="${lines[1]}"
-        echo "Umbra completed: load=$umbra_load exec=$umbra_exec"
+        # # Run Umbra scalability test
+        # echo ""
+        # echo "Umbra ($thread_count CPUs):"
+        # run_umbra_scalability "$program" "$dataset" "$thread_count"
+        # mapfile -t lines < "$TEMP_RESULT_FILE"
+        # umbra_load="${lines[0]}"
+        # umbra_exec="${lines[1]}"
+        # echo "Umbra completed: load=$umbra_load exec=$umbra_exec"
         
-        # Run FlowLog scalability test
-        echo ""
-        echo "FlowLog ($thread_count workers):"
-        run_flowlog_scalability "$program" "$dataset" "$thread_count"
-        mapfile -t lines < "$TEMP_RESULT_FILE"
-        flowlog_load="${lines[0]}"
-        flowlog_exec="${lines[1]}"
-        echo "FlowLog completed: load=$flowlog_load exec=$flowlog_exec"
+        # # Run FlowLog scalability test
+        # echo ""
+        # echo "FlowLog ($thread_count workers):"
+        # run_flowlog_scalability "$program" "$dataset" "$thread_count"
+        # mapfile -t lines < "$TEMP_RESULT_FILE"
+        # flowlog_load="${lines[0]}"
+        # flowlog_exec="${lines[1]}"
+        # echo "FlowLog completed: load=$flowlog_load exec=$flowlog_exec"
 
+        # echo ""
+        # echo "DDlog ($thread_count workers):"
+        # run_ddlog_scalability "$program" "$dataset" "$thread_count"
+        # mapfile -t lines < "$TEMP_RESULT_FILE"
+        # ddlog_load="${lines[0]}"
+        # ddlog_exec="${lines[1]}"
+        # echo "DDlog completed: load=$ddlog_load exec=$ddlog_exec"
+
+        # Run RecStep scalability test
         echo ""
-        echo "DDlog ($thread_count workers):"
-        run_ddlog_scalability "$program" "$dataset" "$thread_count"
+        echo "RecStep ($thread_count jobs):"
+        run_recstep_scalability "$program" "$dataset" "$thread_count"
         mapfile -t lines < "$TEMP_RESULT_FILE"
-        ddlog_load="${lines[0]}"
-        ddlog_exec="${lines[1]}"
-        echo "DDlog completed: load=$ddlog_load exec=$ddlog_exec"
+        recstep_load="${lines[0]}"
+        recstep_exec="${lines[1]}"
+        echo "RecStep completed: load=$recstep_load exec=$recstep_exec"
 
         # Write results to file
-        printf "%-20s %-20s %-8s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
+        printf "%-20s %-20s %-8s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
             "$program" "$dataset" "$thread_count" "$duck_load" "$duck_exec" \
             "$umbra_load" "$umbra_exec" "$flowlog_load" "$flowlog_exec" \
-            "$ddlog_load" "$ddlog_exec" \
+            "$ddlog_load" "$ddlog_exec" "$recstep_load" "$recstep_exec" \
             >> "$RESULT_FILE"
 
         echo "Results written for $thread_count threads"
@@ -639,3 +735,4 @@ echo "Scalability testing completed!"
 echo "Results saved to: $RESULT_FILE"
 echo "Logs saved to: ./log/scalability/"
 echo "=============================================="
+

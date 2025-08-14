@@ -1,2 +1,1 @@
-cspa=cspa-postgresql
-borrow=borrow
+cc=orkut
