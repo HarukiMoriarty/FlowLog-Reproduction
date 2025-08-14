@@ -1,73 +1,125 @@
 #!/bin/bash
 set -e
 
-
-
 # ============================================
-# RECSTEP SETUP
+# Environment Setup for DuckDB, Umbra, and FlowLog
 # ============================================
 
-WORK_DIR=${WORK_DIR:-$HOME}
-mkdir -p "$WORK_DIR"
+echo "[SETUP] Updating system..."
+sudo apt update && sudo apt upgrade -y
 
-# Minimal Quickstep install: download, unzip, move under WORK_DIR/build
-QS_URL="https://pages.cs.wisc.edu/~m0riarty/quickstep_build_binary.zip"
-QS_BUILD_DIR="$WORK_DIR/build"
-if [[ ! -x "$QS_BUILD_DIR/quickstep_cli_shell" ]]; then
-	echo "[SETUP] Installing Quickstep binaries to $QS_BUILD_DIR..."
-	TMP_DIR=$(mktemp -d)
-	curl -fsSL "$QS_URL" -o "$TMP_DIR/quickstep.zip"
-	unzip -q "$TMP_DIR/quickstep.zip" -d "$TMP_DIR"
-	EXTDIR=$(find "$TMP_DIR" -mindepth 1 -maxdepth 1 -type d | head -n1)
-	mkdir -p "$QS_BUILD_DIR"
-	cp -a "$EXTDIR"/. "$QS_BUILD_DIR"/
-	# If binaries live under bin/, expose them at build/ to match expected layout
-	if [[ -x "$QS_BUILD_DIR/bin/quickstep_cli_shell" ]]; then
-		ln -sf "bin/quickstep_cli_shell" "$QS_BUILD_DIR/quickstep_cli_shell"
-		ln -sf "bin/quickstep_client" "$QS_BUILD_DIR/quickstep_client" 2>/dev/null || true
-	fi
-	rm -rf "$TMP_DIR"
+echo "[SETUP] Installing dependencies..."
+# Check for required packages and add missing ones to install list
+packages=("curl" "unzip" "docker.io")
+command -v htop >/dev/null || packages+=("htop")          # System monitor
+command -v dos2unix >/dev/null || packages+=("dos2unix")  # Line ending converter
+
+# Install packages
+sudo apt install -y "${packages[@]}"
+
+echo "[SETUP] Starting Docker service..."
+sudo systemctl enable --now docker
+
+# ============================================
+# DUCKDB SETUP
+# ============================================
+
+echo "[SETUP] Installing DuckDB CLI..."
+DUCKDB_CLI_URL="https://github.com/duckdb/duckdb/releases/latest/download/duckdb_cli-linux-amd64.zip"
+DUCKDB_INSTALL_DIR="$HOME/bin"
+mkdir -p "$DUCKDB_INSTALL_DIR"
+curl -L "$DUCKDB_CLI_URL" -o "$DUCKDB_INSTALL_DIR/duckdb.zip"
+unzip -o "$DUCKDB_INSTALL_DIR/duckdb.zip" -d "$DUCKDB_INSTALL_DIR"
+chmod +x "$DUCKDB_INSTALL_DIR/duckdb"
+rm "$DUCKDB_INSTALL_DIR/duckdb.zip"
+
+# Add $HOME/bin to PATH in .bashrc if missing
+if ! grep -q 'export PATH="$HOME/bin:$PATH"' "$HOME/.bashrc"; then
+    echo 'export PATH="$HOME/bin:$PATH"' >> "$HOME/.bashrc"
 fi
 
-if command -v pip3 >/dev/null 2>&1; then
-	echo "[img-setup] pip exists, skipping install."
+# Create DuckDB data directory
+mkdir -p "$HOME/data/duckdb"
+
+# ============================================
+# FLOWLOG SETUP
+# ============================================
+
+echo "[SETUP] Installing Rust toolchain..."
+# Check if Rust is already installed
+if ! command -v rustc >/dev/null; then
+    # Install Rust using the official installer
+    echo "[INSTALL] Installing Rust..."
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    # Add Rust to PATH for current session and future sessions
+    export PATH="$HOME/.cargo/bin:$PATH"
+    echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
 else
-	sudo apt -qq update
-	sudo apt -qq install python3-pip -y
+    echo "[OK] Rust is already installed"
 fi
 
-if [[ ! -d $WORK_DIR/RecStep ]]; then
+echo "[UPDATE] Moving Rust to latest version..."
+rustup update && rustup default stable
 
-	# Skipping GRPC C++ from-source build; using Quickstep prebuilt binaries instead.
+source ~/.bashrc
 
-	sudo apt -qq update -y
-	sudo apt -qq install -y python3-pip python3-dev build-essential libjpeg-dev zlib1g-dev
-	pip3 install --upgrade pip
-	pip3 install cython
-	pip3 install matplotlib
-	pip3 install psutil
-	pip3 install antlr4-python3-runtime==4.8
-	pip3 install networkx
+echo "[SETUP] FlowLog environment ready!"
 
-	git clone --depth=1 https://github.com/Hacker0912/RecStep $WORK_DIR/RecStep
+# ============================================
+# SOUFFLE SETUP
+# ============================================
 
-	pushd $WORK_DIR/RecStep
+echo "[SETUP] Installing Souffle..."
+# Add Souffle repository key
+sudo wget https://souffle-lang.github.io/ppa/souffle-key.public -O /usr/share/keyrings/souffle-archive-keyring.gpg
 
-	# Point config to Quickstep under WORK_DIR/build
-	sed -i "s|/fastdisk/quickstep-datalog/build|$WORK_DIR/build|" "$WORK_DIR/RecStep/Config.json"
+# Add Souffle repository to sources list
+echo "deb [signed-by=/usr/share/keyrings/souffle-archive-keyring.gpg] https://souffle-lang.github.io/ppa/ubuntu/ stable main" | sudo tee /etc/apt/sources.list.d/souffle.list
 
-	# Install CLI and env
-	echo "#! $(which python3)" > recstep
-	cat interpreter.py >> recstep
-	chmod +x recstep
-	{
-	  echo "export CONFIG_FILE_DIR=$WORK_DIR/RecStep"
-	  echo "export PATH=$PATH:$WORK_DIR/RecStep"
-	} >> "$WORK_DIR/recstep_env"
-	source "$WORK_DIR/recstep_env"
+# Update package list and install Souffle
+sudo apt update
+sudo apt install -y souffle
 
-	popd
+echo "[SETUP] Souffle environment ready!"
+
+# ============================================
+# UMBRA SETUP
+# ============================================
+
+echo "[SETUP] Pulling Umbra Docker image..."
+sudo docker pull umbradb/umbra:latest
+
+echo "[DONE] Environment setup complete. Restart your terminal or run:"
+echo "  export PATH=\"$HOME/bin:\$PATH\""
+echo "  export PATH=\"$HOME/.cargo/bin:\$PATH\""
+
+# ============================================
+# DDLOG SETUP
+# ============================================
+
+echo "[SETUP] Installing DDlog..."
+DDLOG_VERSION="v1.2.3"
+DDLOG_TAR="ddlog-v1.2.3-20211213235218-Linux.tar.gz"
+DDLOG_URL="https://github.com/vmware-archive/differential-datalog/releases/download/${DDLOG_VERSION}/${DDLOG_TAR}"
+DDLOG_INSTALL_DIR="$HOME/ddlog"
+
+mkdir -p "$DDLOG_INSTALL_DIR"
+curl -L "$DDLOG_URL" -o "$HOME/$DDLOG_TAR"
+tar -xzf "$HOME/$DDLOG_TAR" -C "$DDLOG_INSTALL_DIR" --strip-components=1
+rm "$HOME/$DDLOG_TAR"
+
+# Add ddlog/bin to PATH in .bashrc if missing
+if ! grep -q 'export PATH="$HOME/ddlog/bin:$PATH"' "$HOME/.bashrc"; then
+    echo 'export PATH="$HOME/ddlog/bin:$PATH"' >> "$HOME/.bashrc"
 fi
 
-source "$WORK_DIR/recstep_env"
-recstep --help
+# Set DDLOG_HOME in .bashrc if missing
+if ! grep -q 'export DDLOG_HOME="$HOME/ddlog"' "$HOME/.bashrc"; then
+    echo 'export DDLOG_HOME="$HOME/ddlog"' >> "$HOME/.bashrc"
+fi
+
+# Export for current session
+export PATH="$HOME/ddlog/bin:$PATH"
+export DDLOG_HOME="$HOME/ddlog"
+
+echo "[SETUP] DDlog environment ready!"

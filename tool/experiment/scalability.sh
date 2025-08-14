@@ -565,6 +565,8 @@ run_recstep_scalability() {
     echo "=== RecStep Scalability Log for $base on $dataset (${thread_count} jobs) ===" > "$log_file"
     $cmd >> "$log_file" 2>&1 || echo "  WARNING: Logging execution failed"
 
+    rm -rf qsstor
+
     # Run timing executions
     echo "  Running timing executions..."
     local fastest_exec=""
@@ -600,6 +602,8 @@ run_recstep_scalability() {
                 fastest_exec="$etime"
             fi
         fi
+
+        rm -rf qsstor
     done
 
     # Set fallback if no valid execution time was recorded
