@@ -17,7 +17,7 @@ command -v dos2unix >/dev/null || packages+=("dos2unix")  # Line ending converte
 # Install packages
 sudo apt install -y "${packages[@]}"
 
-echo "[SETUP] Starting Docker service..."
+
 sudo systemctl enable --now docker
 
 # ============================================
@@ -123,3 +123,77 @@ export PATH="$HOME/ddlog/bin:$PATH"
 export DDLOG_HOME="$HOME/ddlog"
 
 echo "[SETUP] DDlog environment ready!"
+
+# ============================================
+# RECSTEP SETUP
+# ============================================
+
+# Ensure WORK_DIR points to repo root if not set
+if [[ -z "$WORK_DIR" ]]; then
+    export WORK_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")"/../../.. && pwd)"
+fi
+
+# Default build workers
+build_workers=${build_workers:-$(nproc)}
+
+echo "[SETUP] Installing RecStep..."
+
+## Install RecStep
+if [[ ! -d $WORK_DIR/RecStep ]]; then
+
+    ## Install GRPC
+    if [[ ! -d $WORK_DIR/grpc ]]; then
+        sudo apt -qq update -y
+        # Install toolchain and build tools before building gRPC
+        sudo apt -qq install -y clang cmake build-essential
+
+        export CC=/usr/bin/clang
+        export CXX=/usr/bin/clang++
+
+        git clone --depth=1 -b v1.28.1 https://github.com/grpc/grpc "$WORK_DIR/grpc"
+
+        pushd "$WORK_DIR/grpc"
+        git submodule update --init
+
+        make --silent -j "$build_workers"
+        sudo make --silent install
+
+        pushd third_party/protobuf
+        sudo make --silent install
+        popd
+        popd
+    fi
+
+    sudo apt -qq update -y
+    # Use python3-dev on modern Ubuntu
+    sudo apt -qq install -y python3-pip python3-dev build-essential libjpeg-dev zlib1g-dev
+    pip3 install --upgrade pip
+    pip3 install cython
+    pip3 install matplotlib
+    pip3 install psutil
+    pip3 install antlr4-python3-runtime==4.8
+    pip3 install networkx
+
+    git clone --depth=1 https://github.com/Hacker0912/RecStep $WORK_DIR/RecStep
+
+    pushd $WORK_DIR/RecStep
+
+    # Point config to quickstep
+    sed -i "s|/fastdisk/quickstep-datalog/build|/data/quickstep|" $WORK_DIR/RecStep/Config.json
+
+    # Install CLI and env
+    echo "#! $(which python3)" > recstep
+    cat interpreter.py >> recstep
+    chmod +x recstep
+    echo "export CONFIG_FILE_DIR=$WORK_DIR/RecStep" > $WORK_DIR/recstep_env
+    echo "export PATH=\$PATH:$WORK_DIR/RecStep" >> $WORK_DIR/recstep_env
+    source $WORK_DIR/recstep_env
+
+    popd
+fi
+
+source $WORK_DIR/recstep_env
+# Avoid breaking set -e if recstep is not yet functional
+recstep --help || true
+
+echo "[SETUP] RecStep environment ready!"
