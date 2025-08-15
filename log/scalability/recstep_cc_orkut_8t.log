@@ -1,0 +1,42 @@
+=== RecStep Scalability Log for cc on orkut (8 jobs) ===
+EDB_DECL:
+Arc(a int, b int)
+
+IDB_DECL:
+CC2(cc int)
+CC(node int, cc int)
+
+RULE_DECL:
+0: CC(node, MIN(node)) :- Arc(node, _).
+1: CC(node, MIN(cc)) :- Arc(other, node), CC(other, cc).
+2: CC2(node, MIN(cc)) :- CC(node, cc).
+
+DEPENDENCY_GRAPH: 
+
+rule 0: set()
+rule 1: {0, 1}
+rule 2: {0, 1}
+Number of the rule strongly connected components (rscc): 3
+
+rule strongly connected components in reverse evaluation order: 
+<rscc index>: <rscc key> - <indices of rules>
+
+rscc 0: 2-[2]
+rscc 1: 1-[1]
+rscc 2: 0-[0]
+
+No directed cycle with a negative edge being detected:
+The Datalog program is stratifiable
+
+Rule Groups (in evaluation order):
+
+rule indices: [0]
+CC(node, MIN(node)) :- Arc(node, _).
+
+rule indices: [1]
+CC(node, MIN(cc)) :- Arc(other, node), CC(other, cc).
+
+rule indices: [2]
+CC2(node, MIN(cc)) :- CC(node, cc).
+
+Initiliazing LPA logger......

@@ -37,7 +37,7 @@ fi
 if [[ ! -d $WORK_DIR/RecStep ]]; then
 
 	if [[ ! -d $WORK_DIR/grpc ]]; then
-		apt -qq update -y
+		sudo apt -qq update -y
 		sudo apt -qq install -y clang
 		sudo apt -qq install -y cmake
 		sudo apt -qq install -y autotools-dev automake libtool
@@ -50,11 +50,11 @@ if [[ ! -d $WORK_DIR/RecStep ]]; then
 		cd $WORK_DIR/grpc
 		git submodule update --init
 
-		make --silent -j $build_workers
-		make --silent install
+		sudo make --silent -j $build_workers
+		sudo make --silent install
 
 		cd third_party/protobuf
-		make --silent install
+		sudo make --silent install
 	fi
 
 	sudo apt -qq update -y

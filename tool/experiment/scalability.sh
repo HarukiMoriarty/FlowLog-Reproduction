@@ -7,7 +7,7 @@ set -e
 # Tests DuckDB, Umbra, and FlowLog databases across different thread counts
 
 # Thread counts to test
-THREAD_COUNTS=(8 16 32 64)
+THREAD_COUNTS=(1 2 4 8 16 32 64)
 
 # Display usage if help is requested
 if [[ "$1" == "-h" || "$1" == "--help" ]]; then
@@ -565,13 +565,11 @@ run_recstep_scalability() {
     echo "=== RecStep Scalability Log for $base on $dataset (${thread_count} jobs) ===" > "$log_file"
     $cmd >> "$log_file" 2>&1 || echo "  WARNING: Logging execution failed"
 
-    rm -rf qsstor
-
     # Run timing executions
     echo "  Running timing executions..."
     local fastest_exec=""
     for i in {1..5}; do
-        echo "    Timing run $i/3"
+        echo "    Timing run $i/5"
         local etime=""
         
         if /usr/bin/time -f "%e" -o /tmp/recstep_time_${thread_count}.tmp \
@@ -602,8 +600,6 @@ run_recstep_scalability() {
                 fastest_exec="$etime"
             fi
         fi
-
-        rm -rf qsstor
     done
 
     # Set fallback if no valid execution time was recorded

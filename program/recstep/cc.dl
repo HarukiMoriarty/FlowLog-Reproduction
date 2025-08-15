@@ -1,0 +1,11 @@
+EDB_DECL:
+Arc(a int, b int)
+
+IDB_DECL:
+CC2(cc int)
+CC(node int, cc int)
+
+RULE_DECL:
+CC(node, MIN(node)) :- Arc(node, _).
+CC(node, MIN(cc)) :- Arc(other, node), CC(other, cc).
+CC2(node, MIN(cc)) :- CC(node, cc).
