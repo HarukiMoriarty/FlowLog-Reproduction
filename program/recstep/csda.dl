@@ -1,0 +1,10 @@
+EDB_DECL:
+NullEdge(x int, y int)
+Edge(x int, y int)
+
+IDB_DECL:
+NullNode(x int, y int)
+
+RULE_DECL:
+NullNode(x, y) :- NullEdge(x, y).
+NullNode(x, y) :- NullNode(x, w), Edge(w, y).

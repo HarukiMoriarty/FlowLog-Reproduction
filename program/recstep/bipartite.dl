@@ -1,0 +1,19 @@
+EDB_DECL:
+Arc(x int, y int)
+Source(x int)
+
+IDB_DECL:
+BipartiteViolation(x int)
+Zero(x int)
+One(x int)
+
+RULE_DECL:
+Zero(x) :- Source(x).
+
+One(y) :- Arc(x, y), Zero(x).
+One(x) :- Arc(x, y), Zero(y).
+
+Zero(y) :- Arc(x, y), One(x).
+Zero(x) :- Arc(x, y), One(y).
+
+BipartiteViolation(x) :- One(x), Zero(x).
