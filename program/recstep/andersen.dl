@@ -1,0 +1,14 @@
+EDB_DECL:
+addressOf(y int, x int)
+assign(y int, x int)
+load(y int, x int)
+store(y int, x int)
+
+IDB_DECL:
+PointsTo(y int, x int)
+
+RULE_DECL:
+PointsTo(y, x) :- addressOf(y, x).
+PointsTo(y, x) :- assign(y, z), PointsTo(z, x).
+PointsTo(y, w) :- load(y, x), PointsTo(x, z), PointsTo(z, w).
+PointsTo(z, w) :- store(y, x), PointsTo(y, z), PointsTo(x, w).

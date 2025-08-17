@@ -1,0 +1,92 @@
+EDB_DECL:
+Insert_input(a int, b int, c int, d int)
+Remove_input(a int, b int)
+
+IDB_DECL:
+m_insert(a int, b int, c int, d int)
+remove(IDCtr int, IDN int)
+hasChild(ParentCtr int, ParentN int)
+assign(IDCtr int, IDN int, ElemCtr int, ElemN int, Value int)
+
+laterChild(ParentCtr int, ParentN int, ChildCtr int, ChildN int)
+firstChild(ParentCtr int, ParentN int, ChildCtr int, ChildN int)
+sibling(ChildCtr1 int, ChildN1 int, ChildCtr2 int, ChildN2 int)
+laterSibling(SibCtr1 int, SibN1 int, SibCtr2 int, SibN2 int)
+laterSibling2(SibCtr1 int, SibN1 int, SibCtr3 int, SibN3 int)
+nextSibling(SibCtr1 int, SibN1 int, SibCtr2 int, SibN2 int)
+hasNextSibling(SibCtr1 int, SibN1 int)
+nextSiblingAnc(StartCtr int, StartN int, NextCtr int, NextN int)
+nextElem(PrevCtr int, PrevN int, NextCtr int, NextN int)
+
+currentValue(ElemCtr int, ElemN int, Value int)
+hasValue(ElemCtr int, ElemN int)
+valueStep(FromCtr int, FromN int, ToCtr int, ToN int)
+blankStep(FromCtr int, FromN int, ToCtr int, ToN int)
+
+value_blank_star(FromCtr int, FromN int, ToCtr int, ToN int)
+nextVisible(PrevCtr int, PrevN int, NextCtr int, NextN int)
+
+result(ctr1 int, ctr2 int, value int)
+
+RULE_DECL:
+m_insert(a, b, c, d) :- Insert_input(a, b, c, d).
+remove(a, b) :- Remove_input(a, b).
+assign(ctr, n, ctr, n, n) :- m_insert(ctr, n, _, _).
+hasChild(ParentCtr, ParentN) :- m_insert(_, _, ParentCtr, ParentN).
+
+laterChild(ParentCtr, ParentN, Ctr2, N2) :-
+  m_insert(Ctr1, N1, ParentCtr, ParentN),
+  m_insert(Ctr2, N2, ParentCtr, ParentN),
+  Ctr1 * 10 + N1 > Ctr2 * 10 + N2.
+
+firstChild(ParentCtr, ParentN, ChildCtr, ChildN) :-
+  m_insert(ChildCtr, ChildN, ParentCtr, ParentN), 
+  !laterChild(ParentCtr, ParentN, ChildCtr, ChildN).
+
+sibling(ChildCtr1, ChildN1, ChildCtr2, ChildN2) :-
+  m_insert(ChildCtr1, ChildN1, ParentCtr, ParentN), 
+  m_insert(ChildCtr2, ChildN2, ParentCtr, ParentN).
+
+laterSibling(Ctr1, N1, Ctr2, N2) :-
+  sibling(Ctr1, N1, Ctr2, N2),
+  Ctr1 * 10 + N1 > Ctr2 * 10 + N2.
+
+laterSibling2(Ctr1, N1, Ctr3, N3) :-
+  sibling(Ctr1, N1, Ctr2, N2),
+  sibling(Ctr1, N1, Ctr3, N3),
+  Ctr1 * 10 + N1 > Ctr2 * 10 + N2, 
+  Ctr2 * 10 + N2 > Ctr3 * 10 + N3.
+
+nextSibling(Ctr1, N1, Ctr2, N2) :-
+  laterSibling(Ctr1, N1, Ctr2, N2),
+  !laterSibling2(Ctr1, N1, Ctr2, N2).
+
+hasNextSibling(SibCtr1, SibN1) :- laterSibling(SibCtr1, SibN1, _, _).
+
+nextSiblingAnc(StartCtr, StartN, NextCtr, NextN) :- nextSibling(StartCtr, StartN, NextCtr, NextN).
+nextSiblingAnc(StartCtr, StartN, NextCtr, NextN) :- 
+    !hasNextSibling(StartCtr, StartN), 
+    m_insert(StartCtr, StartN, ParentCtr, ParentN), 
+    nextSiblingAnc(ParentCtr, ParentN, NextCtr, NextN).
+
+nextElem(PrevCtr, PrevN, NextCtr, NextN) :- firstChild(PrevCtr, PrevN, NextCtr, NextN).
+nextElem(PrevCtr, PrevN, NextCtr, NextN) :- !hasChild(PrevCtr, PrevN), nextSiblingAnc(PrevCtr, PrevN, NextCtr, NextN).
+
+currentValue(ElemCtr, ElemN, Value) :- assign(IDCtr, IDN, ElemCtr, ElemN, Value), !remove(IDCtr, IDN).
+
+hasValue(ElemCtr, ElemN) :- currentValue(ElemCtr, ElemN, _).
+valueStep(FromCtr, FromN, ToCtr, ToN) :- hasValue(FromCtr, FromN), nextElem(FromCtr, FromN, ToCtr, ToN). 
+blankStep(FromCtr, FromN, ToCtr, ToN) :- 
+  !valueStep(FromCtr, FromN, ToCtr, ToN), 
+  nextElem(FromCtr, FromN, ToCtr, ToN).
+
+value_blank_star(FromCtr, FromN, ToCtr, ToN) :- valueStep(FromCtr, FromN, ToCtr, ToN).
+value_blank_star(FromCtr, FromN, ToCtr, ToN) :- value_blank_star(FromCtr, FromN, ViaCtr, ViaN), blankStep(ViaCtr, ViaN, ToCtr, ToN).
+
+nextVisible(PrevCtr, PrevN, NextCtr, NextN) :- 
+  value_blank_star(PrevCtr, PrevN, NextCtr, NextN), 
+  hasValue(NextCtr, NextN).
+
+result(ctr1, ctr2, value) :- 
+    nextVisible(ctr1, _, ctr2, N2), 
+    currentValue(ctr2, N2, value).

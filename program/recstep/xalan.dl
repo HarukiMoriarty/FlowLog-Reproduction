@@ -1,0 +1,641 @@
+EDB_DECL:
+
+DirectSuperclass(class int, superclass int)
+DirectSuperinterface(mod_ref int, interface int)
+MainClass(class int)
+FormalParam(m_index int, method int, mod_var int)
+ComponentType(arrayType int, componentType int)
+AssignReturnValue(invocation int, m_to int)
+ActualParam(m_index int, invocation int, mod_var int)
+Method_Modifier(mod_mod int, method int)
+Var_Type(mod_var int, mod_type int)
+HeapAllocation_Type(heap int, mod_type int)
+
+ClassType(class int)
+ArrayType(arrayType int)
+InterfaceType(interface int)
+Var_DeclaringMethod(mod_var int, method int)
+ApplicationClass(mod_type int)
+ThisVar(method int, mod_var int)
+NormalHeap(id int, mod_type int)
+StringConstant(id int)
+AssignHeapAllocation(instruction int, m_index int, heap int, m_to int, inmethod int, linenumber int)
+AssignLocal(instruction int, m_index int, m_from int, m_to int, inmethod int)
+AssignCast(instruction int, m_index int, m_from int, m_to int, mod_type int, inmethod int)
+Field(signature int, declaringClass int, simplename int, mod_type int)
+
+StaticMethodInvocation(instruction int, m_index int, signature int, method int)
+SpecialMethodInvocation(instruction int, m_index int, signature int, base int, method int)
+VirtualMethodInvocation(instruction int, m_index int, signature int, base int, method int)
+Method(method int, simplename int, params int, declaringType int, returnType int, jvmDescriptor int, arity int)
+Method_Descriptor(method int, descriptor int)
+StoreInstanceField(instruction int, m_index int, m_from int, base int, signature int, method int)
+LoadInstanceField(instruction int, m_index int, m_to int, base int, signature int, method int)
+StoreStaticField(instruction int, m_index int, m_from int, signature int, method int)
+LoadStaticField(instruction int, m_index int, m_to int, signature int, method int)
+StoreArrayIndex(instruction int, m_index int, m_from int, base int, method int)
+LoadArrayIndex(instruction int, m_index int, m_to int, base int, method int)
+Return(instruction int, m_index int, mod_var int, method int)
+
+IDB_DECL:
+
+IsType(t int)
+IsReferenceType(t int)
+IsArrayType(t int)
+IsClassType(t int)
+IsInterfaceType(t int)
+OutApplicationClass(mod_ref int)
+Field_DeclaringType(field int, declaringClass int)
+Method_DeclaringType(method int, declaringType int)
+Method_ReturnType(method int, returnType int) # redundant
+Method_SimpleName(method int, simpleName int)
+Method_Params(method int, params int) # redundant
+OutThisVar(method int, mod_var int)
+OutVar_DeclaringMethod(mod_var int, method int)
+# output relation HeapAllocation_Type(heap int, mod_type int) move into input
+# output relation MainMethodArgArray(heap int) # redundant
+# output relation MainMethodArgArrayContent(heap int) # redundant
+Instruction_Method(insn int, inMethod int)
+IsVirtualMethodInvocation_Insn(insn int)
+IsStaticMethodInvocation_Insn(insn int)
+FieldInstruction_Signature(insn int, sign int)
+LoadInstanceField_Base(insn int, mod_var int)
+LoadInstanceField_To(insn int, mod_var int)
+StoreInstanceField_From(insn int, mod_var int)
+StoreInstanceField_Base(insn int, mod_var int)
+LoadStaticField_To(insn int, mod_var int)
+StoreStaticField_From(insn int, mod_var int)
+LoadArrayIndex_Base(insn int, mod_var int)
+LoadArrayIndex_To(insn int, mod_var int)
+StoreArrayIndex_From(insn int, mod_var int)
+StoreArrayIndex_Base(insn int, mod_var int)
+AssignInstruction_To(insn int, m_to int)
+AssignCast_From(insn int, m_from int)
+AssignCast_Type(insn int, mod_type int)
+AssignLocal_From(insn int, m_from int)
+AssignHeapAllocation_Heap(insn int, heap int)
+ReturnNonvoid_Var(mod_return int, mod_var int)
+MethodInvocation_Method(invocation int, signature int)
+VirtualMethodInvocation_Base(invocation int, base int)
+VirtualMethodInvocation_SimpleName(invocation int, simplename int)
+VirtualMethodInvocation_Descriptor(invocation int, descriptor int)
+SpecialMethodInvocation_Base(invocation int, base int)
+MethodInvocation_Base(invocation int, base int)
+
+# Fat schema
+OutLoadInstanceField(base int, sig int, m_to int, inmethod int)
+OutStoreInstanceField(m_from int, base int, signature int, inmethod int)
+OutLoadStaticField(sig int, m_to int, inmethod int)
+OutStoreStaticField(m_from int, signature int, inmethod int)
+OutLoadArrayIndex(base int, m_to int, inmethod int)
+OutStoreArrayIndex(m_from int, base int, inmethod int)
+OutAssignCast(mod_type int, m_from int, m_to int, inmethod int)
+OutAssignLocal(m_from int, m_to int, inmethod int)
+OutAssignHeapAllocation(heap int, m_to int, inmethod int)
+ReturnVar(mod_var int, method int)
+OutStaticMethodInvocation(invocation int, signature int, inmethod int)
+
+
+# Main (value-based) analysis
+# basic.MethodImplemented, basic.MainMethodDeclaration, basic.SupertypeOf, basic.MethodLookup
+# # .printsize
+Assign(m_to int, m_from int)
+VarPointsTo(heap int, mod_var int)
+InstanceFieldPointsTo(heap int , fld int, baseheap int)
+StaticFieldPointsTo(heap int, fld int)
+CallGraphEdge(invocation int, meth int)
+ArrayIndexPointsTo(baseheap int, heap int)
+Reachable(method int)
+
+  
+# Basic (mod_type-based) analysis
+# .comp Basic {
+# # .printsize
+MethodLookup(simplename int, descriptor int, mod_type int, method int)
+MethodImplemented(simplename int, descriptor int, mod_type int, method int)
+DirectSubclass(a int, c int)
+Subclass(c int, a int)
+Superclass(c int, a int)
+Superinterface(k int, c int)
+SubtypeOf(subtype int, mod_type int)
+SupertypeOf(supertype int, mod_type int)
+SubtypeOfDifferent(subtype int, mod_type int)
+MainMethodDeclaration(method int)
+
+
+
+
+
+# class initialization
+# # .printsize
+ClassInitializer(mod_type int, method int)
+InitializedClass(classOrInterface int)
+
+
+RULE_DECL:
+
+IsType(class) :- ClassType(class).
+IsReferenceType(class) :- ClassType(class).
+IsClassType(class) :- ClassType(class).
+
+IsType(arrayType) :- ArrayType(arrayType).
+IsReferenceType(arrayType) :- ArrayType(arrayType).
+IsArrayType(arrayType) :- ArrayType(arrayType).
+
+IsType(interface) :- InterfaceType(interface).
+IsReferenceType(interface) :- InterfaceType(interface).
+IsInterfaceType(interface) :- InterfaceType(interface).
+
+OutVar_DeclaringMethod(mod_var, method) :- Var_DeclaringMethod(mod_var, method). # redundant OutVar_DeclaringMethod
+
+IsType(mod_type) :- ApplicationClass(mod_type).
+IsReferenceType(mod_type) :- ApplicationClass(mod_type).
+OutApplicationClass(mod_type) :- ApplicationClass(mod_type).
+
+OutThisVar(method, mod_var) :- ThisVar(method, mod_var).
+
+IsType(mod_type) :- NormalHeap(_, mod_type).
+# HeapAllocation_Type(id, mod_type) :- NormalHeap(id, mod_type).
+# HeapAllocation_Type(id, 682809) :- StringConstant(id).
+
+Instruction_Method(instruction, method) :-
+  AssignHeapAllocation(instruction, m_index, heap, m_to, method, linenumber).
+AssignInstruction_To(instruction, m_to) :-
+  AssignHeapAllocation(instruction, m_index, heap, m_to, method, linenumber).
+AssignHeapAllocation_Heap(instruction, heap) :-
+  AssignHeapAllocation(instruction, m_index, heap, m_to, method, linenumber).
+
+Instruction_Method(instruction, method) :-
+  AssignLocal(instruction, m_index, m_from, m_to, method).
+AssignLocal_From(instruction, m_from) :-
+  AssignLocal(instruction, m_index, m_from, m_to, method).
+AssignInstruction_To(instruction, m_to) :- 
+  AssignLocal(instruction, m_index, m_from, m_to, method).
+
+Instruction_Method(instruction, method) :-
+  AssignCast(instruction, m_index, m_from, m_to, mod_type, method).
+AssignCast_Type(instruction, mod_type) :-
+  AssignCast(instruction, m_index, m_from, m_to, mod_type, method).
+AssignCast_From(instruction, m_from) :-
+  AssignCast(instruction, m_index, m_from, m_to, mod_type, method).
+AssignInstruction_To(instruction, m_to) :- 
+  AssignCast(instruction, m_index, m_from, m_to, mod_type, method).
+
+Field_DeclaringType(signature, declaringType) :- Field(signature, declaringType, _, _).
+
+MethodInvocation_Base(invocation, base) :- VirtualMethodInvocation_Base(invocation, base).
+MethodInvocation_Base(invocation, base) :- SpecialMethodInvocation_Base(invocation, base).
+
+
+
+
+# .rule
+Instruction_Method(instruction, method) :-
+  StaticMethodInvocation(instruction, m_index, signature, method).
+IsStaticMethodInvocation_Insn(instruction) :-
+  StaticMethodInvocation(instruction, m_index, signature, method).
+MethodInvocation_Method(instruction, signature) :- 
+  StaticMethodInvocation(instruction, m_index, signature, method).
+
+Instruction_Method(instruction, method) :-
+  SpecialMethodInvocation(instruction, m_index, signature, base, method).
+SpecialMethodInvocation_Base(instruction, base) :-
+  SpecialMethodInvocation(instruction, m_index, signature, base, method).
+MethodInvocation_Method(instruction, signature) :-
+  SpecialMethodInvocation(instruction, m_index, signature, base, method).
+
+Instruction_Method(instruction, method) :-
+  VirtualMethodInvocation(instruction, m_index, signature, base, method).
+IsVirtualMethodInvocation_Insn(instruction) :-
+  VirtualMethodInvocation(instruction, m_index, signature, base, method).
+VirtualMethodInvocation_Base(instruction, base) :-
+  VirtualMethodInvocation(instruction, m_index, signature, base, method).
+MethodInvocation_Method(instruction, signature) :-
+  VirtualMethodInvocation(instruction, m_index, signature, base, method).
+
+Method_SimpleName(method, simplename) :-
+  Method(method, simplename, params, declaringType, returnType, jvmDescriptor, arity).
+Method_DeclaringType(method, declaringType) :-
+  Method(method, simplename, params, declaringType, returnType, jvmDescriptor, arity).
+
+# direct import of Method_Descriptor
+# Method_Descriptor(method, descriptor) :- 
+#   Method_ReturnType(method, returnType),
+#   Method_Params(method, params),
+#   descriptor == cat(returnType, params).
+
+Instruction_Method(instruction, method) :-
+  StoreInstanceField(instruction, m_index, m_from, base, signature, method).
+FieldInstruction_Signature(instruction, signature) :-
+  StoreInstanceField(instruction, m_index, m_from, base, signature, method).
+StoreInstanceField_Base(instruction, base) :-
+  StoreInstanceField(instruction, m_index, m_from, base, signature, method).
+StoreInstanceField_From(instruction, m_from) :-
+  StoreInstanceField(instruction, m_index, m_from, base, signature, method).
+
+Instruction_Method(instruction, method) :-
+  LoadInstanceField(instruction, m_index, m_to, base, signature, method).
+FieldInstruction_Signature(instruction, signature) :-
+  LoadInstanceField(instruction, m_index, m_to, base, signature, method).
+LoadInstanceField_Base(instruction, base) :-
+  LoadInstanceField(instruction, m_index, m_to, base, signature, method).
+LoadInstanceField_To(instruction, m_to) :-
+  LoadInstanceField(instruction, m_index, m_to, base, signature, method).
+
+Instruction_Method(instruction, method) :-
+  StoreStaticField(instruction, m_index, m_from, signature, method).
+FieldInstruction_Signature(instruction, signature) :-
+  StoreStaticField(instruction, m_index, m_from, signature, method).
+StoreStaticField_From(instruction, m_from) :-
+  StoreStaticField(instruction, m_index, m_from, signature, method).
+
+Instruction_Method(instruction, method) :-
+  LoadStaticField(instruction, m_index, m_to, signature, method).
+FieldInstruction_Signature(instruction, signature) :-
+  LoadStaticField(instruction, m_index, m_to, signature, method).
+LoadStaticField_To(instruction, m_to) :-
+  LoadStaticField(instruction, m_index, m_to, signature, method).
+
+Instruction_Method(instruction, method) :-
+  StoreArrayIndex(instruction, m_index, m_from, base, method).
+StoreArrayIndex_Base(instruction, base) :-
+  StoreArrayIndex(instruction, m_index, m_from, base, method).
+StoreArrayIndex_From(instruction, m_from) :-
+  StoreArrayIndex(instruction, m_index, m_from, base, method).
+
+Instruction_Method(instruction, method) :-
+  LoadArrayIndex(instruction, m_index, m_to, base, method).
+LoadArrayIndex_Base(instruction, base) :-
+  LoadArrayIndex(instruction, m_index, m_to, base, method).
+LoadArrayIndex_To(instruction, m_to) :-
+  LoadArrayIndex(instruction, m_index, m_to, base, method).
+
+Instruction_Method(instruction, method) :-
+  Return(instruction, m_index, mod_var, method).
+ReturnNonvoid_Var(instruction, mod_var) :-
+  Return(instruction, m_index, mod_var, method).
+
+
+# fat schema population
+OutLoadInstanceField(base, sig, m_to, inmethod) :-
+  Instruction_Method(insn, inmethod),
+  LoadInstanceField_Base(insn, base),
+  FieldInstruction_Signature(insn, sig),
+  LoadInstanceField_To(insn, m_to).
+OutStoreInstanceField(m_from, base, sig, inmethod) :-
+  Instruction_Method(insn, inmethod),
+  StoreInstanceField_From(insn, m_from),
+  StoreInstanceField_Base(insn, base),
+  FieldInstruction_Signature(insn, sig).
+OutLoadStaticField(sig, m_to, inmethod) :-
+  Instruction_Method(insn, inmethod),
+  FieldInstruction_Signature(insn, sig),
+  LoadStaticField_To(insn, m_to).
+OutStoreStaticField(m_from, sig, inmethod) :-
+  Instruction_Method(insn, inmethod),
+  StoreStaticField_From(insn, m_from),
+  FieldInstruction_Signature(insn, sig).
+OutLoadArrayIndex(base, m_to, inmethod) :-
+  Instruction_Method(insn, inmethod),
+  LoadArrayIndex_Base(insn, base),
+  LoadArrayIndex_To(insn, m_to).
+OutStoreArrayIndex(m_from, base, inmethod) :-
+  Instruction_Method(insn, inmethod),
+  StoreArrayIndex_From(insn, m_from),
+  StoreArrayIndex_Base(insn, base).
+OutAssignCast(mod_type, m_from, m_to, inmethod) :-
+  Instruction_Method(insn, inmethod),
+  AssignCast_From(insn, m_from),
+  AssignInstruction_To(insn, m_to),
+  AssignCast_Type(insn, mod_type).
+OutAssignLocal(m_from, m_to, inmethod) :-
+  AssignInstruction_To(insn, m_to),
+  Instruction_Method(insn, inmethod),
+  AssignLocal_From(insn, m_from).
+OutAssignHeapAllocation(heap, m_to, inmethod) :-
+  Instruction_Method(insn, inmethod),
+  AssignHeapAllocation_Heap(insn, heap),
+  AssignInstruction_To(insn, m_to).
+ReturnVar(mod_var, method) :-
+  Instruction_Method(insn, method),
+  ReturnNonvoid_Var(insn, mod_var).
+OutStaticMethodInvocation(invocation, signature, inmethod) :-
+  IsStaticMethodInvocation_Insn(invocation),
+  Instruction_Method(invocation, inmethod),
+  MethodInvocation_Method(invocation, signature).
+# HeapAllocation_Type(heap, mod_type),
+# MainMethodArgArray(heap) :-
+#   heap == 2547954,
+#   mod_type == 548718.
+# HeapAllocation_Type(heap, mod_type),
+# MainMethodArgArrayContent(heap) :-
+#   heap == 2547645,
+#   mod_type == 682809.
+VirtualMethodInvocation_SimpleName(invocation, simplename) :-
+  IsVirtualMethodInvocation_Insn(invocation),
+  MethodInvocation_Method(invocation, signature),
+  Method_SimpleName(signature, simplename),
+  Method_Descriptor(signature, descriptor).
+VirtualMethodInvocation_Descriptor(invocation, descriptor) :-
+  IsVirtualMethodInvocation_Insn(invocation),
+  MethodInvocation_Method(invocation, signature),
+  Method_SimpleName(signature, simplename),
+  Method_Descriptor(signature, descriptor).
+
+
+# # .printsize MethodLookup
+# # .printsize MethodImplemented
+# # .printsize DirectSubclass
+# # .printsize Subclass
+# # .printsize Superclass
+# # .printsize Superinterface
+# # .printsize SubtypeOf
+# # .printsize SupertypeOf
+# # .printsize SubtypeOfDifferent
+# # .printsize MainMethodDeclaration
+
+# .rule
+MethodLookup(simplename, descriptor, mod_type, method) :-
+  MethodImplemented(simplename, descriptor, mod_type, method).
+MethodLookup(simplename, descriptor, mod_type, method) :-
+  DirectSuperclass(mod_type, supertype),
+  MethodLookup(simplename, descriptor, supertype, method),
+  ! MethodImplemented(simplename, descriptor, mod_type, _).
+MethodLookup(simplename, descriptor, mod_type, method) :-
+  DirectSuperinterface(mod_type, supertype),
+  MethodLookup(simplename, descriptor, supertype, method),
+  ! MethodImplemented(simplename, descriptor, mod_type, _).
+MethodImplemented(simplename, descriptor, mod_type, method) :-
+  Method_SimpleName(method, simplename),
+  Method_Descriptor(method, descriptor),
+  Method_DeclaringType(method, mod_type),
+  ! Method_Modifier(971366, method).
+MainMethodDeclaration(method) :-
+  MainClass(mod_type),
+  Method_DeclaringType(method, mod_type),
+  method != 566701,
+  method != 1314186,
+  method != 977029,
+  Method_SimpleName(method, 979988),
+  Method_Descriptor(method, 3021702),
+  Method_Modifier(925397, method),
+  Method_Modifier(836310, method).
+
+DirectSubclass(a, c) :-
+  DirectSuperclass(a, c).
+Subclass(c, a) :-
+  DirectSubclass(a, c).
+Subclass(c, a) :-
+  Subclass(b, a),
+  DirectSubclass(b, c).
+Superclass(c, a) :-
+  Subclass(a, c).
+Superinterface(k, c) :-
+  DirectSuperinterface(c, k).
+Superinterface(k, c) :-
+  DirectSuperinterface(c, j),
+  Superinterface(k, j).
+Superinterface(k, c) :-
+  DirectSuperclass(c, mod_super),
+  Superinterface(k, mod_super).
+
+SubtypeOf(s, s) :-
+  IsClassType(s).
+SubtypeOf(t, t) :-
+  IsType(t).
+SubtypeOf(s, t) :-
+  Subclass(t, s).
+SubtypeOf(s, s) :-
+  IsInterfaceType(s).
+SubtypeOf(s, t) :-
+  IsClassType(s),
+  Superinterface(t, s).
+SubtypeOf(s, t) :-
+  IsInterfaceType(s),
+  IsType(t),
+  t == 685168.
+SubtypeOf(s, t) :-
+  IsArrayType(s),
+  IsType(t),
+  t == 685168.
+SubtypeOf(s, t) :-
+  IsInterfaceType(s),
+  Superinterface(t, s).
+# cross-product warning
+# SubtypeOf(s, t) :-
+#   ComponentType(s, sc),
+#   ComponentType(t, tc),
+#   IsReferenceType(sc),
+#   IsReferenceType(tc),
+#   SubtypeOf(sc, tc).
+SubtypeOf(s, t) :-
+  SubtypeOf(sc, tc),
+  ComponentType(s, sc),
+  ComponentType(t, tc),
+  IsReferenceType(sc),
+  IsReferenceType(tc).
+SubtypeOf(s, t) :-
+  IsArrayType(s),
+  IsInterfaceType(t),
+  IsType(t),
+  t == 971368.
+SubtypeOf(s, t) :-
+  IsArrayType(s),
+  IsInterfaceType(t),
+  IsType(t),
+  t == 691907.
+
+SupertypeOf(s, t) :-
+  SubtypeOf(t, s).
+SubtypeOfDifferent(s, t) :-
+  SubtypeOf(s, t),
+  s != t.
+# }
+# .init basic == Basic
+
+
+# .printsize ClassInitializer
+# .printsize InitializedClass
+
+# .rule
+ClassInitializer(mod_type, method) :-
+   MethodImplemented(799448, 3020761, mod_type, method).
+InitializedClass(superclass) :-
+   InitializedClass(class),
+   DirectSuperclass(class, superclass).
+InitializedClass(superinterface) :-
+   InitializedClass(classOrInterface),
+   DirectSuperinterface(classOrInterface, superinterface).
+InitializedClass(class) :-
+   MainMethodDeclaration(method),
+   Method_DeclaringType(method, class).
+InitializedClass(class) :-
+   Reachable(inmethod),
+   OutAssignHeapAllocation(heap, _, inmethod),
+   HeapAllocation_Type(heap, class).
+InitializedClass(class) :-
+   Reachable(inmethod),
+   Instruction_Method(invocation, inmethod),
+   IsStaticMethodInvocation_Insn(invocation),
+   MethodInvocation_Method(invocation, signature),
+   Method_DeclaringType(signature, class).
+InitializedClass(classOrInterface) :-
+   Reachable(inmethod),
+   OutStoreStaticField(_, signature, inmethod),
+   Field_DeclaringType(signature, classOrInterface).
+InitializedClass(classOrInterface) :-
+   Reachable(inmethod),
+   OutLoadStaticField(signature, _, inmethod),
+   Field_DeclaringType(signature, classOrInterface).
+Reachable(clinit) :-
+   InitializedClass(class),
+   ClassInitializer(class, clinit).
+
+
+# .printsize Assign
+# .printsize VarPointsTo
+# .printsize InstanceFieldPointsTo
+# .printsize StaticFieldPointsTo
+# .printsize CallGraphEdge
+# .printsize ArrayIndexPointsTo
+# .printsize Reachable
+
+# .rule
+Assign(actual, formal) :-
+  CallGraphEdge(invocation, method),
+  FormalParam(m_index, method, formal),
+  ActualParam(m_index, invocation, actual).
+Assign(mod_return, local) :-
+  CallGraphEdge(invocation, method),
+  ReturnVar(mod_return, method),
+  AssignReturnValue(invocation, local).
+VarPointsTo(heap, mod_var) :-
+  OutAssignHeapAllocation(heap, mod_var, inMethod),
+  Reachable(inMethod).
+VarPointsTo(heap, m_to) :-
+  Assign(m_from, m_to),
+  VarPointsTo(heap, m_from).
+VarPointsTo(heap, m_to) :-
+  Reachable(inmethod),
+  OutAssignLocal(m_from, m_to, inmethod),
+  VarPointsTo(heap, m_from).
+# .plan 1:(3,2,1)
+VarPointsTo(heap, m_to) :-
+  Reachable(inmethod),
+  OutAssignCast(mod_type, m_from, m_to, inmethod),
+  SupertypeOf(mod_type, heaptype),
+  HeapAllocation_Type(heap, heaptype),
+  VarPointsTo(heap, m_from).
+#  .plan 1:(5,2,1,4,3)
+ArrayIndexPointsTo(baseheap, heap) :-
+  Reachable(inmethod),
+  OutStoreArrayIndex(m_from, base, inmethod),
+  VarPointsTo(baseheap, base),
+  VarPointsTo(heap, m_from),
+  HeapAllocation_Type(heap, heaptype),
+  HeapAllocation_Type(baseheap, baseheaptype),
+  ComponentType(baseheaptype, componenttype),
+  SupertypeOf(componenttype, heaptype).
+VarPointsTo(heap, m_to) :-
+  Reachable(inmethod),
+  OutLoadArrayIndex(base, m_to, inmethod),
+  VarPointsTo(baseheap, base),
+  ArrayIndexPointsTo(baseheap, heap),
+  Var_Type(m_to, mod_type),
+  HeapAllocation_Type(baseheap, baseheaptype),
+  ComponentType(baseheaptype, basecomponenttype),
+  SupertypeOf(mod_type, basecomponenttype).
+# .plan 1:(3,2,1,4,5,6,7,8), 2:(4,3,2,1,5,6,7,8)
+VarPointsTo(heap, m_to) :-
+  Reachable(inmethod),
+  OutLoadInstanceField(base, signature, m_to, inmethod),
+  VarPointsTo(baseheap, base),
+  InstanceFieldPointsTo(heap, signature, baseheap).
+# .plan 1:(3,2,1,4), 2:(4,2,1,3)
+VarPointsTo(heap, m_to) :-
+  Reachable(inmethod),
+  OutLoadStaticField(fld, m_to, inmethod),
+  StaticFieldPointsTo(heap, fld).
+VarPointsTo(heap, this) :-
+  Reachable(inMethod),
+  Instruction_Method(invocation, inMethod),
+  VirtualMethodInvocation_Base(invocation, base),
+  VarPointsTo(heap, base),
+  HeapAllocation_Type(heap, heaptype),
+  VirtualMethodInvocation_SimpleName(invocation, simplename),
+  VirtualMethodInvocation_Descriptor(invocation, descriptor),
+  MethodLookup(simplename, descriptor, heaptype, toMethod),
+  OutThisVar(toMethod, this).
+# .plan 1:(4,3,2,1,5,6,7,8,9)
+InstanceFieldPointsTo(heap, fld, baseheap) :-
+  Reachable(inmethod),
+  OutStoreInstanceField(m_from, base, fld, inmethod),
+  VarPointsTo(heap, m_from),
+  VarPointsTo(baseheap, base).
+# .plan 1:(3,2,1,4), 2:(4,2,1,3)
+StaticFieldPointsTo(heap, fld) :-
+  Reachable(inmethod),
+  OutStoreStaticField(m_from, fld, inmethod),
+  VarPointsTo(heap, m_from).
+
+# Reachable(toMethod), CallGraphEdge(invocation, toMethod)
+Reachable(toMethod) :-
+  Reachable(inMethod),
+  Instruction_Method(invocation, inMethod),
+  VirtualMethodInvocation_Base(invocation, base),
+  VarPointsTo(heap, base),
+  HeapAllocation_Type(heap, heaptype),
+  VirtualMethodInvocation_SimpleName(invocation, simplename),
+  VirtualMethodInvocation_Descriptor(invocation, descriptor),
+  MethodLookup(simplename, descriptor, heaptype, toMethod).
+CallGraphEdge(invocation, toMethod) :-
+  Reachable(inMethod),
+  Instruction_Method(invocation, inMethod),
+  VirtualMethodInvocation_Base(invocation, base),
+  VarPointsTo(heap, base),
+  HeapAllocation_Type(heap, heaptype),
+  VirtualMethodInvocation_SimpleName(invocation, simplename),
+  VirtualMethodInvocation_Descriptor(invocation, descriptor),
+  MethodLookup(simplename, descriptor, heaptype, toMethod).
+# .plan 1:(4,3,2,1,5,6,7,8)
+
+# Reachable(tomethod), CallGraphEdge(invocation, tomethod)
+Reachable(tomethod) :-
+  Reachable(inmethod),
+  OutStaticMethodInvocation(invocation, tomethod, inmethod).
+CallGraphEdge(invocation, tomethod) :-
+  Reachable(inmethod),
+  OutStaticMethodInvocation(invocation, tomethod, inmethod).
+
+# Reachable(tomethod), CallGraphEdge(invocation, tomethod), VarPointsTo(heap, this)
+Reachable(tomethod) :-
+  Reachable(inmethod),
+  Instruction_Method(invocation, inmethod),
+  SpecialMethodInvocation_Base(invocation, base),
+  VarPointsTo(heap, base),
+  MethodInvocation_Method(invocation, tomethod),
+  OutThisVar(tomethod, this).
+CallGraphEdge(invocation, tomethod) :-
+  Reachable(inmethod),
+  Instruction_Method(invocation, inmethod),
+  SpecialMethodInvocation_Base(invocation, base),
+  VarPointsTo(heap, base),
+  MethodInvocation_Method(invocation, tomethod),
+  OutThisVar(tomethod, this).
+VarPointsTo(heap, this) :-
+  Reachable(inmethod),
+  Instruction_Method(invocation, inmethod),
+  SpecialMethodInvocation_Base(invocation, base),
+  VarPointsTo(heap, base),
+  MethodInvocation_Method(invocation, tomethod),
+  OutThisVar(tomethod, this).
+# .plan 1:(4,3,2,1,5,6)
+
+Reachable(method) :-
+  MainMethodDeclaration(method).
+
+
+# souffle -o doop ./doop.dl -j 16
+# time ./doop -F./doop-data -D./idbs/ -j 16
+# output relation (\w+)(.*)
+# RelationSizes("$1", size) :- $1$2,  var size = $2.group_by(()).count_distinct().

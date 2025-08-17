@@ -1,0 +1,9 @@
+EDB_DECL:
+Arc(x int, y int)
+
+IDB_DECL:
+Tc(x int, y int)
+
+RULE_DECL:
+Tc(x, y) :- Arc(x, y).
+Tc(x, y) :- Arc(z, y), Tc(x, z).

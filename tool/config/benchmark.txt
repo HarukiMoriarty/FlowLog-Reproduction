@@ -1,31 +1,60 @@
-bipartite=netflix
-bipartite=roadNet-CA
-bipartite=mag
+# Benchmark config: each line is "program=dataset"
+# "program" is the benchmark program; "dataset" names a dataset hosted at:
+# https://pages.cs.wisc.edu/~m0riarty/dataset/
+# Example: cc=livejournal
 
 cc=livejournal
 cc=orkut
 cc=arabic
 cc=twitter
 
-csda=csda-httpd
-csda=csda-linux
-csda=csda-postgresql
-
 reach=livejournal
 reach=orkut
 reach=arabic
 reach=twitter
 
-sg=G10K-0.001
-sg=G20K-0.001
-sg=G40K-0.001
-
-tc=G10K-0.001
-tc=G20K-0.001
-tc=G40K-0.001
+bipartite=netflix
+bipartite=roadNet-CA
+bipartite=mag
 
 sssp=livejournal-sssp
 sssp=orkut-sssp
 sssp=arabic-sssp
 sssp=twitter-sssp
 
+tc=G10K-0.001
+tc=G20K-0.001
+tc=G40K-0.001
+
+sg=G10K-0.001
+sg=G20K-0.001
+sg=G40K-0.001
+
+csda=csda-httpd
+csda=csda-linux
+csda=csda-postgresql
+
+cspa=cspa-httpd
+cspa=cspa-linux
+cspa=cspa-postgresql
+
+andersen=medium
+andersen=large
+
+dyck=kernel
+dyck=postgre
+
+crdt=crdt
+crdt_slow=crdt
+
+borrow=borrow
+
+cvc5=cvc5
+
+z3=z3
+
+batik=batik
+biojava=biojava
+eclipse=eclipse
+xalan=xalan
+zxing=zxing

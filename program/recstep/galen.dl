@@ -1,0 +1,10 @@
+EDB_DECL:
+P(X int, Z int)
+
+IDB_DECL:
+OutP(X int, Z int)
+
+RULE_DECL:
+OutP(X, Y) :- P(X, Y).
+OutP(X, Y) :- OutP(X, Z), OutP(Z, Y).
+
