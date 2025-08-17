@@ -56,23 +56,19 @@ fi
 echo "CPU set: ${CPUSET}"
 echo ""
 
-echo "=== Building FlowLog ==="
-cd FlowLog
-git checkout nemo_arithmetic
-cargo build --release
-cd ..
-echo "FlowLog build completed"
-echo ""
-
 # Initialize result file with headers
 if [[ ! -f "$RESULT_FILE" ]]; then
-    printf "%-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
+    printf "%-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
         "Program" "Dataset" "Duck_Load(s)" "Duck_Exec(s)" \
         "Umbra_Load(s)" "Umbra_Exec(s)" "FlowLog_Load(s)" "FlowLog_Exec(s)" \
+        "Souffle_Load(s)" "Souffle_Exec(s)" "DDlog_Load(s)" "DDlog_Exec(s)" \
+        "RecStep_Load(s)" "RecStep_Exec(s)" \
         > "$RESULT_FILE"
-    printf "%-20s %-20s %-12s %-12s %-12s %-12s %-12s %-12s\n" \
+    printf "%-20s %-20s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s %-12s\n" \
         "--------------------" "--------------------" "--------------------" "--------------------" \
         "--------------------" "--------------------" "--------------------" "--------------------" \
+        "--------------------" "--------------------" "--------------------" "--------------------" \
+        "--------------------" "--------------------" \
         >> "$RESULT_FILE"
 fi
 
@@ -177,6 +173,15 @@ run_duckdb() {
 # FlowLog Benchmark Function
 # -----------------------------------------------------------------------------
 run_flowlog() {
+    echo "=== Building FlowLog ==="
+    cd FlowLog
+    git checkout nemo_arithmetic
+    git pull
+    cargo build --release
+    cd ..
+    echo "FlowLog build completed"
+    echo ""
+
     local base=$1
     local dataset=$2
     local prog_file="program/flowlog/${base}.dl"
@@ -294,6 +299,9 @@ run_flowlog() {
         echo "$formatted_exec"
     } > "$TEMP_RESULT_FILE"
     echo "  Results: load=$formatted_load exec=$formatted_exec"
+    cd FlowLog
+    cargo clean
+    cd ..
 }
 
 # -----------------------------------------------------------------------------
@@ -465,6 +473,283 @@ run_umbra() {
     echo "  Results: load=$load_time exec=$fastest_exec"
 }
 
+# -----------------------------------------------------------------------------
+# Souffle Benchmark Function
+# -----------------------------------------------------------------------------
+run_souffle() {
+    local base=$1
+    local dataset=$2
+    local dl_src="program/souffle/${base}.dl"
+    local fact_path="dataset/${dataset}"
+    local bin="program/souffle/${base}_souffle"
+    local profile_log="/tmp/souffle_${base}_${dataset}.prof"
+
+    echo "  Starting Souffle benchmark: $base on $dataset"
+
+    # Check files
+    [[ ! -f "$dl_src" ]] && { 
+        echo "  ERROR: Souffle program not found: $dl_src"; 
+        echo "-1 -1" > "$TEMP_RESULT_FILE"; 
+        return; 
+    }
+    [[ ! -d "$fact_path" ]] && { 
+        echo "  ERROR: Dataset path not found: $fact_path"; 
+        echo "-1 -1" > "$TEMP_RESULT_FILE"; 
+        return; 
+    }
+
+    # Compile Souffle program
+    echo "  Compiling Souffle program..."
+    if ! souffle -o "$bin" -p /dev/null "$dl_src" -j "$THREAD_COUNT" >/dev/null 2>&1; then
+        echo "  ERROR: Souffle compilation failed"
+        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        return
+    fi
+
+    # Logging execution with profiling
+    echo "  Running logging execution with profiling..."
+    local log_file="./log/benchmark/${THREAD_COUNT}/souffle_${base}_${dataset}.log"
+    echo "=== Souffle Execute Log for $base on $dataset ===" > "$log_file"
+    timeout "$TIMEOUT_SECONDS" "$bin" -F "$fact_path" -j "$THREAD_COUNT" -p "$profile_log" \
+        >> "$log_file" 2>&1 || echo "  WARNING: Logging execution failed or timed out"
+
+    # Timing executions (3 runs): capture fastest total time and estimate load/exec via profiler
+    echo "  Running timing executions..."
+    local fastest_total=""
+    local best_load=""
+    local best_exec=""
+    for i in {1..3}; do
+        echo "    Timing run $i/3"
+        local prof_i="/tmp/souffle_${base}_${dataset}_${i}.prof"
+        local etime=""
+        if timeout "$TIMEOUT_SECONDS" /usr/bin/time -f "%e" -o /tmp/souffle_time.tmp \
+            "$bin" -F "$fact_path" -j "$THREAD_COUNT" -p "$prof_i" > /dev/null 2>&1; then
+            etime=$(cat /tmp/souffle_time.tmp 2>/dev/null || echo "")
+            rm -f /tmp/souffle_time.tmp
+            if [[ "$etime" =~ ^[0-9]+\.?[0-9]*$ ]]; then
+                echo "      Completed in $etime seconds"
+                # Parse from souffleprof top: runtime loadtime savetime (first table row)
+                local topout="$(souffleprof "$prof_i" -c top 2>/dev/null || true)"
+                local vals
+                vals=$(printf "%s\n" "$topout" | awk 'BEGIN{found=0} /(^|[[:space:]])runtime[[:space:]]+loadtime[[:space:]]+savetime([[:space:]]|$)/{found=1; next} found==1 && NF {print $1, $2, $3; exit}')
+
+                local rt_raw="" ld_raw="" sv_raw=""
+                if [[ -n "$vals" ]]; then
+                    read -r rt_raw ld_raw sv_raw <<< "$vals"
+                fi
+                echo "      [DEBUG] vals: '$vals'"
+                echo "      [DEBUG] rt_raw: '$rt_raw' ld_raw: '$ld_raw' sv_raw: '$sv_raw'"
+
+                # Validate rt_raw is a time string before conversion
+                if ! [[ "$rt_raw" =~ ^([0-9]+\.?[0-9]*|\.[0-9]+)(m|s|ms)$ ]]; then
+                    echo "      [DEBUG] rt_raw is not a valid time string, skipping this run."
+                    continue
+                fi
+
+                # Convert helper: supports values like .123s or 12.3ms
+                convert_to_seconds() {
+                    local val="$1"
+                    if [[ -z "$val" ]]; then echo ""; return; fi
+                    # Accept numbers like 12.3, .368, 3, .12300000000000000000
+                    if [[ "$val" =~ ^([0-9]+\.?[0-9]*|\.[0-9]+)m$ ]]; then
+                        # minutes to seconds
+                        echo "$(echo \"${BASH_REMATCH[1]} * 60\" | bc -l)"
+                    elif [[ "$val" =~ ^([0-9]+\.?[0-9]*|\.[0-9]+)s$ ]]; then
+                        echo "${BASH_REMATCH[1]}"
+                    elif [[ "$val" =~ ^([0-9]+\.?[0-9]*|\.[0-9]+)ms$ ]]; then
+                        echo "$(echo \"${BASH_REMATCH[1]} / 1000\" | bc -l)"
+                    else
+                        echo ""
+                    fi
+                }
+                local rt_sec="$(convert_to_seconds "$rt_raw")"
+                local ld_sec="$(convert_to_seconds "$ld_raw")"
+                local sv_sec="$(convert_to_seconds "$sv_raw")"
+
+                # Compute exec for this run: runtime - loadtime (savetime included in exec since we output only size)
+
+                local exec_run=""
+                if [[ -n "$rt_sec" ]]; then
+                    local sub_ld="${ld_sec:-0}"
+                    exec_run=$(echo "$rt_sec - $sub_ld" | bc -l)
+                fi
+
+                echo "      [DEBUG] runtime (rt_sec): $rt_sec, load_run (ld_sec): $ld_sec, exec_run: $exec_run"
+
+                # Track fastest total and corresponding load/exec
+                if [[ -z "$fastest_total" || $(echo "$etime < $fastest_total" | bc -l) -eq 1 ]]; then
+                    fastest_total="$etime"
+                    best_load="${ld_sec:-}"
+                    best_exec="${exec_run:-}"
+                fi
+            else
+                echo "      Invalid time value, skipping"
+            fi
+        else
+            rm -f /tmp/souffle_time.tmp
+            echo "      Timed out"
+        fi
+        rm -f "$prof_i" 2>/dev/null || true
+    done
+
+    # If no valid total time, set to -1
+    if [[ -z "$fastest_total" ]]; then
+        fastest_total="$TIMEOUT_SECONDS"
+        best_load="$TIMEOUT_SECONDS"
+    fi
+
+    # Compute execution time as total - load (if load available)
+    local exec_time="$fastest_total"
+    if [[ -n "$best_load" && "$fastest_total" != "-1" ]]; then
+        exec_time=$(echo "$fastest_total - $best_load" | bc -l)
+    fi
+
+    # Write results
+    {
+        echo "$best_load"
+        echo "$exec_time"
+    } > "$TEMP_RESULT_FILE"
+    echo "  Results: load=$best_load exec=$exec_time"
+}
+
+# -----------------------------------------------------------------------------
+# RecStep Benchmark Function
+# -----------------------------------------------------------------------------
+run_recstep() {
+    local base=$1
+    local dataset=$2
+    local prog_file="program/recstep/${base}.dl"
+    local load_prog_file="program/recstep/${base}_load.dl"
+    local fact_path="dataset/${dataset}"
+
+    echo "  Starting RecStep benchmark: $base on $dataset"
+
+    # Check files
+    [[ ! -f "$prog_file" ]] && { 
+        echo "  ERROR: RecStep program not found: $prog_file"; 
+        echo "-1 -1" > "$TEMP_RESULT_FILE"; 
+        return; 
+    }
+    [[ ! -f "$load_prog_file" ]] && { 
+        echo "  ERROR: RecStep load-only program not found: $load_prog_file"; 
+        echo "-1 -1" > "$TEMP_RESULT_FILE"; 
+        return; 
+    }
+    [[ ! -d "$fact_path" ]] && { 
+        echo "  ERROR: Dataset path not found: $fact_path"; 
+        echo "-1 -1" > "$TEMP_RESULT_FILE"; 
+        return; 
+    }
+
+    # Source environment lazily and non-destructively
+    local OLD_PATH="$PATH"
+    if [[ -f "$HOME/recstep_env" ]]; then
+        # shellcheck disable=SC1090
+        source "$HOME/recstep_env"
+    fi
+    if ! command -v recstep >/dev/null 2>&1; then
+        echo "  ERROR: recstep CLI not found in PATH"
+        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        PATH="$OLD_PATH"
+        return
+    fi
+
+    # Optional: one logging run of full program
+    echo "  Running RecStep logging run..."
+    echo "=== RecStep Execute Log for $base on $dataset ===" > "./log/benchmark/${THREAD_COUNT}/recstep_${base}_${dataset}.log"
+    timeout "$TIMEOUT_SECONDS" recstep --program "$prog_file" --input "$fact_path" --jobs "$THREAD_COUNT" \
+        >> "./log/benchmark/${THREAD_COUNT}/recstep_${base}_${dataset}.log" 2>&1 || echo "  WARNING: RecStep logging execution failed or timed out"
+
+    # Time load-only program (3 runs; fastest)
+    local fastest_load=""
+    for i in {1..3}; do
+        echo "    Load-only timing run $i/3"
+        # Clear date-stamped logs
+        find ./log -maxdepth 1 -type f -regextype posix-extended -regex "\./log/[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]+" -delete 2>/dev/null || true
+        local ltime=""
+        if timeout "$TIMEOUT_SECONDS" /usr/bin/time -f "%e" -o /tmp/recstep_load_time.tmp \
+            recstep --program "$load_prog_file" --input "$fact_path" --jobs "$THREAD_COUNT" >/dev/null 2>&1; then
+            if [[ -f /tmp/recstep_load_time.tmp ]]; then
+                ltime=$(cat /tmp/recstep_load_time.tmp)
+                rm -f /tmp/recstep_load_time.tmp
+                if [[ "$ltime" =~ ^[0-9]+\.?[0-9]*$ ]]; then
+                    echo "      Completed in $ltime seconds"
+                    if [[ -z "$fastest_load" || $(echo "$ltime < $fastest_load" | bc -l) -eq 1 ]]; then
+                        fastest_load="$ltime"
+                    fi
+                else
+                    echo "      Invalid time value, skipping"
+                fi
+            else
+                echo "      No time file found, skipping"
+            fi
+        else
+            rm -f /tmp/recstep_load_time.tmp
+            echo "      Timed out"
+        fi
+
+        sleep 2
+    done
+
+    # Time full program (3 runs; fastest total)
+    local fastest_total=""
+    for i in {1..3}; do
+        echo "    Full-program timing run $i/3"
+        # Clear date-stamped logs
+        find ./log -maxdepth 1 -type f -regextype posix-extended -regex "\./log/[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]+" -delete 2>/dev/null || true
+        local ttime=""
+        if timeout "$TIMEOUT_SECONDS" /usr/bin/time -f "%e" -o /tmp/recstep_total_time.tmp \
+            recstep --program "$prog_file" --input "$fact_path" --jobs "$THREAD_COUNT" >/dev/null 2>&1; then
+            if [[ -f /tmp/recstep_total_time.tmp ]]; then
+                ttime=$(cat /tmp/recstep_total_time.tmp)
+                rm -f /tmp/recstep_total_time.tmp
+                if [[ "$ttime" =~ ^[0-9]+\.?[0-9]*$ ]]; then
+                    echo "      Completed in $ttime seconds"
+                    if [[ -z "$fastest_total" || $(echo "$ttime < $fastest_total" | bc -l) -eq 1 ]]; then
+                        fastest_total="$ttime"
+                    fi
+                else
+                    echo "      Invalid time value, skipping"
+                fi
+            else
+                echo "      No time file found, skipping"
+            fi
+        else
+            rm -f /tmp/recstep_total_time.tmp
+            echo "      Timed out"
+        fi
+
+        sleep 2
+    done
+
+    # Restore PATH
+    PATH="$OLD_PATH"
+
+    # Fallbacks on complete timeout
+    if [[ -z "$fastest_load" ]]; then fastest_load="$TIMEOUT_SECONDS"; fi
+    if [[ -z "$fastest_total" ]]; then fastest_total="$TIMEOUT_SECONDS"; fi
+
+    # Compute exec as fastest_total - fastest_load, unless timed out
+    local out_load="${fastest_load}"
+    local out_total="${fastest_total}"
+    local out_exec="-1"
+    if [[ "$out_total" == "$TIMEOUT_SECONDS" || "$out_load" == "$TIMEOUT_SECONDS" ]]; then
+        out_exec="$TIMEOUT_SECONDS"
+    elif [[ "$out_load" =~ ^[0-9]+\.?[0-9]*$ && "$out_total" =~ ^[0-9]+\.?[0-9]*$ ]]; then
+        out_exec=$(echo "$out_total - $out_load" | bc -l)
+    fi
+
+    # Format outputs
+    if [[ "$out_load" =~ ^[0-9]+\.?[0-9]*$ ]]; then out_load=$(printf "%.4f" "$out_load"); else out_load="-1"; fi
+    if [[ "$out_exec" =~ ^-?[0-9]+\.?[0-9]*$ ]]; then out_exec=$(printf "%.4f" "$out_exec"); else out_exec="-1"; fi
+
+    # Write results
+    {
+        echo "$out_load"
+        echo "$out_exec"
+    } > "$TEMP_RESULT_FILE"
+    echo "  Results: load=$out_load exec=$out_exec"
+}
 # =============================================================================
 # Main Benchmark Loop
 # =============================================================================
@@ -515,10 +800,30 @@ while IFS='=' read -r program dataset; do
     flowlog_exec="${lines[1]}"
     echo "FlowLog completed: load=$flowlog_load exec=$flowlog_exec"
 
+    # Run Souffle benchmark
+    echo ""
+    echo "--- Souffle Benchmark ---"
+    run_souffle "$program" "$dataset"
+    mapfile -t lines < "$TEMP_RESULT_FILE"
+    souffle_load="${lines[0]}"
+    souffle_exec="${lines[1]}"
+    echo "Souffle completed: load=$souffle_load exec=$souffle_exec"
+
+    # RecStep benchmark
+    echo ""
+    echo "--- RecStep Benchmark ---"
+    run_recstep "$program" "$dataset"
+    mapfile -t lines < "$TEMP_RESULT_FILE"
+    recstep_load="${lines[0]}"
+    recstep_exec="${lines[1]}"
+    echo "RecStep completed: load=$recstep_load exec=$recstep_exec"
+
     # Write results to file
-    printf "%-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
+    printf "%-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
         "$program" "$dataset" "$duck_load" "$duck_exec" \
         "$umbra_load" "$umbra_exec" "$flowlog_load" "$flowlog_exec" \
+        "$souffle_load" "$souffle_exec" "$ddlog_load" "$ddlog_exec" \
+        "$recstep_load" "$recstep_exec" \
         >> "$RESULT_FILE"
 
     # Cleanup
