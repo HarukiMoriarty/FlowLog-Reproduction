@@ -40,3 +40,51 @@ rule indices: [2]
 CC2(node, MIN(cc)) :- CC(node, cc).
 
 Initiliazing LPA logger......
+ERROR: Unrecognized relation Arc (1 : 6)
+COPY Arc FROM 'dataset/orkut/Arc.cs...
+     ^
+
+
+ERROR: Unrecognized relation Arc (1 : 6)
+COPY Arc FROM 'dataset/orkut/Arc.cs...
+     ^
+
+
+Exception caught when trying to execute the command:
+COPY Arc FROM 'dataset/orkut/Arc.csv' WITH (DELIMITER ',');
+Traceback (most recent call last):
+  File "/users/zhhong/RecStep/quickstep_api/quickstep.py", line 61, in sql_command
+    self.command_error_checking(output)
+  File "/users/zhhong/RecStep/quickstep_api/quickstep.py", line 33, in command_error_checking
+Starting Quickstep with 64 worker thread(s) and a 200.28 GB buffer pool.
+--num_workers is 64, but only specified 0 CPU affinities with --worker_affinities. 64 workers will be unaffinitized.
+    raise Exception(output)
+Exception: ERROR: Unrecognized relation Arc (1 : 6)
+COPY Arc FROM 'dataset/orkut/Arc.cs...
+     ^
+
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/users/zhhong/RecStep/execution/executor.py", line 83, in populate_data_into_edb
+    self.__quickstep_shell_instance.load_data_from_file(
+  File "/users/zhhong/RecStep/quickstep_api/quickstep.py", line 145, in load_data_from_file
+    self.load_file_failure_checking(self.sql_command(load_data_command))
+  File "/users/zhhong/RecStep/quickstep_api/quickstep.py", line 67, in sql_command
+    sys.exit(0)
+SystemExit: 0
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/users/zhhong/RecStep/recstep", line 173, in <module>
+    main()
+  File "/users/zhhong/RecStep/recstep", line 169, in main
+    interpret(PROGRAM)
+  File "/users/zhhong/RecStep/recstep", line 97, in interpret
+    executor.populate_data_into_edb(relation)
+  File "/users/zhhong/RecStep/execution/executor.py", line 91, in populate_data_into_edb
+    raise Exception(except_msg)
+Exception: Loading data from input file Arc for table dataset/orkut/Arc.csv with delimiter , failed,                           please check the input data (e.g., if the data matches the schema of Arc)

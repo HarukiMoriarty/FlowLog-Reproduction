@@ -7,7 +7,7 @@ set -e
 # Tests DuckDB, Umbra, and FlowLog databases across different thread counts
 
 # Thread counts to test
-THREAD_COUNTS=(1 2 4 8 16 32 64)
+THREAD_COUNTS=(64)
 
 # Display usage if help is requested
 if [[ "$1" == "-h" || "$1" == "--help" ]]; then

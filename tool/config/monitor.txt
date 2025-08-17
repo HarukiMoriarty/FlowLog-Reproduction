@@ -1,1 +1,1 @@
-bipartite=netflix
+sssp=arabic-sssp

@@ -2,7 +2,7 @@ EDB_DECL:
 Arc(a int, b int)
 
 IDB_DECL:
-CC2(cc int)
+CC2(node int, cc int)
 CC(node int, cc int)
 
 RULE_DECL:
