@@ -1,0 +1,40 @@
+=== RecStep Scalability Log for tc on G10K-0.001 (1 jobs) ===
+tcmalloc: large alloc 1465450496 bytes == 0x42a54000 @ 
+tcmalloc: large alloc 4139360256 bytes == 0x17130000 @ 
+tcmalloc: large alloc 8278720512 bytes == 0x10dcca000 @ 
+tcmalloc: large alloc 2982395904 bytes == 0x1712c000 @ 
+tcmalloc: large alloc 5964791808 bytes == 0xc8d68000 @ 
+EDB_DECL:
+Arc(x int, y int)
+
+IDB_DECL:
+Tc(x int, y int)
+
+RULE_DECL:
+0: Tc(x, y) :- Arc(x, y).
+1: Tc(x, y) :- Arc(z, y), Tc(x, z).
+
+DEPENDENCY_GRAPH: 
+
+rule 0: set()
+rule 1: {0, 1}
+Number of the rule strongly connected components (rscc): 2
+
+rule strongly connected components in reverse evaluation order: 
+<rscc index>: <rscc key> - <indices of rules>
+
+rscc 0: 1-[1]
+rscc 1: 0-[0]
+
+No directed cycle with a negative edge being detected:
+The Datalog program is stratifiable
+
+Rule Groups (in evaluation order):
+
+rule indices: [0]
+Tc(x, y) :- Arc(x, y).
+
+rule indices: [1]
+Tc(x, y) :- Arc(z, y), Tc(x, z).
+
+Initiliazing LPA logger......
