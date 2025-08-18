@@ -24,6 +24,19 @@ rm -rf "$RESULT_FILE"
 mkdir -p "./log/monitor/${THREAD_COUNT}"
 mkdir -p "./result"
 
+echo "=== Building FlowLog ==="
+FLOWLOG_DIR="$HOME/FlowLog"
+if [ ! -d "$FLOWLOG_DIR" ]; then
+    echo "[ERROR] FlowLog directory not found at $FLOWLOG_DIR. Please run env.sh first."
+    exit 1
+fi
+pushd "$FLOWLOG_DIR" > /dev/null
+git checkout nemo_aggregation
+cargo build --release
+popd > /dev/null
+echo "FlowLog build completed"
+echo ""
+
 echo "=== Monitor Benchmark Configuration ==="
 echo "Thread count: ${THREAD_COUNT}"
 
@@ -89,7 +102,13 @@ while IFS='=' read -r program dataset; do
 
     # FlowLog
     echo "--- FlowLog ---"
-    dlbench run --suffix-time "./FlowLog/target/release/executing --program program/flowlog/${program}.dl --facts dataset/${dataset} --workers ${THREAD_COUNT}" "flowlog_${program}_${dataset}_${THREAD_COUNT}t"
+    FLOWLOG_BIN="$HOME/FlowLog/target/release/executing"
+    if [ ! -x "$FLOWLOG_BIN" ]; then
+        echo "  ERROR: FlowLog binary not found at $FLOWLOG_BIN. Please build FlowLog first."
+        echo "-1 -1" > "$TEMP_RESULT_FILE"
+    else
+        dlbench run --suffix-time "$FLOWLOG_BIN --program program/flowlog/${program}.dl --facts dataset/${dataset} --workers ${THREAD_COUNT}" "flowlog_${program}_${dataset}_${THREAD_COUNT}t"
+    fi
 
     # DDlog
     echo "--- DDlog ---"

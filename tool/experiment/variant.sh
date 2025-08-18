@@ -77,8 +77,13 @@ echo ""
 # Build required systems
 if [[ "$BENCHMARK_TYPE" == "flowlog" || "$BENCHMARK_TYPE" == "both" ]]; then
     echo "=== Building FlowLog ==="
+    FLOWLOG_DIR="$HOME/FlowLog"
+    if [ ! -d "$FLOWLOG_DIR" ]; then
+        echo "Error: FlowLog directory not found at $FLOWLOG_DIR. Please run env.sh first." >&2
+        exit 1
+    fi
     (
-        cd FlowLog || { echo "Error: FlowLog directory not found" >&2; exit 1; }
+        cd "$FLOWLOG_DIR" || { echo "Error: FlowLog directory not found at $FLOWLOG_DIR" >&2; exit 1; }
         git checkout nemo_aggregation || { echo "Error: Failed to checkout nemo_aggregation branch" >&2; exit 1; }
         git pull || { echo "Warning: Failed to pull latest changes" >&2; }
         cargo build --release || { echo "Error: Failed to build FlowLog" >&2; exit 1; }
@@ -129,7 +134,12 @@ run_flowlog() {
     local dataset=$2
     local prog_file="program/flowlog/${base}.dl"
     local fact_path="dataset/${dataset}"
-    local flowlog_binary="./FlowLog/target/release/executing"
+    local flowlog_binary="$HOME/FlowLog/target/release/executing"
+    if [ ! -x "$flowlog_binary" ]; then
+        echo "  ERROR: FlowLog binary not found at $flowlog_binary. Please build FlowLog first."
+        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        return
+    fi
     local workers=$THREAD_COUNT
     
     echo "  Starting FlowLog benchmark: $base on $dataset"

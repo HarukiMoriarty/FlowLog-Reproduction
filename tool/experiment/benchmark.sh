@@ -216,11 +216,17 @@ run_duckdb() {
 # -----------------------------------------------------------------------------
 run_flowlog() {
     echo "=== Building FlowLog ==="
-    cd FlowLog
+    FLOWLOG_DIR="$HOME/FlowLog"
+    if [ ! -d "$FLOWLOG_DIR" ]; then
+        echo "[ERROR] FlowLog directory not found at $FLOWLOG_DIR. Please run env.sh first."
+        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        return
+    fi
+    pushd "$FLOWLOG_DIR" > /dev/null
     git checkout nemo_arithmetic
     git pull
     cargo build --release
-    cd ..
+    popd > /dev/null
     echo "FlowLog build completed"
     echo ""
 
@@ -228,7 +234,12 @@ run_flowlog() {
     local dataset=$2
     local prog_file="program/flowlog/${base}.dl"
     local fact_path="dataset/${dataset}"
-    local flowlog_binary="./FlowLog/target/release/executing"
+    local flowlog_binary="$HOME/FlowLog/target/release/executing"
+    if [ ! -x "$flowlog_binary" ]; then
+        echo "  ERROR: FlowLog binary not found at $flowlog_binary. Please build FlowLog first."
+        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        return
+    fi
     local workers=$THREAD_COUNT
     
     echo "  Starting FlowLog benchmark: $base on $dataset"

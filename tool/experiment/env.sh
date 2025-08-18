@@ -171,8 +171,16 @@ install_duckdb() {
 # ============================================
 
 install_flowlog() {
+    echo "[SETUP] Ensuring FlowLog is cloned under $HOME/FlowLog ..."
+    local FLOWLOG_ROOT="$HOME/FlowLog"
+    if [ ! -d "$FLOWLOG_ROOT" ]; then
+        echo "[CLONE] Cloning FlowLog into $FLOWLOG_ROOT ..."
+        git clone https://github.com/DB-Flow/FlowLog.git "$FLOWLOG_ROOT"
+    else
+        echo "[OK] FlowLog already present at $FLOWLOG_ROOT"
+    fi
+
     echo "[SETUP] Installing Rust toolchain for FlowLog..."
-    
     # Check if Rust is already installed
     if ! command -v rustc >/dev/null 2>&1; then
         echo "[INSTALL] Installing Rust..."
@@ -181,13 +189,13 @@ install_flowlog() {
     else
         echo "[OK] Rust is already installed"
     fi
-    
+
     # Ensure Rust is available in current session
     export PATH="$CARGO_BIN_DIR:$PATH"
-    
+
     echo "[UPDATE] Updating Rust to latest stable version..."
     rustup update && rustup default stable
-    
+
     echo "[OK] FlowLog environment ready!"
 }
 
