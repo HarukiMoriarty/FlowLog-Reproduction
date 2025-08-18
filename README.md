@@ -1,44 +1,132 @@
-# Datalog-DB Benchmark
+# FlowLog: Efficient and Extensible Datalog via Incrementality
 
-Benchmarks FlowLog vs DuckDB vs Umbra.
+This repository contains scripts to reproduce results for the paper “FlowLog: Efficient and Extensible Datalog via Incrementality.”
 
-## Quick Start
+For now, this repository is scoped to paper reproduction. Start with the environment setup below, then run the reproduction steps for each table/figure.
 
-1. Clone this repository with submodules:
+## Recommended environment
+
+- CloudLab Clem cluster, type 6525
+- CPU: AMD EPYC 7543, 32-core processors (64 physical cores total), hyper-threading
+- OS: Ubuntu 22.04
+- Memory: 256 GiB
+
+We highly recommend using the same or similar hardware/OS to match performance characteristics reported in the paper.
+
+## Environment setup (Step 1)
+
+Install prerequisites and toolchains. You can install everything at once (recommended), or select specific systems.
+
+- Install all supported systems:
 ```bash
-git clone --recursive https://github.com/HarukiMoriarty/Datalog-DB-benchmark
+# syntax: env.sh [--all | --systems LIST]
+./tool/experiment/env.sh --all
 ```
 
-2. Setup environment:
+- Or install selected systems (comma-separated):
 ```bash
-./tool/env.sh
+# syntax: env.sh --systems duckdb,flowlog,umbra,souffle,ddlog,recstep
+./tool/experiment/env.sh --systems duckdb,flowlog,umbra,souffle,ddlog,recstep
 ```
-Installs DuckDB, Docker, Rust, pulls Umbra image, and shows FlowLog submodule setup.
 
-3. Run benchmarks:
+Notes:
+- You need sudo privileges; the script installs packages and configures Docker.
+- After the script completes, re-login (or reboot) so docker group membership takes effect, and run: `source ~/.bashrc` to pick up PATH updates.
+
+## Reproduce Table 1
+
+Run the main benchmark (defaults: 900s timeout, 64 threads, all engines). You can override via flags.
 ```bash
-./tool/benchmark.sh
+# syntax: benchmark.sh [-t SECONDS] [-n THREADS] [-e ENGINES]
+# ENGINES: duckdb,umbra,flowlog,souffle,recstep
+./tool/experiment/benchmark.sh -t 900 -n 64 -e duckdb,umbra,flowlog,souffle,recstep
 ```
-Downloads datasets, runs all systems, outputs timing table to `result.txt`.
 
-## Configuration
+Configuration:
+- Program/dataset pairs: `./tool/config/benchmark.txt` (one `program=dataset` per line, `#` for comments). The default file lists the pairs used for Table 1; add more if needed.
 
-- `tool/config.txt`: Which programs/datasets to run (comment with `#`)
-- `program/duck/`: DuckDB SQL files
-- `program/umbra/`: Umbra SQL files  
-- `program/flowlog/`: FlowLog Datalog files
+Results:
+- Output table: `./result/benchmark.txt`
+- For some engines, Load(s) and Exec(s) are reported separately; sum Load + Exec if you need a single total time.
+- Logs: `./log/benchmark/<threads>/`
 
-## How it works
+## Reproduce Figure 6
 
-The benchmark script:
-1. Downloads datasets from hardcoded URLs
-2. For each program+dataset: runs DuckDB CLI, Umbra Docker, FlowLog binary
-3. Extracts timing from command output and logs
-4. Runs each 3 times, takes fastest time
-5. Outputs formatted table
+1) Ensure environment and datasets are prepared (same usage as Table 1):
+```bash
+# syntax: benchmark.sh [-t SECONDS] [-n THREADS]
+./tool/experiment/benchmark.sh -t 900 -n 64
+```
 
-## Modifying
+2) Plot stacked Exec+Load bars for selected programs:
+```bash
+# syntax: plot_stack.py --file FILE --programs P1 P2 ... --out OUT --threads N
+python3 tool/plot/plot_stack.py --file table/stack_plot.txt \
+  --programs SSSP Reach Bipartite Polonius CC Andersen \
+  --out figure6.pdf --threads 64
+```
 
-- **Add new query**: Create SQL/Datalog files in all 3 `program/` dirs, add to `config.txt`
-- **Change datasets**: Add new ones to `config.txt`
-- **Fix timing issues**: Check `log/` files, FlowLog timing extracted from "Dataflow executed" logs
+Inputs and behavior:
+- The plotting script reads a whitespace-separated file with Load/Exec columns for each engine (an example is provided at `table/stack_plot.txt`).
+- Values `-1` are treated as unsupported; values `>= 900` seconds are treated as timeouts (annotated as TO).
+
+Output:
+- The figure is saved to `figure6.pdf` (or the path you pass via `--out`).
+- Note: The camera-ready Figure 6 is typeset in LaTeX. The exact LaTeX figure source is not included; the script above is a helper to approximate the plot for reproduction.
+
+## Reproduce Figure 7
+
+1) Run system monitoring for selected programs/datasets using the provided config:
+```bash
+# syntax: monitor.sh [THREAD_COUNT]
+./tool/experiment/monitor.sh 64
+```
+- Config file: `./tool/config/monitor.txt`
+- Logs are produced per engine/program/dataset; collect/copy them into a single folder for plotting.
+
+2) Plot CPU/Memory over time from the collected logs (use wildcard to include all logs in the folder):
+```bash
+# syntax: plot_live.py PATH/*.log
+python3 tool/plot/plot_live.py ./table/live-plot/*.log
+```
+
+Notes:
+- Filenames like `Program_Dataset_Threads_Engine.log` are expected (e.g., `Bipartite_netflix_4_flowlog.log`).
+- `plot_live.py` requires LaTeX (`pdflatex`) and outputs `liveplot.png` and `liveplot.pgf`.
+- Prepared example logs are under `./table/live-plot/`.
+
+## Reproduce Figure 8
+
+Run the scalability experiment across thread counts:
+```bash
+# syntax: scalability.sh
+./tool/experiment/scalability.sh
+```
+
+Configuration:
+- Program/dataset pairs: `./tool/config/scalability.txt`
+- Thread counts are set inside the script via `THREAD_COUNTS=(...)`; edit as needed.
+
+Results:
+- Output table: `./scalability.txt`
+- Logs: `./log/scalability/`
+
+## Reproduce Figure 9
+
+Use the variant benchmark to compare FlowLog and Soufflé variants:
+```bash
+# syntax: variant.sh [TIMEOUT_SECONDS] [THREAD_COUNT] [BENCHMARK_TYPE]
+# BENCHMARK_TYPE: flowlog | souffle | both (default: both)
+./tool/experiment/variant.sh 900 64 both
+```
+
+Configuration:
+- Variants are listed in `./tool/config/variant.txt` as `program_variant=dataset`.
+- For the paper, we provide variants for DOOP, DDISASM, and Galen. To obtain the original Figure 9 data, edit `variant.txt` to include all available variants for these three programs (e.g., `doop`, `doop-1`, …; `ddisasm`, `ddisasm-1`, …; `galen`, `galen-1`, …) with their corresponding datasets.
+
+Results:
+- Output table: `./result/variant.txt`
+- Logs: `./log/variant_benchmark/<threads>/` (compile/execute) and `./log/benchmark/<threads>/` (timing runs)
+
+
+
