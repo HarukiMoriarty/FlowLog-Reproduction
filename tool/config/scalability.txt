@@ -1,1 +1,12 @@
+# Scalability config: each line is "program=dataset"
+# "program" is the program; "dataset" names a dataset hosted at:
+# https://pages.cs.wisc.edu/~m0riarty/dataset/
+# This config tests scalability of different systems
+# Example: cc=livejournal (tests scalability on livejournal dataset)
+
 cc=orkut
+tc=G10K-0.001
+bipartite=netflix
+cspa=cspa-postgresql
+csda=csda-postgresql
+borrow=borrow

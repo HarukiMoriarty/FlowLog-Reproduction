@@ -7,7 +7,7 @@ set -e
 # Tests DuckDB, Umbra, and FlowLog databases across different thread counts
 
 # Thread counts to test
-THREAD_COUNTS=(64)
+THREAD_COUNTS=(1 2 4 8 16 32 64)
 
 # Display usage if help is requested
 if [[ "$1" == "-h" || "$1" == "--help" ]]; then
@@ -28,38 +28,46 @@ fi
 CONFIG_FILE="./tool/config/scalability.txt"
 TEMP_SQL="tmp_sql"
 DATASET_DIR="./dataset"
-RESULT_FILE="scalability.txt"
+RESULT_FILE="./result/scalability.txt"
 TEMP_RESULT_FILE="/tmp/scalability_result.tmp"
 
 # Initialize directories and files
 mkdir -p "$DATASET_DIR"
 rm -rf "$RESULT_FILE"
 mkdir -p "./log/scalability"
+mkdir -p "./result"
 
 echo "=== Database Scalability Testing Configuration ==="
 echo "Thread counts: ${THREAD_COUNTS[*]}"
 echo "No timeout - all queries run to completion"
 echo ""
 
-# echo "=== Building FlowLog ==="
-# cd FlowLog
-# git checkout nemo_arithmetic
-# cargo build --release
-# cd ..
-# echo "FlowLog build completed"
-# echo ""
+echo "=== Building FlowLog ==="
+cd FlowLog
+git checkout nemo_arithmetic
+cargo build --release
+cd ..
+echo "FlowLog build completed"
+echo ""
 
 # Initialize result file with headers
 if [[ ! -f "$RESULT_FILE" ]]; then
-    printf "%-20s %-20s %-8s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
-        "Program" "Dataset" "Threads" "Duck_Load(s)" "Duck_Exec(s)" \
-        "Umbra_Load(s)" "Umbra_Exec(s)" "FlowLog_Load(s)" "FlowLog_Exec(s)" \
-        "DDlog_Load(s)" "DDlog_Exec(s)" "RecStep_Load(s)" "RecStep_Exec(s)" \
-    printf "%-20s %-20s %-8s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
-        "--------------------" "--------------------" "--------" "--------------------" "--------------------" \
-        "--------------------" "--------------------" "--------------------" "--------------------" \
-        "--------------------" "--------------------" "--------------------" "--------------------" \
-        >> "$RESULT_FILE"
+    {
+        printf "%-20s %-20s %-8s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
+            "Program" "Dataset" "Threads" \
+            "Duck_Load(s)" "Duck_Exec(s)" \
+            "Umbra_Load(s)" "Umbra_Exec(s)" \
+            "FlowLog_Load(s)" "FlowLog_Exec(s)" \
+            "DDlog_Load(s)" "DDlog_Exec(s)" \
+            "RecStep_Load(s)" "RecStep_Exec(s)"
+        printf "%-20s %-20s %-8s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
+            "--------------------" "--------------------" "--------" \
+            "--------------------" "--------------------" \
+            "--------------------" "--------------------" \
+            "--------------------" "--------------------" \
+            "--------------------" "--------------------" \
+            "--------------------" "--------------------"
+    } >> "$RESULT_FILE"
 fi
 
 # =============================================================================
@@ -442,7 +450,7 @@ run_umbra_scalability() {
     fi
     
     echo "  Removing Docker volume..."
-    sudo docker volume rm umbra-db > /dev/null 2>&1 || echo "  WARNING: Could not remove volume"
+    sudo docker volume rm "umbra-db-${thread_count}" > /dev/null 2>&1 || echo "  WARNING: Could not remove volume umbra-db-${thread_count}"
 
     # Write results to temp file
     {
@@ -537,7 +545,11 @@ run_ddlog_scalability() {
 # RecStep Scalability Test Function
 # -----------------------------------------------------------------------------
 run_recstep_scalability() {
-    source "$HOME/recstep_env"
+    # Optional: source RecStep environment if available
+    if [[ -f "$HOME/recstep_env" ]]; then
+        # shellcheck disable=SC1090
+        source "$HOME/recstep_env"
+    fi
     local base=$1
     local dataset=$2
     local thread_count=$3
@@ -648,42 +660,50 @@ while IFS='=' read -r program dataset; do
         echo ""
         echo "--- Testing with $thread_count threads ---"
 
-        # # Run DuckDB scalability test
-        # echo ""
-        # echo "DuckDB ($thread_count threads):"
-        # run_duckdb_scalability "$program" "$dataset" "$thread_count"
-        # mapfile -t lines < "$TEMP_RESULT_FILE"
-        # duck_load="${lines[0]}"
-        # duck_exec="${lines[1]}"
-        # echo "DuckDB completed: load=$duck_load exec=$duck_exec"
-        
-        # # Run Umbra scalability test
-        # echo ""
-        # echo "Umbra ($thread_count CPUs):"
-        # run_umbra_scalability "$program" "$dataset" "$thread_count"
-        # mapfile -t lines < "$TEMP_RESULT_FILE"
-        # umbra_load="${lines[0]}"
-        # umbra_exec="${lines[1]}"
-        # echo "Umbra completed: load=$umbra_load exec=$umbra_exec"
-        
-        # # Run FlowLog scalability test
-        # echo ""
-        # echo "FlowLog ($thread_count workers):"
-        # run_flowlog_scalability "$program" "$dataset" "$thread_count"
-        # mapfile -t lines < "$TEMP_RESULT_FILE"
-        # flowlog_load="${lines[0]}"
-        # flowlog_exec="${lines[1]}"
-        # echo "FlowLog completed: load=$flowlog_load exec=$flowlog_exec"
+        # Initialize per-DB defaults (use -1 for absent/disabled tests)
+        duck_load="-1"; duck_exec="-1"
+        umbra_load="-1"; umbra_exec="-1"
+        flowlog_load="-1"; flowlog_exec="-1"
+        ddlog_load="-1"; ddlog_exec="-1"
+        recstep_load="-1"; recstep_exec="-1"
 
-        # echo ""
-        # echo "DDlog ($thread_count workers):"
-        # run_ddlog_scalability "$program" "$dataset" "$thread_count"
-        # mapfile -t lines < "$TEMP_RESULT_FILE"
-        # ddlog_load="${lines[0]}"
-        # ddlog_exec="${lines[1]}"
-        # echo "DDlog completed: load=$ddlog_load exec=$ddlog_exec"
+        # Run DuckDB scalability test
+        echo ""
+        echo "DuckDB ($thread_count threads):"
+        run_duckdb_scalability "$program" "$dataset" "$thread_count"
+        mapfile -t lines < "$TEMP_RESULT_FILE"
+        duck_load="${lines[0]}"
+        duck_exec="${lines[1]}"
+        echo "DuckDB completed: load=$duck_load exec=$duck_exec"
+        
+        # Run Umbra scalability test
+        echo ""
+        echo "Umbra ($thread_count CPUs):"
+        run_umbra_scalability "$program" "$dataset" "$thread_count"
+        mapfile -t lines < "$TEMP_RESULT_FILE"
+        umbra_load="${lines[0]}"
+        umbra_exec="${lines[1]}"
+        echo "Umbra completed: load=$umbra_load exec=$umbra_exec"
+        
+        # Run FlowLog scalability test
+        echo ""
+        echo "FlowLog ($thread_count workers):"
+        run_flowlog_scalability "$program" "$dataset" "$thread_count"
+        mapfile -t lines < "$TEMP_RESULT_FILE"
+        flowlog_load="${lines[0]}"
+        flowlog_exec="${lines[1]}"
+        echo "FlowLog completed: load=$flowlog_load exec=$flowlog_exec"
 
-        # Run RecStep scalability test
+        # Run DDlog scalability test
+        echo ""
+        echo "DDlog ($thread_count workers):"
+        run_ddlog_scalability "$program" "$dataset" "$thread_count"
+        mapfile -t lines < "$TEMP_RESULT_FILE"
+        ddlog_load="${lines[0]}"
+        ddlog_exec="${lines[1]}"
+        echo "DDlog completed: load=$ddlog_load exec=$ddlog_exec"
+
+        # Run RecStep scalability test (others currently disabled above)
         echo ""
         echo "RecStep ($thread_count jobs):"
         run_recstep_scalability "$program" "$dataset" "$thread_count"
