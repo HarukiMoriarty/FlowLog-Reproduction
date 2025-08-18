@@ -6,27 +6,62 @@ set -e
 # =============================================================================
 # Benchmarks DuckDB, Umbra, and FlowLog databases with configurable parameters
 
-# Default timeout in seconds (15 minutes) and thread count
-TIMEOUT_SECONDS=${1:-900}
-THREAD_COUNT=${2:-64}
+# Default timeout in seconds (15 minutes), thread count and engines to run
+TIMEOUT_SECONDS=900
+THREAD_COUNT=64
+# Comma-separated list: duckdb,umbra,flowlog,souffle,recstep (default: all)
+ENGINES="duckdb,umbra,flowlog,souffle,recstep"
 
-# Display usage if help is requested
-if [[ "$1" == "-h" || "$1" == "--help" ]]; then
-    echo "Usage: $0 [TIMEOUT_SECONDS] [THREAD_COUNT]"
-    echo ""
-    echo "Run database benchmarks with configurable timeout and thread count."
-    echo ""
-    echo "Arguments:"
-    echo "  TIMEOUT_SECONDS  Timeout for each query execution in seconds (default: 900 = 15 minutes)"
-    echo "  THREAD_COUNT     Number of threads/workers to use (default: 64)"
-    echo ""
-    echo "Examples:"
-    echo "  $0                # Use default 15-minute timeout and 64 threads"
-    echo "  $0 600            # Use 10-minute timeout and 64 threads"
-    echo "  $0 1800 32        # Use 30-minute timeout and 32 threads"
-    echo "  $0 900 4          # Use 15-minute timeout and 4 threads"
-    exit 0
+# Parse CLI args (flags) while keeping backward-compatible positional usage
+POSITIONAL=()
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -h|--help)
+            echo "Usage: $0 [OPTIONS] [TIMEOUT_SECONDS] [THREAD_COUNT]"
+            echo ""
+            echo "Run database benchmarks with configurable timeout, thread count, and engine selection."
+            echo ""
+            echo "Options:"
+            echo "  -t, --timeout SECONDS    Timeout for each query execution in seconds (default: 900)"
+            echo "  -n, --threads N          Number of threads/workers to use (default: 64)"
+            echo "  -e, --engines LIST       Comma-separated engines to run: duckdb,umbra,flowlog,souffle,recstep (default: all)"
+            echo "  -h, --help               Show this help message and exit"
+            echo ""
+            echo "Examples:"
+            echo "  $0                      # Use defaults (15-minute timeout, 64 threads, all engines)"
+            echo "  $0 -t 600 -n 32 -e duckdb,flowlog"
+            echo "  $0 600 32               # Backward-compatible: timeout=600, threads=32"
+            exit 0
+            ;;
+        -t|--timeout)
+            TIMEOUT_SECONDS="$2"; shift 2;;
+        -n|--threads)
+            THREAD_COUNT="$2"; shift 2;;
+        -e|--engines)
+            ENGINES="$2"; shift 2;;
+        --)
+            shift; break;;
+        -*|--*)
+            echo "Unknown option: $1"; exit 1;;
+        *)
+            POSITIONAL+=("$1"); shift;;
+    esac
+done
+
+# If positional args (legacy) provided, map them to timeout and threads
+if [[ ${#POSITIONAL[@]} -ge 1 ]]; then
+    if [[ "${POSITIONAL[0]}" =~ ^[0-9]+$ ]]; then
+        TIMEOUT_SECONDS=${POSITIONAL[0]}
+    fi
 fi
+if [[ ${#POSITIONAL[@]} -ge 2 ]]; then
+    if [[ "${POSITIONAL[1]}" =~ ^[0-9]+$ ]]; then
+        THREAD_COUNT=${POSITIONAL[1]}
+    fi
+fi
+
+# Normalize engines string (lowercase, remove spaces)
+ENGINES=$(echo "$ENGINES" | tr '[:upper:]' '[:lower:]' | tr -d '[:space:]')
 
 # =============================================================================
 # Configuration and Setup
@@ -75,6 +110,12 @@ fi
 # =============================================================================
 # Database Benchmark Functions
 # =============================================================================
+
+# Helper: check if an engine is selected in the ENGINES list
+engine_selected() {
+    local want="$1"
+    [[ ",${ENGINES}," == *",${want},"* ]]
+}
 # -----------------------------------------------------------------------------
 # DuckDB Benchmark Function
 # -----------------------------------------------------------------------------
@@ -630,11 +671,6 @@ run_recstep() {
         echo "-1 -1" > "$TEMP_RESULT_FILE"; 
         return; 
     }
-    [[ ! -f "$load_prog_file" ]] && { 
-        echo "  ERROR: RecStep load-only program not found: $load_prog_file"; 
-        echo "-1 -1" > "$TEMP_RESULT_FILE"; 
-        return; 
-    }
     [[ ! -d "$fact_path" ]] && { 
         echo "  ERROR: Dataset path not found: $fact_path"; 
         echo "-1 -1" > "$TEMP_RESULT_FILE"; 
@@ -654,42 +690,14 @@ run_recstep() {
         return
     fi
 
-    # Optional: one logging run of full program
+    # one logging run of full program
     echo "  Running RecStep logging run..."
     echo "=== RecStep Execute Log for $base on $dataset ===" > "./log/benchmark/${THREAD_COUNT}/recstep_${base}_${dataset}.log"
     timeout "$TIMEOUT_SECONDS" recstep --program "$prog_file" --input "$fact_path" --jobs "$THREAD_COUNT" \
         >> "./log/benchmark/${THREAD_COUNT}/recstep_${base}_${dataset}.log" 2>&1 || echo "  WARNING: RecStep logging execution failed or timed out"
 
-    # Time load-only program (3 runs; fastest)
-    local fastest_load=""
-    for i in {1..3}; do
-        echo "    Load-only timing run $i/3"
-        # Clear date-stamped logs
-        find ./log -maxdepth 1 -type f -regextype posix-extended -regex "\./log/[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]+" -delete 2>/dev/null || true
-        local ltime=""
-        if timeout "$TIMEOUT_SECONDS" /usr/bin/time -f "%e" -o /tmp/recstep_load_time.tmp \
-            recstep --program "$load_prog_file" --input "$fact_path" --jobs "$THREAD_COUNT" >/dev/null 2>&1; then
-            if [[ -f /tmp/recstep_load_time.tmp ]]; then
-                ltime=$(cat /tmp/recstep_load_time.tmp)
-                rm -f /tmp/recstep_load_time.tmp
-                if [[ "$ltime" =~ ^[0-9]+\.?[0-9]*$ ]]; then
-                    echo "      Completed in $ltime seconds"
-                    if [[ -z "$fastest_load" || $(echo "$ltime < $fastest_load" | bc -l) -eq 1 ]]; then
-                        fastest_load="$ltime"
-                    fi
-                else
-                    echo "      Invalid time value, skipping"
-                fi
-            else
-                echo "      No time file found, skipping"
-            fi
-        else
-            rm -f /tmp/recstep_load_time.tmp
-            echo "      Timed out"
-        fi
-
-        sleep 2
-    done
+    # For RecStep we skip separate load timing: load time is treated as 0 and
+    # we only time the full program runs (execution time = full run time).
 
     # Time full program (3 runs; fastest total)
     local fastest_total=""
@@ -725,19 +733,12 @@ run_recstep() {
     # Restore PATH
     PATH="$OLD_PATH"
 
-    # Fallbacks on complete timeout
-    if [[ -z "$fastest_load" ]]; then fastest_load="$TIMEOUT_SECONDS"; fi
+    # Fallback on complete timeout
     if [[ -z "$fastest_total" ]]; then fastest_total="$TIMEOUT_SECONDS"; fi
 
-    # Compute exec as fastest_total - fastest_load, unless timed out
-    local out_load="${fastest_load}"
-    local out_total="${fastest_total}"
-    local out_exec="-1"
-    if [[ "$out_total" == "$TIMEOUT_SECONDS" || "$out_load" == "$TIMEOUT_SECONDS" ]]; then
-        out_exec="$TIMEOUT_SECONDS"
-    elif [[ "$out_load" =~ ^[0-9]+\.?[0-9]*$ && "$out_total" =~ ^[0-9]+\.?[0-9]*$ ]]; then
-        out_exec=$(echo "$out_total - $out_load" | bc -l)
-    fi
+    # For simplified RecStep reporting: load time = 0, exec time = fastest_total
+    local out_load=0
+    local out_exec="$fastest_total"
 
     # Format outputs
     if [[ "$out_load" =~ ^[0-9]+\.?[0-9]*$ ]]; then out_load=$(printf "%.4f" "$out_load"); else out_load="-1"; fi
@@ -750,6 +751,7 @@ run_recstep() {
     } > "$TEMP_RESULT_FILE"
     echo "  Results: load=$out_load exec=$out_exec"
 }
+
 # =============================================================================
 # Main Benchmark Loop
 # =============================================================================
@@ -773,50 +775,77 @@ while IFS='=' read -r program dataset; do
     echo ""
     echo "=== RUNNING: $program on $dataset ==="
 
-    # Run DuckDB benchmark
-    echo ""
-    echo "--- DuckDB Benchmark ---"
-    run_duckdb "$program" "$dataset"
-    mapfile -t lines < "$TEMP_RESULT_FILE"
-    duck_load="${lines[0]}"
-    duck_exec="${lines[1]}"
-    echo "DuckDB completed: load=$duck_load exec=$duck_exec"
-    
-    # Run Umbra benchmark
-    echo ""
-    echo "--- Umbra Benchmark ---"
-    run_umbra "$program" "$dataset"
-    mapfile -t lines < "$TEMP_RESULT_FILE"
-    umbra_load="${lines[0]}"
-    umbra_exec="${lines[1]}"
-    echo "Umbra completed: load=$umbra_load exec=$umbra_exec"
-    
-    # Run FlowLog benchmark
-    echo ""
-    echo "--- FlowLog Benchmark ---"
-    run_flowlog "$program" "$dataset"
-    mapfile -t lines < "$TEMP_RESULT_FILE"
-    flowlog_load="${lines[0]}"
-    flowlog_exec="${lines[1]}"
-    echo "FlowLog completed: load=$flowlog_load exec=$flowlog_exec"
+    # Prepare default values for all engines (in case some are skipped)
+    duck_load="-1"; duck_exec="-1"
+    umbra_load="-1"; umbra_exec="-1"
+    flowlog_load="-1"; flowlog_exec="-1"
+    souffle_load="-1"; souffle_exec="-1"
+    recstep_load="-1"; recstep_exec="-1"
 
-    # Run Souffle benchmark
-    echo ""
-    echo "--- Souffle Benchmark ---"
-    run_souffle "$program" "$dataset"
-    mapfile -t lines < "$TEMP_RESULT_FILE"
-    souffle_load="${lines[0]}"
-    souffle_exec="${lines[1]}"
-    echo "Souffle completed: load=$souffle_load exec=$souffle_exec"
+    # Run DuckDB benchmark (if requested)
+    if engine_selected duckdb; then
+        echo ""
+        echo "--- DuckDB Benchmark ---"
+        run_duckdb "$program" "$dataset"
+        mapfile -t lines < "$TEMP_RESULT_FILE"
+        duck_load="${lines[0]}"
+        duck_exec="${lines[1]}"
+        echo "DuckDB completed: load=$duck_load exec=$duck_exec"
+    else
+        echo "--- DuckDB skipped ---"
+    fi
 
-    # RecStep benchmark
-    echo ""
-    echo "--- RecStep Benchmark ---"
-    run_recstep "$program" "$dataset"
-    mapfile -t lines < "$TEMP_RESULT_FILE"
-    recstep_load="${lines[0]}"
-    recstep_exec="${lines[1]}"
-    echo "RecStep completed: load=$recstep_load exec=$recstep_exec"
+    # Run Umbra benchmark (if requested)
+    if engine_selected umbra; then
+        echo ""
+        echo "--- Umbra Benchmark ---"
+        run_umbra "$program" "$dataset"
+        mapfile -t lines < "$TEMP_RESULT_FILE"
+        umbra_load="${lines[0]}"
+        umbra_exec="${lines[1]}"
+        echo "Umbra completed: load=$umbra_load exec=$umbra_exec"
+    else
+        echo "--- Umbra skipped ---"
+    fi
+
+    # Run FlowLog benchmark (if requested)
+    if engine_selected flowlog; then
+        echo ""
+        echo "--- FlowLog Benchmark ---"
+        run_flowlog "$program" "$dataset"
+        mapfile -t lines < "$TEMP_RESULT_FILE"
+        flowlog_load="${lines[0]}"
+        flowlog_exec="${lines[1]}"
+        echo "FlowLog completed: load=$flowlog_load exec=$flowlog_exec"
+    else
+        echo "--- FlowLog skipped ---"
+    fi
+
+    # Run Souffle benchmark (if requested)
+    if engine_selected souffle; then
+        echo ""
+        echo "--- Souffle Benchmark ---"
+        run_souffle "$program" "$dataset"
+        mapfile -t lines < "$TEMP_RESULT_FILE"
+        souffle_load="${lines[0]}"
+        souffle_exec="${lines[1]}"
+        echo "Souffle completed: load=$souffle_load exec=$souffle_exec"
+    else
+        echo "--- Souffle skipped ---"
+    fi
+
+    # RecStep benchmark (if requested)
+    if engine_selected recstep; then
+        echo ""
+        echo "--- RecStep Benchmark ---"
+        run_recstep "$program" "$dataset"
+        mapfile -t lines < "$TEMP_RESULT_FILE"
+        recstep_load="${lines[0]}"
+        recstep_exec="${lines[1]}"
+        echo "RecStep completed: load=$recstep_load exec=$recstep_exec"
+    else
+        echo "--- RecStep skipped ---"
+    fi
 
     # Write results to file
     printf "%-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s\n" \

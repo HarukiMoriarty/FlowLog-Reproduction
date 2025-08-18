@@ -44,6 +44,8 @@ andersen=large
 dyck=kernel
 dyck=postgre
 
+galen=galen
+
 crdt=crdt
 crdt_slow=crdt
 
