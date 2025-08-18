@@ -1,1 +1,10 @@
-sssp=arabic-sssp
+# Live monitor config: each line is "program=dataset"
+# "program" is the program; "dataset" names a dataset hosted at:
+# https://pages.cs.wisc.edu/~m0riarty/dataset/
+# This config tests cpu and memory dynamic usage of different systems
+# Example: cc=livejournal (tests live metrics on livejournal dataset)
+
+bipartite=netflix
+csda=csda-postgresql
+galen=galen
+biojava=biojava
