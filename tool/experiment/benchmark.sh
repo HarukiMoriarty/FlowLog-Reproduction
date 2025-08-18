@@ -70,13 +70,14 @@ ENGINES=$(echo "$ENGINES" | tr '[:upper:]' '[:lower:]' | tr -d '[:space:]')
 CONFIG_FILE="./tool/config/benchmark.txt"
 TEMP_SQL="tmp_sql"
 DATASET_DIR="./dataset"
-RESULT_FILE="benchmark.txt"
+RESULT_FILE="./result/benchmark.txt"
 TEMP_RESULT_FILE="/tmp/benchmark_result.tmp"
 
 # Initialize directories and files
 mkdir -p "$DATASET_DIR"
 rm -rf "$RESULT_FILE"
 mkdir -p "./log/benchmark/${THREAD_COUNT}"
+mkdir -p "./result"
 
 echo "=== Database Benchmark Configuration ==="
 echo "Timeout: ${TIMEOUT_SECONDS} seconds ($(echo "scale=1; $TIMEOUT_SECONDS/60" | bc -l) minutes)"

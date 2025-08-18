@@ -1,311 +1,475 @@
 #!/bin/bash
-# Exit immediately if a command exits with a non-zero status
-set -e
+set -euo pipefail
 
-############################################################
-# OPTIMIZATION TIMING TEST SCRIPT
-# This script measures execution time for FlowLog programs
-# with different optimization levels (-O1, -O2, -O3)
-# 
-# Execution logs are saved to ./log/ directory
-# Timing information is extracted from the "Dataflow executed" log line
-# Results are generated as table and CSV in the log directory
-############################################################
+# =============================================================================
+# Datalog Variant Script
+# =============================================================================
+# Variants FlowLog and/or Souffle datalog engine with configurable parameters
 
-############################################################
-# CONFIGURATION
-# Define paths and parameters for timing tests
-############################################################
+# Default parameters
+TIMEOUT_SECONDS=${1:-900}
+THREAD_COUNT=${2:-64}
+BENCHMARK_TYPE=${3:-"both"}
 
-CONFIG_FILE="./tool/config/variant.txt"                 # Program/dataset pairs configuration
-PROG_DIR="./program"                                    # Program files directory
-FACT_DIR="./dataset"                                    # Dataset files directory
-LOG_DIR="./log/variant"                                 # Log output directory
-BINARY_PATH="./FlowLog/target/release/executing"        # Path to compiled binary
-WORKERS=64                                              # Number of worker threads
+# Display usage if help is requested
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    cat << EOF
+Usage: $0 [TIMEOUT_SECONDS] [THREAD_COUNT] [BENCHMARK_TYPE]
 
-############################################################
-# DATASET SETUP
-# Functions to download, extract, and clean up datasets
-############################################################
+Run database benchmarks with configurable timeout, thread count, and benchmark selection.
 
-setup_dataset() {
-    # Download and extract dataset if not already present
-    local dataset_name="$1"
-    local dataset_zip="/dev/shm/${dataset_name}.zip"
-    local extract_path="${FACT_DIR}/${dataset_name}"
-    local dataset_url="https://pages.cs.wisc.edu/~m0riarty/dataset/${dataset_name}.zip"
+Arguments:
+  TIMEOUT_SECONDS  Timeout for each query execution in seconds (default: 900 = 15 minutes)
+  THREAD_COUNT     Number of threads/workers to use (default: 64)
+  BENCHMARK_TYPE   Which benchmarks to run: 'flowlog', 'souffle', or 'both' (default: both)
 
-    # Check if dataset is already extracted
-    if [ -d "$extract_path" ]; then
-        echo "[OK] Dataset $dataset_name already extracted. Skipping."
-        return
-    fi
+Examples:
+  $0                    # Use defaults: 15-min timeout, 64 threads, run both
+  $0 600                # Use 10-min timeout, 64 threads, run both
+  $0 1800 32            # Use 30-min timeout, 32 threads, run both
+  $0 900 4 flowlog      # Use 15-min timeout, 4 threads, run FlowLog only
+  $0 900 64 souffle     # Use 15-min timeout, 64 threads, run Souffle only
+  $0 600 32 both        # Use 10-min timeout, 32 threads, run both
+EOF
+    exit 0
+fi
 
-    mkdir -p "$FACT_DIR"
+# Validate benchmark type parameter
+case "$BENCHMARK_TYPE" in
+    "flowlog"|"souffle"|"both")
+        ;;
+    *)
+        echo "Error: Invalid BENCHMARK_TYPE '$BENCHMARK_TYPE'. Must be 'flowlog', 'souffle', or 'both'." >&2
+        exit 1
+        ;;
+esac
 
-    # Download dataset if zip file doesn't exist
-    if [ ! -f "$dataset_zip" ]; then
-        echo "[DOWNLOAD] Downloading $dataset_name.zip from $dataset_url..."
-        mkdir -p "$(dirname "$dataset_zip")"
-        wget -O "$dataset_zip" "$dataset_url" || {
-            echo "[ERROR] Failed to download dataset: $dataset_name"
-            exit 1
-        }
-    fi
+# =============================================================================
+# Configuration and Setup
+# =============================================================================
 
-    # Extract the dataset
-    echo "[EXTRACT] Extracting $dataset_name..."
-    unzip -q "$dataset_zip" -d "$FACT_DIR"
-    rm -f "$dataset_zip"  # Remove zip file after extraction
-    echo "[OK] Dataset $dataset_name ready."
-}
+readonly CONFIG_FILE="./tool/config/variant.txt"
+readonly DATASET_DIR="./dataset"
+readonly RESULT_FILE="./result/variant.txt"
+readonly TEMP_RESULT_FILE="/tmp/benchmark_result.tmp"
 
-cleanup_dataset() {
-    # Remove extracted dataset to save space
-    local dataset_name="$1"
-    local extract_path="${FACT_DIR}/${dataset_name}"
+# Initialize directories and files
+mkdir -p "$DATASET_DIR"
+rm -rf "$RESULT_FILE"
+mkdir -p "./log/benchmark/${THREAD_COUNT}"
+mkdir -p "./log/variant_benchmark/${THREAD_COUNT}"
+mkdir -p "./result"
 
-    echo "[CLEANUP] Removing dataset $dataset_name..."
-    rm -rf "$extract_path"
-}
+echo "=== Database Benchmark Configuration ==="
+echo "Timeout: ${TIMEOUT_SECONDS} seconds ($(echo "scale=1; $TIMEOUT_SECONDS/60" | bc -l) minutes)"
+echo "Thread count: ${THREAD_COUNT}"
+echo "Benchmark type: ${BENCHMARK_TYPE}"
 
-############################################################
-# TIMING FUNCTIONS
-# Functions to run timing tests and measure performance
-############################################################
+# Generate CPU set (keeping for potential FlowLog optimizations)
+if [[ $THREAD_COUNT -eq 1 ]]; then
+    readonly CPUSET="0"
+else
+    readonly CPUSET="0-$((THREAD_COUNT-1))"
+fi
+echo "CPU set: ${CPUSET}"
+echo ""
 
-run_single_timing_test() {
-    # Run a single timing test for a program/dataset/optimization combination
-    local prog_name="$1"
-    local dataset_name="$2"
-    local optimization_flag="$3"
-    local optimization_label="$4"
-
-    # Set up program file paths and URLs
-    local prog_file=$(basename "$prog_name")
-    local prog_path="${PROG_DIR}/flowlog/${prog_file}"
-    
-    # Set up paths for timing test
-    local fact_path="${FACT_DIR}/${dataset_name}"
-    local program_stem="${prog_name%.*}"
-    local log_file="${LOG_DIR}/${program_stem}_${dataset_name}_${optimization_label}.log"
-
-    echo "[TIMING] Running $prog_name with $dataset_name ($optimization_label)"
-
-    # Ensure log directory exists
-    mkdir -p "$LOG_DIR"
-
-    # Run the binary with specified optimization flag and capture output to log
-    echo "[RUN] Timing test: $prog_name ($optimization_label)"
-
-    # Run with timeout (600 seconds = 10 minutes)
-    # Temporarily disable exit on error for timeout handling
-    set +e
-    
-    if [ -z "$optimization_flag" ]; then
-        timeout 600 bash -c "RUST_LOG=info '$BINARY_PATH' --program '$prog_path' --facts '$fact_path' --workers '$WORKERS'" > "$log_file" 2>&1
-    else
-        timeout 600 bash -c "RUST_LOG=info '$BINARY_PATH' --program '$prog_path' --facts '$fact_path' --workers '$WORKERS' '$optimization_flag'" > "$log_file" 2>&1
-    fi
-
-    local exit_code=$?
-
-    # Re-enable exit on error
-    set -e
-
-    if [ $exit_code -eq 124 ]; then
-        echo "[TIMEOUT] Test timed out after 600 seconds: $prog_name ($optimization_label)"
-        echo "TIMEOUT: Test exceeded 600 seconds limit" >> "$log_file"
-    elif [ $exit_code -ne 0 ]; then
-        echo "[ERROR] Test failed with exit code $exit_code: $prog_name ($optimization_label)"
-        echo "ERROR: Test failed with exit code $exit_code" >> "$log_file"
-    else
-        echo "[TIMING] Completed $prog_name ($optimization_label)"
-    fi
-}
-
-run_all_timing_tests() {
-    # Run timing tests for all programs with all optimization levels
-    echo "[TIMING] Running optimization timing tests..."
-
-    # Define optimization flags and labels
-    local optimizations=("" "-O1" "-O2" "-O3")
-    local opt_labels=("none" "1" "2" "3")
-
-    # Clean previous logs
-    rm -rf "$LOG_DIR"
-    mkdir -p "$LOG_DIR"
-
-    # Read each program=dataset pair from config file
-    while IFS='=' read -r prog_name dataset_name; do
-        # Skip empty lines and comment lines starting with #
-        if [ -z "$prog_name" ] || [ -z "$dataset_name" ] || [[ "$prog_name" =~ ^#.* ]]; then
-            continue
-        fi
-
-        echo "[PROGRAM] Timing $prog_name with $dataset_name"
-        echo "========================================"
-
-        # Setup dataset once for all optimization levels
-        setup_dataset "$dataset_name"
-
-        # Run tests with all optimization levels
-        for i in "${!optimizations[@]}"; do
-            run_single_timing_test "$prog_name" "$dataset_name" "${optimizations[$i]}" "${opt_labels[$i]}"
-            sleep 5 # Sleep to avoid overwhelming the system
-        done
-
-        # Cleanup dataset after all optimization tests
-        cleanup_dataset "$dataset_name"
-    done < "$CONFIG_FILE"
-
-    echo "[OK] All timing tests completed!"
-}
-
-############################################################
-# TIMING EXTRACTION FUNCTIONS
-# Functions to extract timing information from log files
-############################################################
-
-extract_time_from_log() {
-    # Extract timing information from log file by parsing "Dataflow executed" line
-    local log_file="$1"
-    
-    if [ ! -f "$log_file" ]; then
-        echo "N/A"
-        return
-    fi
-    
-    # Check for timeout or error messages first
-    if grep -q "TIMEOUT:" "$log_file" 2>/dev/null; then
-        echo "TIMEOUT"
-        return
-    fi
-    
-    if grep -q "ERROR:" "$log_file" 2>/dev/null; then
-        echo "ERROR"
-        return
-    fi
-    
-    # Look for the "Dataflow executed" line and extract the duration
-    # Format: "2025-07-22T21:41:00.527157Z  INFO executing::dataflow: 3.933584239s:	Dataflow executed"
-    local time_line=$(grep "Dataflow executed" "$log_file" 2>/dev/null | tail -1)
-    
-    if [ -z "$time_line" ]; then
-        echo "N/A"
-        return
-    fi
-    
-    # Extract time value using grep and sed
-    # Look for pattern like "3.933584239s:" and remove the "s:"
-    local extracted_time=$(echo "$time_line" | grep -oE '[0-9]+\.[0-9]+s:' | sed 's/s://' 2>/dev/null || echo "N/A")
-    echo "$extracted_time"
-}
-
-############################################################
-# RESULT GENERATION FUNCTIONS
-# Functions to generate timing results table and CSV
-############################################################
-
-generate_timing_table() {
-    # Generate and display a formatted table of timing results
+# Build required systems
+if [[ "$BENCHMARK_TYPE" == "flowlog" || "$BENCHMARK_TYPE" == "both" ]]; then
+    echo "=== Building FlowLog ==="
+    (
+        cd FlowLog || { echo "Error: FlowLog directory not found" >&2; exit 1; }
+        git checkout nemo_aggregation || { echo "Error: Failed to checkout nemo_aggregation branch" >&2; exit 1; }
+        git pull || { echo "Warning: Failed to pull latest changes" >&2; }
+        cargo build --release || { echo "Error: Failed to build FlowLog" >&2; exit 1; }
+    )
+    echo "FlowLog build completed"
     echo ""
-    echo "============================"
-    echo "[SUMMARY] Timing Results Table"
-    echo "============================"
+fi
 
-    printf "| %-25s | %-17s | %-17s | %-17s | %-17s |\n" "Program-Dataset" "No Optimization" "O1" "O2" "O3"
-    printf "|---------------------------|-------------------|-------------------|-------------------|-------------------|\n"
+# Initialize result file with headers
+if [[ ! -f "$RESULT_FILE" ]]; then
+    case "$BENCHMARK_TYPE" in
+        "flowlog")
+            printf "%-20s %-20s %-20s %-20s\n" \
+                "Program" "Dataset" "FlowLog_Load(s)" "FlowLog_Exec(s)" \
+                > "$RESULT_FILE"
+            printf "%-20s %-20s %-20s %-20s\n" \
+                "--------------------" "--------------------" "--------------------" "--------------------" \
+                >> "$RESULT_FILE"
+            ;;
+        "souffle")
+            printf "%-20s %-20s %-20s %-20s\n" \
+                "Program" "Dataset" "Souffle_Load(s)" "Souffle_Exec(s)" \
+                > "$RESULT_FILE"
+            printf "%-20s %-20s %-20s %-20s\n" \
+                "--------------------" "--------------------" "--------------------" "--------------------" \
+                >> "$RESULT_FILE"
+            ;;
+        "both")
+            printf "%-20s %-20s %-20s %-20s %-20s %-20s\n" \
+                "Program" "Dataset" "FlowLog_Load(s)" "FlowLog_Exec(s)" "Souffle_Load(s)" "Souffle_Exec(s)" \
+                > "$RESULT_FILE"
+            printf "%-20s %-20s %-20s %-20s %-20s %-20s\n" \
+                "--------------------" "--------------------" "--------------------" "--------------------" "--------------------" "--------------------" \
+                >> "$RESULT_FILE"
+            ;;
+    esac
+fi
 
-    # Read each program=dataset pair and display timing results
-    while IFS='=' read -r prog_name dataset_name; do
-        # Skip empty lines and comment lines starting with #
-        if [ -z "$prog_name" ] || [ -z "$dataset_name" ] || [[ "$prog_name" =~ ^#.* ]]; then
-            continue
-        fi
+# =============================================================================
+# Database Benchmark Functions
+# =============================================================================
 
-        local program_stem="${prog_name%.*}"
-        local label="${program_stem}_${dataset_name}"
-        printf "| %-20s " "$label"
-
-        # Display timing for each optimization level
-        for opt in "none" "1" "2" "3"; do
-            local log_file="${LOG_DIR}/${program_stem}_${dataset_name}_${opt}.log"
-            elapsed_time=$(extract_time_from_log "$log_file")
-
-            if [[ "$elapsed_time" =~ ^[0-9] ]]; then
-                printf "| %17.6f " "$elapsed_time"
-            else
-                printf "| %-17s " "$elapsed_time"
+# -----------------------------------------------------------------------------
+# FlowLog Benchmark Function
+# -----------------------------------------------------------------------------
+run_flowlog() {
+    local base=$1
+    local dataset=$2
+    local prog_file="program/flowlog/${base}.dl"
+    local fact_path="dataset/${dataset}"
+    local flowlog_binary="./FlowLog/target/release/executing"
+    local workers=$THREAD_COUNT
+    
+    echo "  Starting FlowLog benchmark: $base on $dataset"
+    echo "  Using $workers workers"
+    
+    # Check if required files exist
+    if [[ ! -f "$prog_file" ]]; then
+        echo "  ERROR: Program file not found: $prog_file" >&2
+        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        return 1
+    fi
+    
+    if [[ ! -d "$fact_path" ]]; then
+        echo "  ERROR: Dataset path not found: $fact_path" >&2
+        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        return 1
+    fi
+    
+    # Run logging execution
+    echo "  Running logging execution..."
+    local log_file="./log/variant_benchmark/${THREAD_COUNT}/flowlog_${base}_${dataset}.log"
+    echo "=== FlowLog Execute Log for $base on $dataset ===" > "$log_file"
+    
+    if ! timeout "$TIMEOUT_SECONDS" "$flowlog_binary" \
+        --program "$prog_file" \
+        --facts "$fact_path" \
+        --workers "$workers" \
+        -O3 >> "$log_file" 2>&1; then
+        echo "  WARNING: Logging execution failed or timed out"
+    fi
+    
+    # Run timing executions
+    echo "  Running timing executions..."
+    local fastest_load=""
+    local fastest_exec=""
+    
+    for i in {1..3}; do
+        echo "    Timing run $i/3"
+        local temp_log="./log/benchmark/${THREAD_COUNT}/flowlog_${base}_${dataset}_${i}.log"
+        
+        # Run FlowLog with timeout and capture output
+        if timeout "$TIMEOUT_SECONDS" "$flowlog_binary" \
+            --program "$prog_file" \
+            --facts "$fact_path" \
+            --workers "$workers" \
+            -O3 > "$temp_log" 2>&1; then
+            echo "      Completed successfully"
+        else
+            echo "      Timed out"
+            # Set timeout values and continue
+            if [[ -z "$fastest_load" ]] || (( $(echo "$TIMEOUT_SECONDS < $fastest_load" | bc -l) )); then
+                fastest_load="$TIMEOUT_SECONDS"
             fi
-        done
-
-        printf "|\n"
-    done < "$CONFIG_FILE"
-}
-
-generate_timing_csv() {
-    # Generate CSV file with timing results for analysis
-    echo ""
-    echo "[CSV] Generating timing CSV file..."
-
-    local csv_file="${LOG_DIR}/timing_results.csv"
-
-    # Write CSV header
-    echo "Program,Dataset,No_Optimization,O1,O2,O3" > "$csv_file"
-
-    # Read each program=dataset pair and write timing data
-    while IFS='=' read -r prog_name dataset_name; do
-        # Skip empty lines and comment lines starting with #
-        if [ -z "$prog_name" ] || [ -z "$dataset_name" ] || [[ "$prog_name" =~ ^#.* ]]; then
+            if [[ -z "$fastest_exec" ]] || (( $(echo "$TIMEOUT_SECONDS < $fastest_exec" | bc -l) )); then
+                fastest_exec="$TIMEOUT_SECONDS"
+            fi
+            rm -f "$temp_log"
             continue
         fi
+        
+        # Extract timing information
+        local load_line
+        load_line=$(grep "Data loaded for" "$temp_log" | tail -1)
+        local load_time="-1"
+        
+        if [[ -n "$load_line" ]]; then
+            if [[ "$load_line" =~ ([0-9]+\.?[0-9]*)ms ]]; then
+                load_time=$(echo "${BASH_REMATCH[1]} / 1000" | bc -l)
+            elif [[ "$load_line" =~ ([0-9]+\.?[0-9]*)s ]]; then
+                load_time="${BASH_REMATCH[1]}"
+            fi
+        fi
+        
+        local exec_line
+        exec_line=$(grep -E "(Dataflow executed|Fixpoint reached)" "$temp_log")
+        local total_time="-1"
+        
+        if [[ -n "$exec_line" ]]; then
+            if [[ "$exec_line" =~ ([0-9]+\.?[0-9]*)ms ]]; then
+                total_time=$(echo "${BASH_REMATCH[1]} / 1000" | bc -l)
+            elif [[ "$exec_line" =~ ([0-9]+\.?[0-9]*)s ]]; then
+                total_time="${BASH_REMATCH[1]}"
+            fi
+        fi
+        
+        # Calculate execution time
+        local exec_time="-1"
+        if [[ "$load_time" != "-1" && "$total_time" != "-1" ]]; then
+            exec_time=$(echo "$total_time - $load_time" | bc -l)
+        fi
+        
+        # Track fastest times
+        if [[ "$load_time" != "-1" ]]; then
+            if [[ -z "$fastest_load" ]] || (( $(echo "$load_time < $fastest_load" | bc -l) )); then
+                fastest_load="$load_time"
+            fi
+        fi
+        
+        if [[ "$exec_time" != "-1" ]]; then
+            if [[ -z "$fastest_exec" ]] || (( $(echo "$exec_time < $fastest_exec" | bc -l) )); then
+                fastest_exec="$exec_time"
+            fi
+        fi
+        
+        rm -f "$temp_log"
+    done
+    
+    # Format results
+    local formatted_load="${fastest_load:-"-1"}"
+    local formatted_exec="${fastest_exec:-"-1"}"
+    
+    if [[ "$formatted_load" != "-1" ]]; then
+        formatted_load=$(printf "%.4f" "$formatted_load")
+    fi
+    
+    if [[ "$formatted_exec" != "-1" ]]; then
+        formatted_exec=$(printf "%.4f" "$formatted_exec")
+    fi
 
-        local program_stem="${prog_name%.*}"
-        printf "%s,%s" "$program_stem" "$dataset_name" >> "$csv_file"
-
-        # Write timing data for each optimization level
-        for opt in "none" "1" "2" "3"; do
-            local log_file="${LOG_DIR}/${program_stem}_${dataset_name}_${opt}.log"
-            elapsed_time=$(extract_time_from_log "$log_file")
-            printf ",%s" "$elapsed_time" >> "$csv_file"
-        done
-
-        printf "\n" >> "$csv_file"
-    done < "$CONFIG_FILE"
-
-    echo "[CSV] Timing results saved to: $csv_file"
+    # Write results to temp file
+    {
+        echo "$formatted_load"
+        echo "$formatted_exec"
+    } > "$TEMP_RESULT_FILE"
+    echo "  Results: load=$formatted_load exec=$formatted_exec"
+    return 0
 }
 
-############################################################
-# MAIN EXECUTION
-# Entry point for the script
-############################################################
+# -----------------------------------------------------------------------------
+# Souffle Benchmark Function  
+# -----------------------------------------------------------------------------
+run_souffle() {
+    local base=$1
+    local dataset=$2
+    local prog_file="program/souffle/${base}.dl"
+    local fact_path="dataset/${dataset}"
+    local souffle_binary="${base}"
+    local workers=$THREAD_COUNT
+    
+    echo "  Starting Souffle benchmark: $base on $dataset"
+    echo "  Using $workers workers"
+    
+    # Check if required files exist
+    if [[ ! -f "$prog_file" ]]; then
+        echo "  ERROR: Program file not found: $prog_file" >&2
+        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        return 1
+    fi
+    
+    if [[ ! -d "$fact_path" ]]; then
+        echo "  ERROR: Dataset path not found: $fact_path" >&2
+        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        return 1
+    fi
+    
+    # Compile Souffle program
+    echo "  Compiling Souffle program..."
+    local compile_log="./log/variant_benchmark/${THREAD_COUNT}/souffle_${base}_${dataset}_compile.log"
+    echo "=== Souffle Compile Log for $base on $dataset ===" > "$compile_log"
+    
+    if ! timeout "$TIMEOUT_SECONDS" souffle -o "$souffle_binary" "$prog_file" -j 64 >> "$compile_log" 2>&1; then
+        echo "  ERROR: Compilation failed or timed out" >&2
+        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        return 1
+    fi
+    
+    # Run logging execution
+    echo "  Running logging execution..."
+    local log_file="./log/variant_benchmark/${THREAD_COUNT}/souffle_${base}_${dataset}.log"
+    echo "=== Souffle Execute Log for $base on $dataset ===" > "$log_file"
+    
+    if ! timeout "$TIMEOUT_SECONDS" "./$souffle_binary" -F"$fact_path/" -j "$workers" >> "$log_file" 2>&1; then
+        echo "  WARNING: Logging execution failed or timed out"
+    fi
+    
+    # Run timing executions
+    echo "  Running timing executions..."
+    local fastest_total=""
+    
+    for i in {1..3}; do
+        echo "    Timing run $i/3"
+        local temp_log="./log/benchmark/${THREAD_COUNT}/souffle_${base}_${dataset}_${i}.log"
+        
+        # Run Souffle with timeout and capture output
+        local start_time
+        start_time=$(date +%s.%N)
+        
+        if timeout "$TIMEOUT_SECONDS" "./$souffle_binary" -F"$fact_path/" -j "$workers" > "$temp_log" 2>&1; then
+            local end_time
+            end_time=$(date +%s.%N)
+            local total_time
+            total_time=$(echo "$end_time - $start_time" | bc -l)
+            echo "      Completed successfully in ${total_time}s"
+            
+            # Track fastest time
+            if [[ -z "$fastest_total" ]] || (( $(echo "$total_time < $fastest_total" | bc -l) )); then
+                fastest_total="$total_time"
+            fi
+        else
+            echo "      Timed out"
+            # Set timeout values and continue
+            if [[ -z "$fastest_total" ]] || (( $(echo "$TIMEOUT_SECONDS < $fastest_total" | bc -l) )); then
+                fastest_total="$TIMEOUT_SECONDS"
+            fi
+            rm -f "$temp_log"
+            continue
+        fi
+        
+        rm -f "$temp_log"
+    done
+    
+    # Format results (Souffle doesn't separate load/exec, so we put total time in exec and 0 in load)
+    local formatted_load="0.0000"
+    local formatted_exec="${fastest_total:-"-1"}"
+    
+    if [[ "$formatted_exec" != "-1" ]]; then
+        formatted_exec=$(printf "%.4f" "$formatted_exec")
+    fi
 
-main() {
-    # Print start message
-    echo "[START] FlowLog Optimization Timing Test"
-
-    echo "=== SETUP COMPLETE ==="
-
-    # Build the Rust binary
-    echo "[BUILD] Building the project..."
-    cd FlowLog
-    git pull && git checkout nemo_aggregation
-    cargo clean && cargo build --release
-    cd ..
-
-    # Run all timing tests
-    run_all_timing_tests
-
-    # Generate results in table and CSV format
-    generate_timing_table
-    generate_timing_csv
-
-    # Print finish message
-    echo "[FINISH] All timing test cases completed successfully."
+    # Write results to temp file
+    {
+        echo "$formatted_load"
+        echo "$formatted_exec"
+    } > "$TEMP_RESULT_FILE"
+    echo "  Results: load=$formatted_load exec=$formatted_exec"
+    
+    # Cleanup compiled binary
+    rm -f "$souffle_binary"
+    return 0
 }
 
-# Call main function with all script arguments
-main "$@"
+# =============================================================================
+# Main Benchmark Loop
+# =============================================================================
+
+while IFS='=' read -r program dataset; do
+    # Skip empty lines and comments
+    [[ -z "$program" || "$program" =~ ^# ]] && continue
+
+    DATASET_PATH="${DATASET_DIR}/${dataset}"
+    ZIP_URL="https://pages.cs.wisc.edu/~m0riarty/dataset/${dataset}.zip"
+    ZIP_PATH="/dev/shm/${dataset}.zip"
+
+    # Download and extract dataset if needed
+    if [[ -d "$DATASET_PATH" ]]; then
+        echo "SKIP: Dataset already exists: $DATASET_PATH"
+    else
+        echo "PREP: Downloading and extracting dataset: $dataset"
+        if ! wget -O "$ZIP_PATH" "$ZIP_URL"; then
+            echo "ERROR: Failed to download dataset: $dataset" >&2
+            continue
+        fi
+        
+        if ! unzip "$ZIP_PATH" -d "$DATASET_DIR"; then
+            echo "ERROR: Failed to extract dataset: $dataset" >&2
+            rm -f "$ZIP_PATH"
+            continue
+        fi
+    fi
+
+    echo ""
+    echo "=== RUNNING: $program on $dataset ==="
+
+    # Initialize result variables
+    flowlog_load="-1"
+    flowlog_exec="-1"
+    souffle_load="-1"
+    souffle_exec="-1"
+
+    # Run FlowLog benchmark if selected
+    if [[ "$BENCHMARK_TYPE" == "flowlog" || "$BENCHMARK_TYPE" == "both" ]]; then
+        echo ""
+        echo "--- FlowLog Benchmark ---"
+        if run_flowlog "$program" "$dataset"; then
+            mapfile -t lines < "$TEMP_RESULT_FILE"
+            flowlog_load="${lines[0]}"
+            flowlog_exec="${lines[1]}"
+            echo "FlowLog completed: load=$flowlog_load exec=$flowlog_exec"
+        else
+            echo "FlowLog failed for $program on $dataset"
+        fi
+    fi
+
+    # Run Souffle benchmark if selected
+    if [[ "$BENCHMARK_TYPE" == "souffle" || "$BENCHMARK_TYPE" == "both" ]]; then
+        echo ""
+        echo "--- Souffle Benchmark ---"
+        if run_souffle "$program" "$dataset"; then
+            mapfile -t lines < "$TEMP_RESULT_FILE"
+            souffle_load="${lines[0]}"
+            souffle_exec="${lines[1]}"
+            echo "Souffle completed: load=$souffle_load exec=$souffle_exec"
+        else
+            echo "Souffle failed for $program on $dataset"
+        fi
+    fi
+
+    # Write results to file based on benchmark type
+    case "$BENCHMARK_TYPE" in
+        "flowlog")
+            printf "%-20s %-20s %-20s %-20s\n" \
+                "$program" "$dataset" "$flowlog_load" "$flowlog_exec" \
+                >> "$RESULT_FILE"
+            ;;
+        "souffle")
+            printf "%-20s %-20s %-20s %-20s\n" \
+                "$program" "$dataset" "$souffle_load" "$souffle_exec" \
+                >> "$RESULT_FILE"
+            ;;
+        "both")
+            printf "%-20s %-20s %-20s %-20s %-20s %-20s\n" \
+                "$program" "$dataset" "$flowlog_load" "$flowlog_exec" "$souffle_load" "$souffle_exec" \
+                >> "$RESULT_FILE"
+            ;;
+    esac
+
+    # Cleanup
+    echo ""
+    echo "CLEANUP: Removing dataset: $dataset"
+    rm -rf "$ZIP_PATH" "${DATASET_DIR:?}/${dataset}"
+
+    # Show progress
+    echo ""
+    echo "=== RESULTS SO FAR ==="
+    cat "$RESULT_FILE"
+    echo ""
+done < "$CONFIG_FILE"
+
+# =============================================================================
+# Cleanup and Final Results
+# =============================================================================
+
+# Clean up temporary files
+rm -f "$TEMP_RESULT_FILE"
+
+# Display final results
+echo ""
+echo "=============================================="
+echo "           FINAL TIMING RESULTS"
+echo "=============================================="
+cat "$RESULT_FILE"
+echo ""
+echo "Benchmark completed successfully!"
