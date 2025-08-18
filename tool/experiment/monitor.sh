@@ -31,7 +31,7 @@ if [ ! -d "$FLOWLOG_DIR" ]; then
     exit 1
 fi
 pushd "$FLOWLOG_DIR" > /dev/null
-git checkout nemo_aggregation
+git checkout main
 cargo build --release
 popd > /dev/null
 echo "FlowLog build completed"
@@ -64,15 +64,6 @@ if ! command -v dlbench >/dev/null 2>&1; then
     export PATH="$PATH:$(python3 -m site --user-base)/bin"
     hash -r
 fi
-
-echo "=== Building FlowLog ==="
-pushd FlowLog >/dev/null
-git checkout nemo_aggregation
-git pull
-cargo build --release
-popd >/dev/null
-echo "FlowLog build completed"
-echo ""
 
 while IFS='=' read -r program dataset; do
     [[ -z "$program" || "$program" =~ ^# ]] && continue

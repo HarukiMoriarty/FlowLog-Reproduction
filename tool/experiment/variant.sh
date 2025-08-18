@@ -84,7 +84,7 @@ if [[ "$BENCHMARK_TYPE" == "flowlog" || "$BENCHMARK_TYPE" == "both" ]]; then
     fi
     (
         cd "$FLOWLOG_DIR" || { echo "Error: FlowLog directory not found at $FLOWLOG_DIR" >&2; exit 1; }
-        git checkout nemo_aggregation || { echo "Error: Failed to checkout nemo_aggregation branch" >&2; exit 1; }
+        git checkout main || { echo "Error: Failed to checkout main branch" >&2; exit 1; }
         git pull || { echo "Warning: Failed to pull latest changes" >&2; }
         cargo build --release || { echo "Error: Failed to build FlowLog" >&2; exit 1; }
     )
