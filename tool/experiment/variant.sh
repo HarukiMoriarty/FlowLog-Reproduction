@@ -137,7 +137,10 @@ run_flowlog() {
     local flowlog_binary="$HOME/FlowLog/target/release/executing"
     if [ ! -x "$flowlog_binary" ]; then
         echo "  ERROR: FlowLog binary not found at $flowlog_binary. Please build FlowLog first."
-        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"
         return
     fi
     local workers=$THREAD_COUNT
@@ -148,13 +151,19 @@ run_flowlog() {
     # Check if required files exist
     if [[ ! -f "$prog_file" ]]; then
         echo "  ERROR: Program file not found: $prog_file" >&2
-        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"
         return 1
     fi
     
     if [[ ! -d "$fact_path" ]]; then
         echo "  ERROR: Dataset path not found: $fact_path" >&2
-        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"
         return 1
     fi
     
@@ -285,13 +294,19 @@ run_souffle() {
     # Check if required files exist
     if [[ ! -f "$prog_file" ]]; then
         echo "  ERROR: Program file not found: $prog_file" >&2
-        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"
         return 1
     fi
     
     if [[ ! -d "$fact_path" ]]; then
         echo "  ERROR: Dataset path not found: $fact_path" >&2
-        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"
         return 1
     fi
     
@@ -302,7 +317,10 @@ run_souffle() {
     
     if ! timeout "$TIMEOUT_SECONDS" souffle -o "$souffle_binary" "$prog_file" -j 64 >> "$compile_log" 2>&1; then
         echo "  ERROR: Compilation failed or timed out" >&2
-        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"
         return 1
     fi
     

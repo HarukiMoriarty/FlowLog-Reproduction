@@ -94,7 +94,10 @@ run_duckdb_scalability() {
     # Check if template files exist
     [[ ! -f "$load_tpl" || ! -f "$exec_tpl" ]] && { 
         echo "  ERROR: Template files not found"
-        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"
         return 
     }
 
@@ -188,7 +191,10 @@ run_flowlog_scalability() {
     local flowlog_binary="$HOME/FlowLog/target/release/executing"
     if [ ! -x "$flowlog_binary" ]; then
         echo "  ERROR: FlowLog binary not found at $flowlog_binary. Please build FlowLog first."
-        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"
         return
     fi
     
@@ -197,13 +203,19 @@ run_flowlog_scalability() {
     # Check if required files exist
     [[ ! -f "$prog_file" ]] && { 
         echo "  ERROR: Program file not found: $prog_file"
-        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"
         return
     }
     
     [[ ! -d "$fact_path" ]] && { 
         echo "  ERROR: Dataset path not found: $fact_path"
-        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"
         return
     }
     
@@ -322,7 +334,10 @@ run_umbra_scalability() {
     # Check if template files exist
     [[ ! -f "$load_tpl" || ! -f "$exec_tpl" ]] && { 
         echo "  ERROR: Template files not found"
-        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"
         return
     }
 
@@ -488,12 +503,18 @@ run_ddlog_scalability() {
     # Check if required files exist
     [[ ! -f "$ddlog_prog" ]] && { 
         echo "  ERROR: DDlog program file not found: $ddlog_prog"
-        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"
         return
     }
     [[ ! -f "$fact_path" ]] && { 
         echo "  ERROR: Dataset file not found: $fact_path"
-        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"
         return
     }
 
@@ -572,11 +593,20 @@ run_recstep_scalability() {
 
     if ! command -v recstep >/dev/null 2>&1; then
         echo "  ERROR: recstep CLI not found in PATH. Run tool/experiment/env.sh first."
-        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"
         return
     fi
-    [[ ! -f "$prog_file" ]] && { echo "  ERROR: Program not found: $prog_file"; echo "-1 -1" > "$TEMP_RESULT_FILE"; return; }
-    [[ ! -d "$fact_path" ]] && { echo "  ERROR: Dataset path not found: $fact_path"; echo "-1 -1" > "$TEMP_RESULT_FILE"; return; }
+    [[ ! -f "$prog_file" ]] && { echo "  ERROR: Program not found: $prog_file"; {
+        echo "-1"
+        echo "-1"
+    } > "$TEMP_RESULT_FILE"; return; }
+    [[ ! -d "$fact_path" ]] && { echo "  ERROR: Dataset path not found: $fact_path"; {
+        echo "-1"
+        echo "-1"
+    } > "$TEMP_RESULT_FILE"; return; }
 
     # Prepare command
     local cmd="recstep --program $prog_file --input $fact_path --jobs $thread_count"

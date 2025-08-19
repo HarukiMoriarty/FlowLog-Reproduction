@@ -132,7 +132,10 @@ run_duckdb() {
     # Check if template files exist
     [[ ! -f "$load_tpl" || ! -f "$exec_tpl" ]] && { 
         echo "  ERROR: Template files not found"
-        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"
         return 
     }
 
@@ -219,7 +222,10 @@ run_flowlog() {
     FLOWLOG_DIR="$HOME/FlowLog"
     if [ ! -d "$FLOWLOG_DIR" ]; then
         echo "[ERROR] FlowLog directory not found at $FLOWLOG_DIR. Please run env.sh first."
-        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"
         return
     fi
     pushd "$FLOWLOG_DIR" > /dev/null
@@ -237,7 +243,10 @@ run_flowlog() {
     local flowlog_binary="$HOME/FlowLog/target/release/executing"
     if [ ! -x "$flowlog_binary" ]; then
         echo "  ERROR: FlowLog binary not found at $flowlog_binary. Please build FlowLog first."
-        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"
         return
     fi
     local workers=$THREAD_COUNT
@@ -248,13 +257,19 @@ run_flowlog() {
     # Check if required files exist
     [[ ! -f "$prog_file" ]] && { 
         echo "  ERROR: Program file not found: $prog_file"
-        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"
         return
     }
     
     [[ ! -d "$fact_path" ]] && { 
         echo "  ERROR: Dataset path not found: $fact_path"
-        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"
         return
     }
     
@@ -352,9 +367,11 @@ run_flowlog() {
         echo "$formatted_exec"
     } > "$TEMP_RESULT_FILE"
     echo "  Results: load=$formatted_load exec=$formatted_exec"
-    cd FlowLog
+    
+    # Clean FlowLog build artifacts
+    pushd "$HOME/FlowLog" > /dev/null
     cargo clean
-    cd ..
+    popd > /dev/null
 }
 
 # -----------------------------------------------------------------------------
@@ -373,7 +390,10 @@ run_umbra() {
     # Check if template files exist
     [[ ! -f "$load_tpl" || ! -f "$exec_tpl" ]] && { 
         echo "  ERROR: Template files not found"
-        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"
         return
     }
 
@@ -542,12 +562,18 @@ run_souffle() {
     # Check files
     [[ ! -f "$dl_src" ]] && { 
         echo "  ERROR: Souffle program not found: $dl_src"; 
-        echo "-1 -1" > "$TEMP_RESULT_FILE"; 
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"; 
         return; 
     }
     [[ ! -d "$fact_path" ]] && { 
         echo "  ERROR: Dataset path not found: $fact_path"; 
-        echo "-1 -1" > "$TEMP_RESULT_FILE"; 
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"; 
         return; 
     }
 
@@ -555,7 +581,10 @@ run_souffle() {
     echo "  Compiling Souffle program..."
     if ! souffle -o "$bin" -p /dev/null "$dl_src" -j "$THREAD_COUNT" >/dev/null 2>&1; then
         echo "  ERROR: Souffle compilation failed"
-        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"
         return
     fi
 
@@ -680,12 +709,18 @@ run_recstep() {
     # Check files
     [[ ! -f "$prog_file" ]] && { 
         echo "  ERROR: RecStep program not found: $prog_file"; 
-        echo "-1 -1" > "$TEMP_RESULT_FILE"; 
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"; 
         return; 
     }
     [[ ! -d "$fact_path" ]] && { 
         echo "  ERROR: Dataset path not found: $fact_path"; 
-        echo "-1 -1" > "$TEMP_RESULT_FILE"; 
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"; 
         return; 
     }
 
@@ -697,7 +732,10 @@ run_recstep() {
     fi
     if ! command -v recstep >/dev/null 2>&1; then
         echo "  ERROR: recstep CLI not found in PATH"
-        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"
         PATH="$OLD_PATH"
         return
     fi

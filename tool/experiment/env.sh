@@ -175,7 +175,7 @@ install_flowlog() {
     local FLOWLOG_ROOT="$HOME/FlowLog"
     if [ ! -d "$FLOWLOG_ROOT" ]; then
         echo "[CLONE] Cloning FlowLog into $FLOWLOG_ROOT ..."
-        git clone https://github.com/DB-Flow/FlowLog.git "$FLOWLOG_ROOT"
+        git clone https://github.com/hdz284/FlowLog.git "$FLOWLOG_ROOT"
     else
         echo "[OK] FlowLog already present at $FLOWLOG_ROOT"
     fi

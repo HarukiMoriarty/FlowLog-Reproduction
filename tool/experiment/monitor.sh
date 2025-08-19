@@ -87,7 +87,7 @@ while IFS='=' read -r program dataset; do
     echo "--- DuckDB ---"
     sed "s|{{DATASET_PATH}}|dataset/${dataset}|g" "program/duck/${program}.sql" > "$TEMP_SQL"
     sed -i "1i PRAGMA threads=$THREAD_COUNT;" "$TEMP_SQL"
-    dlbench run --suffix-time "duckdb temp.duckdb < ${TEMP_SQL}" "duckdb_${program}_${dataset}_${THREAD_COUNT}t"
+    dlbench run "duckdb temp.duckdb < ${TEMP_SQL}" "duckdb_${program}_${dataset}_${THREAD_COUNT}t"
     rm -f temp.duckdb
     rm -f "$TEMP_SQL"
 
@@ -96,9 +96,12 @@ while IFS='=' read -r program dataset; do
     FLOWLOG_BIN="$HOME/FlowLog/target/release/executing"
     if [ ! -x "$FLOWLOG_BIN" ]; then
         echo "  ERROR: FlowLog binary not found at $FLOWLOG_BIN. Please build FlowLog first."
-        echo "-1 -1" > "$TEMP_RESULT_FILE"
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"
     else
-        dlbench run --suffix-time "$FLOWLOG_BIN --program program/flowlog/${program}.dl --facts dataset/${dataset} --workers ${THREAD_COUNT}" "flowlog_${program}_${dataset}_${THREAD_COUNT}t"
+        dlbench run "$FLOWLOG_BIN --program program/flowlog/${program}.dl --facts dataset/${dataset} --workers ${THREAD_COUNT}" "flowlog_${program}_${dataset}_${THREAD_COUNT}t"
     fi
 
     # DDlog
@@ -114,7 +117,7 @@ while IFS='=' read -r program dataset; do
         RUSTFLAGS=-Awarnings cargo +1.76 build --release --quiet
         popd >/dev/null
     fi
-    dlbench run --suffix-time "$DDLOG_EXE -w ${THREAD_COUNT} < dataset/${dataset}/data.ddin" "ddlog_${program}_${dataset}_${THREAD_COUNT}t"
+    dlbench run "$DDLOG_EXE -w ${THREAD_COUNT} < dataset/${dataset}/data.ddin" "ddlog_${program}_${dataset}_${THREAD_COUNT}t"
 
     # RecStep
     echo "--- RecStep ---"
@@ -122,7 +125,7 @@ while IFS='=' read -r program dataset; do
         # shellcheck disable=SC1090
         source "$HOME/recstep_env"
     fi
-    dlbench run --suffix-time "recstep --program program/recstep/${program}.dl --input dataset/${dataset} --jobs ${THREAD_COUNT}" "recstep_${program}_${dataset}_${THREAD_COUNT}t" --monitor quickstep_cli_shell
+    dlbench run "recstep --program program/recstep/${program}.dl --input dataset/${dataset} --jobs ${THREAD_COUNT}" "recstep_${program}_${dataset}_${THREAD_COUNT}t" --monitor quickstep_cli_shell
 
     # Souffle (compile then run)
     echo "--- Souffle ---"
@@ -130,7 +133,7 @@ while IFS='=' read -r program dataset; do
     SOUFFLE_BIN="program/souffle/${program}_souffle"
     if [[ -f "$SOUFFLE_SRC" ]]; then
         if souffle -o "$SOUFFLE_BIN" "$SOUFFLE_SRC" -j "$THREAD_COUNT"; then
-            dlbench run --suffix-time "$SOUFFLE_BIN -F dataset/${dataset} -j ${THREAD_COUNT}" "souffle_${program}_${dataset}_${THREAD_COUNT}t"
+            dlbench run "$SOUFFLE_BIN -F dataset/${dataset} -j ${THREAD_COUNT}" "souffle_${program}_${dataset}_${THREAD_COUNT}t"
         else
             echo "Souffle compilation failed for $program"
         fi
