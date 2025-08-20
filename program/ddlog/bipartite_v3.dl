@@ -1,0 +1,23 @@
+typedef TId = signed<32>
+
+input relation Arc(y: TId, x: TId)
+input relation Source(x: TId)
+
+output relation BipartiteViolation(x: TId)
+output relation Zero(x: TId)
+output relation One(x: TId)
+output relation RelationSizes(relation_name: string, size: signed<32>)
+
+Zero(x) :- Source(x).
+
+One(y) :- Arc(x, y), Zero(x).
+One(x) :- Arc(x, y), Zero(y).
+
+Zero(y) :- Arc(x, y), One(x).
+Zero(x) :- Arc(x, y), One(y).
+
+BipartiteViolation(x) :- One(x), Zero(x).
+
+RelationSizes("BipartiteViolation", size) :- size = Aggregate((), count_distinct(BipartiteViolation(x))).
+RelationSizes("Zero", size) :- size = Aggregate((), count_distinct(Zero(x))).
+RelationSizes("One", size) :- size = Aggregate((), count_distinct(One(x))).

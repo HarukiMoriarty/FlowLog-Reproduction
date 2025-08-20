@@ -1,0 +1,24 @@
+typedef TId = signed<32>
+
+input relation Assign(x: TId, y: TId)
+input relation Dereference(x: TId, y: TId)
+
+output relation ValueFlow(x: TId, y: TId)
+output relation MemoryAlias(x: TId, y: TId)
+output relation ValueAlias(x: TId, y: TId)
+output relation RelationSizes(relation_name: string, size: signed<32>)
+
+ValueFlow(y, x) :- Assign(y, x).
+ValueFlow(x, y) :- Assign(x, z), MemoryAlias(z, y).
+ValueFlow(x, y) :- ValueFlow(x, z), ValueFlow(z, y).
+MemoryAlias(x, w) :- ValueAlias(y, z), Dereference(z, w), Dereference(y, x).
+ValueAlias(x, y) :- ValueFlow(z, x), ValueFlow(z, y).
+ValueAlias(x, y) :- MemoryAlias(z, w), ValueFlow(w, y), ValueFlow(z, x).
+ValueFlow(x, x) :- Assign(x, y).
+ValueFlow(x, x) :- Assign(y, x).
+MemoryAlias(x, x) :- Assign(y, x).
+MemoryAlias(x, x) :- Assign(x, y).
+
+RelationSizes("ValueFlow", size) :- size = Aggregate((), count_distinct(ValueFlow(x, y))).
+RelationSizes("MemoryAlias", size) :- size = Aggregate((), count_distinct(MemoryAlias(x, y))).
+RelationSizes("ValueAlias", size) :- size = Aggregate((), count_distinct(ValueAlias(x, y))).

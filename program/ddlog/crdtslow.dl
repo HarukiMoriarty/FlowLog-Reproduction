@@ -1,0 +1,125 @@
+typedef number = signed<32>
+
+input relation Insert_input(a: number, b: number, c: number, d: number)
+input relation Remove_input(a: number, b: number)
+
+// definition of insertion into an ordered list (defines nextelem):
+output relation Insert(a: number, b: number, c: number, d: number)
+output relation Remove(idctr: number, idn: number)
+output relation HasChild(parentctr: number, parentn: number)
+output relation Assign(idctr: number, idn: number, elemctr: number, elemn: number, value: number)
+output relation LaterChild(parentctr: number, parentn: number, childctr: number, childn: number)
+output relation FirstChild(parentctr: number, parentn: number, childctr: number, childn: number)
+output relation Sibling(childctr1: number, childn1: number, childctr2: number, childn2: number)
+output relation LaterSibling(sibctr1: number, sibn1: number, sibctr2: number, sibn2: number)
+output relation LaterSibling2(sibctr1: number, sibn1: number, sibctr3: number, sibn3: number)
+output relation NextSibling(sibctr1: number, sibn1: number, sibctr2: number, sibn2: number)
+output relation HasNextSibling(sibctr1: number, sibn1: number)
+output relation NextSiblingAnc(startctr: number, startn: number, nextctr: number, nextn: number)
+output relation NextElem(prevctr: number, prevn: number, nextctr: number, nextn: number)
+output relation CurrentValue(elemctr: number, elemn: number, value: number)
+output relation HasValue(elemctr: number, elemn: number)
+output relation ValueStep(fromctr: number, fromn: number, toctr: number, ton: number)
+output relation BlankStep(fromctr: number, fromn: number, toctr: number, ton: number)
+output relation Value_blank_star(fromctr: number, fromn: number, toctr: number, ton: number)
+output relation NextVisible(prevctr: number, prevn: number, nextctr: number, nextn: number)
+output relation ResultP(ctr1: number, ctr2: number, value: number)
+output relation SkipBlank(fromctr: number, fromn: number, toctr: number, ton: number)
+
+Insert(a, b, c, d) :- Insert_input(a, b, c, d).
+Remove(a, b) :- Remove_input(a, b).
+Assign(ctr, n, ctr, n, n) :- Insert(ctr, n, _, _).
+HasChild(parentctr, parentn) :- Insert(_, _, parentctr, parentn).
+
+LaterChild(parentctr, parentn, ctr2, n2) :-
+  Insert(ctr1, n1, parentctr, parentn),
+  Insert(ctr2, n2, parentctr, parentn),
+  ctr1 * 10 + n1 > ctr2 * 10 + n2.
+//  (ctr1 > ctr2; (ctr1 = ctr2, n1 > n2)). 
+
+
+FirstChild(parentctr, parentn, childctr, childn) :-
+  Insert(childctr, childn, parentctr, parentn), 
+  not LaterChild(parentctr, parentn, childctr, childn).
+
+
+Sibling(childctr1, childn1, childctr2, childn2) :-
+  Insert(childctr1, childn1, parentctr, parentn), 
+  Insert(childctr2, childn2, parentctr, parentn).
+
+
+LaterSibling(ctr1, n1, ctr2, n2) :-
+  Sibling(ctr1, n1, ctr2, n2),
+  ctr1 * 10 + n1 > ctr2 * 10 + n2.
+//  (ctr1 > ctr2; (ctr1 = ctr2, n1 > n2)).
+
+
+LaterSibling2(ctr1, n1, ctr3, n3) :-
+  Sibling(ctr1, n1, ctr2, n2),
+  Sibling(ctr1, n1, ctr3, n3),
+  ctr1 * 10 + n1 > ctr2 * 10 + n2, 
+  ctr2 * 10 + n2 > ctr3 * 10 + n3.
+//  (ctr1 > ctr2; (ctr1 = ctr2, n1 > n2)),
+//  (ctr2 > ctr3; (ctr2 = ctr3, n2 > n3)).
+
+
+NextSibling(ctr1, n1, ctr2, n2) :-
+  LaterSibling(ctr1, n1, ctr2, n2),
+  not LaterSibling2(ctr1, n1, ctr2, n2).
+
+
+HasNextSibling(sibctr1, sibn1) :- LaterSibling(sibctr1, sibn1, _, _).
+
+
+NextSiblingAnc(startctr, startn, nextctr, nextn) :- NextSibling(startctr, startn, nextctr, nextn).
+NextSiblingAnc(startctr, startn, nextctr, nextn) :- 
+    Insert(startctr, startn, parentctr, parentn), 
+    NextSiblingAnc(parentctr, parentn, nextctr, nextn),
+    not HasNextSibling(startctr, startn).
+
+
+NextElem(prevctr, prevn, nextctr, nextn) :- FirstChild(prevctr, prevn, nextctr, nextn).
+NextElem(prevctr, prevn, nextctr, nextn) :- NextSiblingAnc(prevctr, prevn, nextctr, nextn), not HasChild(prevctr, prevn).
+
+
+
+// assigning values to list elements.
+CurrentValue(elemctr, elemn, value) :- Assign(idctr, idn, elemctr, elemn, value), not Remove(idctr, idn).
+
+HasValue(elemctr, elemn) :- CurrentValue(elemctr, elemn, _).
+
+SkipBlank(fromctr, fromn, toctr, ton) :- NextElem(fromctr, fromn, toctr, ton).
+SkipBlank(fromctr, fromn, toctr, ton) :- SkipBlank(viactr, vian, toctr, ton), NextElem(fromctr, fromn, viactr, vian), not HasValue(viactr, vian).
+
+
+NextVisible(prevctr, prevn, nextctr, nextn) :- 
+  HasValue(prevctr, prevn),
+  SkipBlank(prevctr, prevn, nextctr, nextn), 
+  HasValue(nextctr, nextn).
+
+ResultP(ctr1, ctr2, value) :- 
+    NextVisible(ctr1, _, ctr2, n2), 
+    CurrentValue(ctr2, n2, value).
+
+output relation RelationSizes(rel: string, size:bit<64>)
+
+RelationSizes("Insert", size) :- Insert(a, b, c, d),  var size = (a, b, c, d).group_by(()).count_distinct().
+RelationSizes("Remove", size) :- Remove(idctr, idn),  var size = (idctr, idn).group_by(()).count_distinct().
+RelationSizes("HasChild", size) :- HasChild(parentctr, parentn),  var size = (parentctr, parentn).group_by(()).count_distinct().
+RelationSizes("Assign", size) :- Assign(idctr, idn, elemctr, elemn, value),  var size = (idctr, idn, elemctr, elemn, value).group_by(()).count_distinct().
+RelationSizes("LaterChild", size) :- LaterChild(parentctr, parentn, childctr, childn),  var size = (parentctr, parentn, childctr, childn).group_by(()).count_distinct().
+RelationSizes("FirstChild", size) :- FirstChild(parentctr, parentn, childctr, childn),  var size = (parentctr, parentn, childctr, childn).group_by(()).count_distinct().
+RelationSizes("Sibling", size) :- Sibling(childctr1, childn1, childctr2, childn2),  var size = (childctr1, childn1, childctr2, childn2).group_by(()).count_distinct().
+RelationSizes("LaterSibling", size) :- LaterSibling(sibctr1, sibn1, sibctr2, sibn2),  var size = (sibctr1, sibn1, sibctr2, sibn2).group_by(()).count_distinct().
+RelationSizes("LaterSibling2", size) :- LaterSibling2(sibctr1, sibn1, sibctr3, sibn3),  var size = (sibctr1, sibn1, sibctr3, sibn3).group_by(()).count_distinct().
+RelationSizes("NextSibling", size) :- NextSibling(sibctr1, sibn1, sibctr2, sibn2),  var size = (sibctr1, sibn1, sibctr2, sibn2).group_by(()).count_distinct().
+RelationSizes("HasNextSibling", size) :- HasNextSibling(sibctr1, sibn1),  var size = (sibctr1, sibn1).group_by(()).count_distinct().
+RelationSizes("NextSiblingAnc", size) :- NextSiblingAnc(startctr, startn, nextctr, nextn),  var size = (startctr, startn, nextctr, nextn).group_by(()).count_distinct().
+RelationSizes("NextElem", size) :- NextElem(prevctr, prevn, nextctr, nextn),  var size = (prevctr, prevn, nextctr, nextn).group_by(()).count_distinct().
+RelationSizes("CurrentValue", size) :- CurrentValue(elemctr, elemn, value),  var size = (elemctr, elemn, value).group_by(()).count_distinct().
+RelationSizes("HasValue", size) :- HasValue(elemctr, elemn),  var size = (elemctr, elemn).group_by(()).count_distinct().
+RelationSizes("ValueStep", size) :- ValueStep(fromctr, fromn, toctr, ton),  var size = (fromctr, fromn, toctr, ton).group_by(()).count_distinct().
+RelationSizes("BlankStep", size) :- BlankStep(fromctr, fromn, toctr, ton),  var size = (fromctr, fromn, toctr, ton).group_by(()).count_distinct().
+RelationSizes("Value_blank_star", size) :- Value_blank_star(fromctr, fromn, toctr, ton),  var size = (fromctr, fromn, toctr, ton).group_by(()).count_distinct().
+RelationSizes("NextVisible", size) :- NextVisible(prevctr, prevn, nextctr, nextn),  var size = (prevctr, prevn, nextctr, nextn).group_by(()).count_distinct().
+RelationSizes("ResultP", size) :- ResultP(ctr1, ctr2, value),  var size = (ctr1, ctr2, value).group_by(()).count_distinct().

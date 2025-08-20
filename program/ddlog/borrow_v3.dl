@@ -1,0 +1,86 @@
+typedef TId = signed<32>
+
+input relation subset_base(x: TId, y: TId, z: TId)
+input relation cfg_edge(x: TId, y: TId)
+input relation loan_issued_at(x: TId, y: TId, z: TId)
+input relation universal_region(x: TId)
+input relation var_used_at(x: TId, y: TId)
+input relation loan_killed_at(x: TId, y: TId)
+input relation known_placeholder_subset(x: TId, y: TId)
+input relation var_dropped_at(x: TId, y: TId)
+input relation drop_of_var_derefs_origin(x: TId, y: TId)
+input relation var_defined_at(x: TId, y: TId)
+input relation child_path(x: TId, y: TId)
+input relation path_moved_at_base(x: TId, y: TId)
+input relation path_assigned_at_base(x: TId, y: TId)
+input relation path_accessed_at_base(x: TId, y: TId)
+input relation path_is_var(x: TId, y: TId)
+input relation loan_invalidated_at(x: TId, y: TId)
+input relation use_of_var_derefs_origin(x: TId, y: TId)
+
+output relation subset(x: TId, y: TId, z: TId)
+output relation origin_live_on_entry(x: TId, y: TId)
+output relation origin_contains_loan_on_entry(x: TId, y: TId, z: TId)
+output relation loan_live_at(x: TId, y: TId)
+output relation errors(x: TId, y: TId)
+output relation placeholder_origin(x: TId)
+output relation subset_error(x: TId, y: TId, z: TId)
+output relation var_maybe_partly_initialized_on_exit(x: TId, y: TId)
+output relation var_maybe_partly_initialized_on_entry(x: TId, y: TId)
+output relation var_live_on_entry(x: TId, y: TId)
+output relation ancestor_path(x: TId, y: TId)
+output relation path_moved_at(x: TId, y: TId)
+output relation path_assigned_at(x: TId, y: TId)
+output relation path_accessed_at(x: TId, y: TId)
+output relation path_begins_with_var(x: TId, y: TId)
+output relation path_maybe_initialized_on_exit(x: TId, y: TId)
+output relation path_maybe_uninitialized_on_exit(x: TId, y: TId)
+output relation move_error(x: TId, y: TId)
+output relation cfg_node(x: TId)
+output relation var_drop_live_on_entry(x: TId, y: TId)
+output relation RelationSizes(relation_name: string, size: signed<32>)
+
+subset(origin1, origin2, point) :- subset_base(origin1, origin2, point).
+origin_contains_loan_on_entry(origin, loan, point) :- loan_issued_at(loan, origin, point).
+placeholder_origin(origin) :- universal_region(origin).
+known_placeholder_subset(x, z) :- known_placeholder_subset(x, y), known_placeholder_subset(y, z).
+subset(origin1, origin3, point) :- subset(origin1, origin2, point), subset_base(origin2, origin3, point), origin1 != origin3.
+subset(origin1, origin2, point2) :- subset(origin1, origin2, point1), cfg_edge(point1, point2), origin_live_on_entry(origin1, point2), origin_live_on_entry(origin2, point2).
+origin_contains_loan_on_entry(origin2, loan, point) :- origin_contains_loan_on_entry(origin1, loan, point), subset(origin1, origin2, point).
+origin_contains_loan_on_entry(origin, loan, point2) :- origin_contains_loan_on_entry(origin, loan, point1), cfg_edge(point1, point2), not loan_killed_at(loan, point1), origin_live_on_entry(origin, point2).
+loan_live_at(loan, point) :- origin_contains_loan_on_entry(origin, loan, point), origin_live_on_entry(origin, point).
+errors(loan, point) :- loan_invalidated_at(loan, point), loan_live_at(loan, point).
+subset_error(origin1, origin2, point) :- subset(origin1, origin2, point), placeholder_origin(origin1), placeholder_origin(origin2), not known_placeholder_subset(origin1, origin2), origin1 != origin2.
+
+origin_live_on_entry(origin, point) :- cfg_node(point), universal_region(origin).
+
+cfg_node(point1) :- cfg_edge(point1, _).
+cfg_node(point2) :- cfg_edge(_, point2).
+
+var_live_on_entry(var, point) :- var_used_at(var, point).
+var_maybe_partly_initialized_on_entry(var, point2) :- var_maybe_partly_initialized_on_exit(var, point1), cfg_edge(point1, point2).
+var_drop_live_on_entry(var, point) :- var_dropped_at(var, point), var_maybe_partly_initialized_on_entry(var, point).
+origin_live_on_entry(origin, point) :- var_drop_live_on_entry(var, point), drop_of_var_derefs_origin(var, origin).
+origin_live_on_entry(origin, point) :- var_live_on_entry(var, point), use_of_var_derefs_origin(var, origin).
+var_live_on_entry(var, point1) :- var_live_on_entry(var, point2), cfg_edge(point1, point2), not var_defined_at(var, point1).
+var_drop_live_on_entry(Var, SourceNode) :- var_drop_live_on_entry(Var, TargetNode), cfg_edge(SourceNode, TargetNode), not var_defined_at(Var, SourceNode), var_maybe_partly_initialized_on_exit(Var, SourceNode).
+
+ancestor_path(x, y) :- child_path(x, y).
+path_moved_at(x, y) :- path_moved_at_base(x, y).
+path_assigned_at(x, y) :- path_assigned_at_base(x, y).
+path_accessed_at(x, y) :- path_accessed_at_base(x, y).
+path_begins_with_var(x, var) :- path_is_var(x, var).
+ancestor_path(Grandparent, Child) :- ancestor_path(Parent, Child), child_path(Parent, Grandparent).
+path_moved_at(Child, Point) :- path_moved_at(Parent, Point), ancestor_path(Parent, Child).
+path_assigned_at(Child, point) :- path_assigned_at(Parent, point), ancestor_path(Parent, Child).
+path_accessed_at(Child, point) :- path_accessed_at(Parent, point), ancestor_path(Parent, Child).
+path_begins_with_var(Child, Var) :- path_begins_with_var(Parent, Var), ancestor_path(Parent, Child).
+
+path_maybe_initialized_on_exit(path, point) :- path_assigned_at(path, point).
+path_maybe_uninitialized_on_exit(path, point) :- path_moved_at(path, point).
+path_maybe_initialized_on_exit(path, point2) :- path_maybe_initialized_on_exit(path, point1), cfg_edge(point1, point2), not path_moved_at(path, point2).
+path_maybe_uninitialized_on_exit(path, point2) :- cfg_edge(point1, point2), not path_assigned_at(path, point2), path_maybe_uninitialized_on_exit(path, point1).
+var_maybe_partly_initialized_on_exit(var, point) :- path_maybe_initialized_on_exit(path, point), path_begins_with_var(path, var).
+move_error(Path, TargetNode) :- path_maybe_uninitialized_on_exit(Path, SourceNode), cfg_edge(SourceNode, TargetNode).
+
+RelationSizes("path_maybe_initialized_on_exit", size) :- size = Aggregate((), count_distinct(path_maybe_initialized_on_exit(x, y))).

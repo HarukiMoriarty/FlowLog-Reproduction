@@ -1,0 +1,16 @@
+typedef var = signed<32>
+
+input relation AddressOf(y: var, x: var)
+input relation Assign(y: var, x: var)
+input relation Load(y: var, x: var)
+input relation Store(y: var, x: var)
+
+output relation PointsTo(y: var, x: var)
+
+PointsTo(y, x) :- AddressOf(y, x).
+PointsTo(y, x) :- Assign(y, z), PointsTo(z, x).
+PointsTo(y, w) :- PointsTo(x, z), PointsTo(z, w), Load(y, x).
+PointsTo(z, w) :- Store(y, x), PointsTo(y, z), PointsTo(x, w).
+
+output relation RelationSizes(rel: string, size:bit<64>)
+RelationSizes("PointsTo", size) :- PointsTo(y, x),  var size = (y, x).group_by(()).count_distinct().

@@ -1,0 +1,12 @@
+typedef node = signed<32>
+
+input relation Source(id: node)
+input relation Arc(x: node, y: node)
+
+output relation Reach(id: node)
+
+Reach(y) :- Source(y).
+Reach(y) :- Arc(x, y), Reach(x).
+
+output relation RelationSizes(rel: string, size:bit<64>)
+RelationSizes("Reach", size) :- Reach(id),  var size = (id).group_by(()).count_distinct().

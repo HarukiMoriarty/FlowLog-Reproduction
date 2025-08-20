@@ -1,0 +1,11 @@
+typedef node = signed<32>
+
+input relation Arc(src: node, dest: node)
+
+output relation Sg(src: node, dest: node)
+
+Sg(x, y) :- Arc(a, x), Arc(a, y), x != y.
+Sg(x, y) :- Arc(b, y), Sg(a, b), Arc(a, x).
+
+output relation RelationSizes(rel: string, size:bit<64>)
+RelationSizes("Sg", size) :- Sg(src, dest),  var size = (src, dest).group_by(()).count_distinct().

@@ -1,0 +1,24 @@
+typedef node = signed<32>
+
+input relation Assign(x: node, y: node)
+input relation Dereference(x: node, y: node)
+
+output relation ValueFlow(x: node, y: node)
+output relation MemoryAlias(x: node, y: node)
+output relation ValueAlias(x: node, y: node)
+
+ValueFlow(y, x) :- Assign(y, x).
+ValueFlow(x, y) :- Assign(x, z), MemoryAlias(z, y).
+ValueFlow(x, y) :- ValueFlow(x, z), ValueFlow(z, y).
+MemoryAlias(x, w) :- Dereference(y, x), ValueAlias(y, z), Dereference(z, w).
+ValueAlias(x, y) :- ValueFlow(z, x), ValueFlow(z, y).
+ValueAlias(x, y) :- ValueFlow(z, x), MemoryAlias(z, w), ValueFlow(w, y).
+ValueFlow(x, x) :- Assign(x, y).
+ValueFlow(x, x) :- Assign(y, x).
+MemoryAlias(x, x) :- Assign(y, x).
+MemoryAlias(x, x) :- Assign(x, y).
+
+output relation RelationSizes(rel: string, size:bit<64>)
+RelationSizes("ValueFlow", size) :- ValueFlow(x, y),  var size = (x, y).group_by(()).count_distinct().
+RelationSizes("MemoryAlias", size) :- MemoryAlias(x, y),  var size = (x, y).group_by(()).count_distinct().
+RelationSizes("ValueAlias", size) :- ValueAlias(x, y),  var size = (x, y).group_by(()).count_distinct().

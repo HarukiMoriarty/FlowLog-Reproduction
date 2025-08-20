@@ -1,0 +1,16 @@
+typedef TId = signed<32>
+
+input relation AddressOf(y: TId, x: TId)
+input relation Assign(y: TId, x: TId)
+input relation Load(y: TId, x: TId)
+input relation Store(y: TId, x: TId)
+
+output relation PointsTo(y: TId, x: TId)
+output relation RelationSizes(relation_name: string, size: signed<32>)
+
+PointsTo(y, x) :- AddressOf(y, x).
+PointsTo(y, x) :- Assign(y, z), PointsTo(z, x).
+PointsTo(y, w) :- PointsTo(x, z), PointsTo(z, w), Load(y, x).
+PointsTo(z, w) :- Store(y, x), PointsTo(x, w), PointsTo(y, z).
+
+RelationSizes("PointsTo", size) :- size = Aggregate((), count_distinct(PointsTo(y, x))).

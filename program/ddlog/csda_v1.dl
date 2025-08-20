@@ -6,7 +6,7 @@ input relation Edge(x: node, y: node)
 output relation NullNode(x: node, y: node)
 
 NullNode(x, y) :- NullEdge(x, y).
-NullNode(x, y) :- NullNode(x, w), Edge(w, y).
+NullNode(x, y) :- Edge(w, y), NullNode(x, w).
 
 output relation RelationSizes(rel: string, size:bit<64>)
 RelationSizes("NullNode", size) :- NullNode(x, y),  var size = (x, y).group_by(()).count_distinct().

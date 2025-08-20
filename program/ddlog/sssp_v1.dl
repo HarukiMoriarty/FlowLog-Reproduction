@@ -1,0 +1,15 @@
+typedef node = signed<32>
+typedef weight = signed<32>
+
+input relation Arc(src: node, dest: node, weight: weight)
+input relation id(src: node)
+
+relation sssp2(x: node, y: weight)
+output relation sssp(x: node, y: weight)
+
+sssp2(x, min_weight) :- id(x), var min_weight = Aggregate((x), group_min(0)).
+sssp2(y, min_dist) :- Arc(x, y, d2), sssp2(x, d1), var min_dist = Aggregate((y), group_min(d1 + d2)).
+sssp(x, min_d) :- sssp2(x, d), var min_d = Aggregate((x), group_min(d)).
+
+output relation RelationSizes(rel: string, size:bit<64>)
+RelationSizes("sssp", size) :- sssp(x, y),  var size = (x, y).group_by(()).count_distinct().

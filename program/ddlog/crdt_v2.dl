@@ -1,0 +1,90 @@
+typedef TId = signed<32>
+
+input relation Insert_input(a: TId, b: TId, c: TId, d: TId)
+input relation Remove_input(a: TId, b: TId)
+
+output relation insert(a: TId, b: TId, c: TId, d: TId)
+output relation remove(IDCtr: TId, IDN: TId)
+output relation hasChild(ParentCtr: TId, ParentN: TId)
+output relation assign(IDCtr: TId, IDN: TId, ElemCtr: TId, ElemN: TId, Value: TId)
+output relation laterChild(ParentCtr: TId, ParentN: TId, ChildCtr: TId, ChildN: TId)
+output relation firstChild(ParentCtr: TId, ParentN: TId, ChildCtr: TId, ChildN: TId)
+output relation sibling(ChildCtr1: TId, ChildN1: TId, ChildCtr2: TId, ChildN2: TId)
+output relation laterSibling(SibCtr1: TId, SibN1: TId, SibCtr2: TId, SibN2: TId)
+output relation laterSibling2(SibCtr1: TId, SibN1: TId, SibCtr3: TId, SibN3: TId)
+output relation nextSibling(SibCtr1: TId, SibN1: TId, SibCtr2: TId, SibN2: TId)
+output relation hasNextSibling(SibCtr1: TId, SibN1: TId)
+output relation nextSiblingAnc(StartCtr: TId, StartN: TId, NextCtr: TId, NextN: TId)
+output relation nextElem(PrevCtr: TId, PrevN: TId, NextCtr: TId, NextN: TId)
+output relation currentValue(ElemCtr: TId, ElemN: TId, Value: TId)
+output relation hasValue(ElemCtr: TId, ElemN: TId)
+output relation valueStep(FromCtr: TId, FromN: TId, ToCtr: TId, ToN: TId)
+output relation blankStep(FromCtr: TId, FromN: TId, ToCtr: TId, ToN: TId)
+output relation value_blank_star(FromCtr: TId, FromN: TId, ToCtr: TId, ToN: TId)
+output relation nextVisible(PrevCtr: TId, PrevN: TId, NextCtr: TId, NextN: TId)
+output relation result(ctr1: TId, ctr2: TId, value: TId)
+output relation RelationSizes(relation_name: string, size: signed<32>)
+
+insert(a, b, c, d) :- Insert_input(a, b, c, d).
+remove(a, b) :- Remove_input(a, b).
+assign(ctr, n, ctr, n, n) :- insert(ctr, n, _, _).
+hasChild(ParentCtr, ParentN) :- insert(_, _, ParentCtr, ParentN).
+
+laterChild(ParentCtr, ParentN, Ctr2, N2) :-
+  insert(Ctr1, N1, ParentCtr, ParentN),
+  insert(Ctr2, N2, ParentCtr, ParentN),
+  Ctr1 * 10 + N1 > Ctr2 * 10 + N2.
+
+firstChild(ParentCtr, ParentN, ChildCtr, ChildN) :-
+  insert(ChildCtr, ChildN, ParentCtr, ParentN), 
+  not laterChild(ParentCtr, ParentN, ChildCtr, ChildN).
+
+sibling(ChildCtr1, ChildN1, ChildCtr2, ChildN2) :-
+  insert(ChildCtr1, ChildN1, ParentCtr, ParentN), 
+  insert(ChildCtr2, ChildN2, ParentCtr, ParentN).
+
+laterSibling(Ctr1, N1, Ctr2, N2) :-
+  sibling(Ctr1, N1, Ctr2, N2),
+  Ctr1 * 10 + N1 > Ctr2 * 10 + N2.
+
+laterSibling2(Ctr1, N1, Ctr3, N3) :-
+  sibling(Ctr1, N1, Ctr2, N2),
+  sibling(Ctr1, N1, Ctr3, N3),
+  Ctr1 * 10 + N1 > Ctr2 * 10 + N2, 
+  Ctr2 * 10 + N2 > Ctr3 * 10 + N3.
+
+nextSibling(Ctr1, N1, Ctr2, N2) :-
+  laterSibling(Ctr1, N1, Ctr2, N2),
+  not laterSibling2(Ctr1, N1, Ctr2, N2).
+
+hasNextSibling(SibCtr1, SibN1) :- laterSibling(SibCtr1, SibN1, _, _).
+
+nextSiblingAnc(StartCtr, StartN, NextCtr, NextN) :- nextSibling(StartCtr, StartN, NextCtr, NextN).
+nextSiblingAnc(StartCtr, StartN, NextCtr, NextN) :- 
+    not hasNextSibling(StartCtr, StartN), 
+    insert(StartCtr, StartN, ParentCtr, ParentN), 
+    nextSiblingAnc(ParentCtr, ParentN, NextCtr, NextN).
+
+nextElem(PrevCtr, PrevN, NextCtr, NextN) :- firstChild(PrevCtr, PrevN, NextCtr, NextN).
+nextElem(PrevCtr, PrevN, NextCtr, NextN) :- not hasChild(PrevCtr, PrevN), nextSiblingAnc(PrevCtr, PrevN, NextCtr, NextN).
+
+currentValue(ElemCtr, ElemN, Value) :- assign(IDCtr, IDN, ElemCtr, ElemN, Value), not remove(IDCtr, IDN).
+
+hasValue(ElemCtr, ElemN) :- currentValue(ElemCtr, ElemN, _).
+valueStep(FromCtr, FromN, ToCtr, ToN) :- nextElem(FromCtr, FromN, ToCtr, ToN), hasValue(FromCtr, FromN).
+blankStep(FromCtr, FromN, ToCtr, ToN) :- 
+  not valueStep(FromCtr, FromN, ToCtr, ToN), 
+  nextElem(FromCtr, FromN, ToCtr, ToN).
+
+value_blank_star(FromCtr, FromN, ToCtr, ToN) :- valueStep(FromCtr, FromN, ToCtr, ToN).
+value_blank_star(FromCtr, FromN, ToCtr, ToN) :- blankStep(ViaCtr, ViaN, ToCtr, ToN), value_blank_star(FromCtr, FromN, ViaCtr, ViaN).
+
+nextVisible(PrevCtr, PrevN, NextCtr, NextN) :- 
+  value_blank_star(PrevCtr, PrevN, NextCtr, NextN), 
+  hasValue(NextCtr, NextN).
+
+result(ctr1, ctr2, value) :- 
+    nextVisible(ctr1, _, ctr2, N2), 
+    currentValue(ctr2, N2, value).
+
+RelationSizes("nextSiblingAnc", size) :- size = Aggregate((), count_distinct(nextSiblingAnc(StartCtr, StartN, NextCtr, NextN))).

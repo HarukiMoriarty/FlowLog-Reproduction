@@ -1,0 +1,20 @@
+typedef node = signed<32>
+typedef label = signed<32>
+
+input relation Arc(x: node, y: node, l: label)
+
+relation Zero(x: node, y: node)
+relation One(x: node, y: node)
+output relation Dyck(x: node, y: node)
+
+Zero(x, y) :- Arc(x, y, 0).
+One(x, y) :- Arc(x, y, 1).
+
+Dyck(x, y) :- Zero(x, z), Zero(z, y).
+Dyck(x, y) :- One(x, z), One(z, y).
+Dyck(x, y) :- Dyck(z, w), Zero(w, y), Zero(x, z).
+Dyck(x, y) :- One(x, z), Dyck(z, w), One(w, y).
+Dyck(x, y) :- Dyck(x, z), Dyck(z, y).
+
+output relation RelationSizes(rel: string, size:bit<64>)
+RelationSizes("Dyck", size) :- Dyck(x, y),  var size = (x, y).group_by(()).count_distinct().
