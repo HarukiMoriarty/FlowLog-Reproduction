@@ -9,8 +9,8 @@ set -e
 # Default timeout in seconds (15 minutes), thread count and engines to run
 TIMEOUT_SECONDS=900
 THREAD_COUNT=64
-# Comma-separated list: duckdb,umbra,flowlog,souffle,recstep (default: all)
-ENGINES="duckdb,umbra,flowlog,souffle,recstep"
+# Comma-separated list: duckdb,umbra,flowlog,souffle,ddlog,recstep (default: all)
+ENGINES="duckdb,umbra,flowlog,souffle,ddlog,recstep"
 
 # Parse CLI args (flags) while keeping backward-compatible positional usage
 POSITIONAL=()
@@ -24,7 +24,7 @@ while [[ $# -gt 0 ]]; do
             echo "Options:"
             echo "  -t, --timeout SECONDS    Timeout for each query execution in seconds (default: 900)"
             echo "  -n, --threads N          Number of threads/workers to use (default: 64)"
-            echo "  -e, --engines LIST       Comma-separated engines to run: duckdb,umbra,flowlog,souffle,recstep (default: all)"
+            echo "  -e, --engines LIST       Comma-separated engines to run: duckdb,umbra,flowlog,souffle,ddlog,recstep (default: all)"
             echo "  -h, --help               Show this help message and exit"
             echo ""
             echo "Examples:"
@@ -695,6 +695,107 @@ run_souffle() {
 }
 
 # -----------------------------------------------------------------------------
+# DDlog Benchmark Function
+# -----------------------------------------------------------------------------
+run_ddlog() {
+    local base=$1
+    local dataset=$2
+    local ddlog_prog="program/ddlog/${base}.dl"
+    local fact_path="dataset/${dataset}-${base}/data.ddin"
+    local build_dir="${base}_ddlog"
+    local exe="${build_dir}/target/release/${base}_cli"
+    local rust_v=1.76
+
+    echo "  Starting DDlog benchmark: $base on $dataset (${THREAD_COUNT} workers)"
+
+    # Check if required files exist
+    [[ ! -f "$ddlog_prog" ]] && { 
+        echo "  ERROR: DDlog program file not found: $ddlog_prog"
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"
+        return
+    }
+    [[ ! -f "$fact_path" ]] && { 
+        echo "  ERROR: Dataset file not found: $fact_path"
+        {
+            echo "-1"
+            echo "-1"
+        } > "$TEMP_RESULT_FILE"
+        return
+    }
+
+    # Compile DDlog program if not already compiled
+    if [[ ! -x "$exe" ]]; then
+        echo "  Compiling DDlog program..."
+        rm -rf "${build_dir}" || true
+        ddlog -i "$ddlog_prog" -o ./
+        pushd "$build_dir" >/dev/null
+        RUSTFLAGS=-Awarnings cargo +$rust_v build --release --quiet
+        popd >/dev/null
+    fi
+
+    # Run logging execution
+    local log_file="./log/benchmark/${THREAD_COUNT}/ddlog_${base}_${dataset}.log"
+    echo "=== DDlog Execute Log for $base on $dataset (${THREAD_COUNT} workers) ===" > "$log_file"
+    timeout "$TIMEOUT_SECONDS" "$exe" -w "$THREAD_COUNT" < "$fact_path" >> "$log_file" 2>&1 || echo "  WARNING: Logging execution failed or timed out"
+
+    # Run timing executions
+    echo "  Running timing executions..."
+    local fastest_exec=""
+    for i in {1..3}; do
+        echo "    Timing run $i/3"
+        local temp_log="./log/benchmark/${THREAD_COUNT}/ddlog_${base}_${dataset}_${i}.log"
+        local etime=""
+        
+        if timeout "$TIMEOUT_SECONDS" /usr/bin/time -f "LinuxRT: %e" "$exe" -w "$THREAD_COUNT" < "$fact_path" > "$temp_log" 2>&1; then
+            # Extract execution time
+            local exec_time=$(grep "LinuxRT:" "$temp_log" | tail -1 | awk '{print $2}')
+            if [[ "$exec_time" =~ ^[0-9]+\.?[0-9]*$ ]]; then
+                echo "      Completed in $exec_time seconds"
+                etime="$exec_time"
+            else
+                echo "      Invalid or missing time, using timeout"
+                etime="$TIMEOUT_SECONDS"
+            fi
+        else
+            echo "      Timed out"
+            etime="$TIMEOUT_SECONDS"
+        fi
+        
+        # Track fastest execution time
+        if [[ -n "$etime" && "$etime" != "$TIMEOUT_SECONDS" ]]; then
+            if [[ -z "$fastest_exec" || $(echo "$etime < $fastest_exec" | bc -l) -eq 1 ]]; then
+                fastest_exec="$etime"
+            fi
+        fi
+        
+        rm -f "$temp_log"
+    done
+
+    # Set fallback if no valid execution time was recorded
+    if [[ -z "$fastest_exec" ]]; then
+        fastest_exec="$TIMEOUT_SECONDS"
+    fi
+
+    # DDlog does not have a separate load phase, so set load_time to -1
+    local load_time="-1"
+
+    echo "  Fastest execution time: $fastest_exec seconds"
+
+    # Clean up build directory
+    rm -rf "${build_dir}" 2>/dev/null || true
+
+    # Write results to temp file
+    {
+        echo "$load_time"
+        echo "$fastest_exec"
+    } > "$TEMP_RESULT_FILE"
+    echo "  Results: load=$load_time exec=$fastest_exec"
+}
+
+# -----------------------------------------------------------------------------
 # RecStep Benchmark Function
 # -----------------------------------------------------------------------------
 run_recstep() {
@@ -806,31 +907,83 @@ run_recstep() {
 # Main Benchmark Loop
 # =============================================================================
 
-while IFS='=' read -r program dataset; do
-    [[ -z "$program" || "$program" =~ ^# ]] && continue
-
-    DATASET_PATH="${DATASET_DIR}/${dataset}"
-    ZIP_URL="https://pages.cs.wisc.edu/~m0riarty/dataset/${dataset}.zip"
-    ZIP_PATH="/dev/shm/${dataset}.zip"
-
+# Helper function to download and extract dataset
+download_dataset() {
+    local program=$1
+    local dataset=$2
+    local for_ddlog=$3
+    
+    local ZIP_URL
+    local ZIP_PATH
+    local DATASET_PATH
+    
+    if [[ "$for_ddlog" == "true" ]]; then
+        # DDlog datasets extract to dataset/${dataset}-${program}/ directory
+        DATASET_PATH="${DATASET_DIR}/${dataset}-${program}"
+        local ZIP_FILENAME="${dataset}-${program}.zip"
+        ZIP_PATH="/dev/shm/${ZIP_FILENAME}"
+        
+        # Try two possible URLs for DDlog datasets
+        local URL1="https://pages.cs.wisc.edu/~m0riarty/dataset/ddin/${ZIP_FILENAME}"
+        local URL2="https://pages.cs.wisc.edu/~simonfrisk/${ZIP_FILENAME}"
+        
+    else
+        # Other engines extract to dataset/${dataset}/ directory
+        DATASET_PATH="${DATASET_DIR}/${dataset}"
+        ZIP_URL="https://pages.cs.wisc.edu/~m0riarty/dataset/csv/${dataset}.zip"
+        ZIP_PATH="/dev/shm/${dataset}.zip"
+    fi
+    
     # Download and extract dataset if needed
     if [[ -d "$DATASET_PATH" ]]; then
         echo "SKIP: Dataset already exists: $DATASET_PATH"
     else
-        echo "PREP: Downloading and extracting dataset: $dataset"
-        wget -O "$ZIP_PATH" "$ZIP_URL"
+        echo "PREP: Downloading and extracting dataset: $dataset (for_ddlog=$for_ddlog)"
+        
+        if [[ "$for_ddlog" == "true" ]]; then
+            # Try both URLs for DDlog datasets
+            echo "      Trying URL1: $URL1"
+            if wget -O "$ZIP_PATH" "$URL1"; then
+                echo "      Successfully downloaded from URL1"
+                ZIP_URL="$URL1"  # For logging purposes
+            else
+                echo "      URL1 failed, trying URL2: $URL2"
+                if wget -O "$ZIP_PATH" "$URL2"; then
+                    echo "      Successfully downloaded from URL2"
+                    ZIP_URL="$URL2"  # For logging purposes
+                else
+                    echo "      ERROR: Both URLs failed for DDlog dataset: $ZIP_FILENAME"
+                    rm -f "$ZIP_PATH"  # Clean up partial download
+                    return 1
+                fi
+            fi
+        else
+            # Single URL for non-DDlog datasets
+            echo "      URL: $ZIP_URL"
+            if ! wget -O "$ZIP_PATH" "$ZIP_URL"; then
+                echo "      ERROR: Failed to download dataset: $ZIP_URL"
+                rm -f "$ZIP_PATH"  # Clean up partial download
+                return 1
+            fi
+        fi
+        
+        echo "      Downloaded from: $ZIP_URL"
         unzip "$ZIP_PATH" -d "$DATASET_DIR"
+        rm -f "$ZIP_PATH"  # Clean up zip immediately
     fi
+}
 
-    echo ""
-    echo "=== RUNNING: $program on $dataset ==="
-
+# Helper function to run non-ddlog engines for a program/dataset pair
+run_non_ddlog_engines() {
+    local program=$1
+    local dataset=$2
+    
     # Prepare default values for all engines (in case some are skipped)
-    duck_load="-1"; duck_exec="-1"
-    umbra_load="-1"; umbra_exec="-1"
-    flowlog_load="-1"; flowlog_exec="-1"
-    souffle_load="-1"; souffle_exec="-1"
-    recstep_load="-1"; recstep_exec="-1"
+    local duck_load="-1"; local duck_exec="-1"
+    local umbra_load="-1"; local umbra_exec="-1"
+    local flowlog_load="-1"; local flowlog_exec="-1"
+    local souffle_load="-1"; local souffle_exec="-1"
+    local recstep_load="-1"; local recstep_exec="-1"
 
     # Run DuckDB benchmark (if requested)
     if engine_selected duckdb; then
@@ -896,7 +1049,64 @@ while IFS='=' read -r program dataset; do
     else
         echo "--- RecStep skipped ---"
     fi
+    
+    # Store results in associative arrays (simulate by writing to temp files)
+    echo "$duck_load" > "/tmp/results_${program}_${dataset}_duck_load"
+    echo "$duck_exec" > "/tmp/results_${program}_${dataset}_duck_exec"
+    echo "$umbra_load" > "/tmp/results_${program}_${dataset}_umbra_load"
+    echo "$umbra_exec" > "/tmp/results_${program}_${dataset}_umbra_exec"
+    echo "$flowlog_load" > "/tmp/results_${program}_${dataset}_flowlog_load"
+    echo "$flowlog_exec" > "/tmp/results_${program}_${dataset}_flowlog_exec"
+    echo "$souffle_load" > "/tmp/results_${program}_${dataset}_souffle_load"
+    echo "$souffle_exec" > "/tmp/results_${program}_${dataset}_souffle_exec"
+    echo "$recstep_load" > "/tmp/results_${program}_${dataset}_recstep_load"
+    echo "$recstep_exec" > "/tmp/results_${program}_${dataset}_recstep_exec"
+}
 
+# Helper function to run ddlog engine for a program/dataset pair
+run_ddlog_engine() {
+    local program=$1
+    local dataset=$2
+    
+    local ddlog_load="-1"; local ddlog_exec="-1"
+    
+    # Run DDlog benchmark (if requested)
+    if engine_selected ddlog; then
+        echo ""
+        echo "--- DDlog Benchmark ---"
+        run_ddlog "$program" "$dataset"
+        mapfile -t lines < "$TEMP_RESULT_FILE"
+        ddlog_load="${lines[0]}"
+        ddlog_exec="${lines[1]}"
+        echo "DDlog completed: load=$ddlog_load exec=$ddlog_exec"
+    else
+        echo "--- DDlog skipped ---"
+    fi
+    
+    # Store ddlog results
+    echo "$ddlog_load" > "/tmp/results_${program}_${dataset}_ddlog_load"
+    echo "$ddlog_exec" > "/tmp/results_${program}_${dataset}_ddlog_exec"
+}
+
+# Helper function to write final results for a program/dataset pair
+write_final_results() {
+    local program=$1
+    local dataset=$2
+    
+    # Read all results from temp files
+    local duck_load=$(cat "/tmp/results_${program}_${dataset}_duck_load" 2>/dev/null || echo "-1")
+    local duck_exec=$(cat "/tmp/results_${program}_${dataset}_duck_exec" 2>/dev/null || echo "-1")
+    local umbra_load=$(cat "/tmp/results_${program}_${dataset}_umbra_load" 2>/dev/null || echo "-1")
+    local umbra_exec=$(cat "/tmp/results_${program}_${dataset}_umbra_exec" 2>/dev/null || echo "-1")
+    local flowlog_load=$(cat "/tmp/results_${program}_${dataset}_flowlog_load" 2>/dev/null || echo "-1")
+    local flowlog_exec=$(cat "/tmp/results_${program}_${dataset}_flowlog_exec" 2>/dev/null || echo "-1")
+    local souffle_load=$(cat "/tmp/results_${program}_${dataset}_souffle_load" 2>/dev/null || echo "-1")
+    local souffle_exec=$(cat "/tmp/results_${program}_${dataset}_souffle_exec" 2>/dev/null || echo "-1")
+    local ddlog_load=$(cat "/tmp/results_${program}_${dataset}_ddlog_load" 2>/dev/null || echo "-1")
+    local ddlog_exec=$(cat "/tmp/results_${program}_${dataset}_ddlog_exec" 2>/dev/null || echo "-1")
+    local recstep_load=$(cat "/tmp/results_${program}_${dataset}_recstep_load" 2>/dev/null || echo "-1")
+    local recstep_exec=$(cat "/tmp/results_${program}_${dataset}_recstep_exec" 2>/dev/null || echo "-1")
+    
     # Write results to file
     printf "%-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
         "$program" "$dataset" "$duck_load" "$duck_exec" \
@@ -904,16 +1114,108 @@ while IFS='=' read -r program dataset; do
         "$souffle_load" "$souffle_exec" "$ddlog_load" "$ddlog_exec" \
         "$recstep_load" "$recstep_exec" \
         >> "$RESULT_FILE"
+        
+    # Clean up temp result files
+    rm -f "/tmp/results_${program}_${dataset}_"*
+}
 
-    # Cleanup
-    echo ""
-    echo "CLEANUP: Removing dataset: $dataset"
-    rm -rf "$ZIP_PATH" "${DATASET_DIR:?}/${dataset}"
+# Check if any non-ddlog engines are selected
+has_non_ddlog_engines() {
+    engine_selected duckdb || engine_selected umbra || engine_selected flowlog || engine_selected souffle || engine_selected recstep
+}
 
-    # Show progress
+# PHASE 1: Run all non-ddlog engines first
+if has_non_ddlog_engines; then
     echo ""
-    echo "=== RESULTS SO FAR ==="
+    echo "========================================"
+    echo "PHASE 1: Running non-ddlog engines"
+    echo "========================================"
+    
+    while IFS='=' read -r program dataset; do
+        [[ -z "$program" || "$program" =~ ^# ]] && continue
+
+        echo ""
+        echo "=== RUNNING NON-DDLOG: $program on $dataset ==="
+        
+        # Download dataset for non-ddlog engines
+        download_dataset "$program" "$dataset" "false"
+        
+        # Run non-ddlog engines
+        run_non_ddlog_engines "$program" "$dataset"
+        
+        # Cleanup dataset to save space
+        echo ""
+        echo "CLEANUP: Removing dataset: $dataset"
+        rm -rf "${DATASET_DIR:?}/${dataset}"
+
+        echo "Non-ddlog engines completed for $program on $dataset"
+        
+        # Show current results if we have any completed pairs
+        echo ""
+        echo "=== CURRENT RESULTS (Non-DDlog engines only) ==="
+        if [[ -f "$RESULT_FILE" ]]; then
+            cat "$RESULT_FILE"
+        else
+            echo "No results written yet."
+        fi
+        echo ""
+    done < "$CONFIG_FILE"
+fi
+
+# PHASE 2: Run ddlog engine separately
+if engine_selected ddlog; then
+    echo ""
+    echo "========================================"
+    echo "PHASE 2: Running ddlog engine"
+    echo "========================================"
+    
+    while IFS='=' read -r program dataset; do
+        [[ -z "$program" || "$program" =~ ^# ]] && continue
+
+        echo ""
+        echo "=== RUNNING DDLOG: $program on $dataset ==="
+        
+        # Download dataset for ddlog engine
+        download_dataset "$program" "$dataset" "true"
+        
+        # Run ddlog engine
+        run_ddlog_engine "$program" "$dataset"
+        
+        # Cleanup dataset to save space (DDlog uses different directory structure)
+        echo ""
+        echo "CLEANUP: Removing DDlog dataset: ${dataset}-${program}"
+        rm -rf "${DATASET_DIR:?}/${dataset}-${program}"
+
+        echo "DDlog engine completed for $program on $dataset"
+        
+        # Show current results if we have any completed pairs
+        echo ""
+        echo "=== CURRENT RESULTS (DDlog engine only) ==="
+        if [[ -f "$RESULT_FILE" ]]; then
+            cat "$RESULT_FILE"
+        else
+            echo "No results written yet."
+        fi
+        echo ""
+    done < "$CONFIG_FILE"
+fi
+
+# PHASE 3: Write all final results
+echo ""
+echo "========================================"
+echo "PHASE 3: Writing final results"
+echo "========================================"
+
+while IFS='=' read -r program dataset; do
+    [[ -z "$program" || "$program" =~ ^# ]] && continue
+    write_final_results "$program" "$dataset"
+    
+    # Show progress after each program-dataset pair
+    echo ""
+    echo "=== FINAL RESULTS==="
     cat "$RESULT_FILE"
+    echo ""
+    echo "Completed: $program on $dataset"
     echo ""
 done < "$CONFIG_FILE"
 

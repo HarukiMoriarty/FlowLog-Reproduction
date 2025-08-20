@@ -5,22 +5,22 @@
 
 cc=livejournal
 cc=orkut
-cc=arabic
+# cc=arabic
 cc=twitter
 
 reach=livejournal
 reach=orkut
-reach=arabic
+# reach=arabic
 reach=twitter
 
 bipartite=netflix
-bipartite=roadNet-CA
+# bipartite=roadNet-CA
 bipartite=mag
 
-sssp=livejournal-sssp
-sssp=orkut-sssp
-sssp=arabic-sssp
-sssp=twitter-sssp
+# sssp=livejournal-sssp
+# sssp=orkut-sssp
+# sssp=arabic-sssp
+# sssp=twitter-sssp
 
 tc=G10K-0.001
 tc=G20K-0.001
