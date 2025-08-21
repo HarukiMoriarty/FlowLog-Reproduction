@@ -257,6 +257,22 @@ install_ddlog() {
     # Export for current session
     export PATH="$DDLOG_DIR/bin:$PATH"
     export DDLOG_HOME="$DDLOG_DIR"
+
+    echo "[SETUP] Installing Rust toolchain for ddlog..."
+    # Check if Rust is already installed
+    if ! command -v rustc >/dev/null 2>&1; then
+        echo "[INSTALL] Installing Rust..."
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+        add_to_path "$CARGO_BIN_DIR"
+    else
+        echo "[OK] Rust is already installed"
+    fi
+
+    # Ensure Rust is available in current session
+    export PATH="$CARGO_BIN_DIR:$PATH"
+
+    echo "[UPDATE] Updating Rust to latest stable version..."
+    rustup update && rustup default stable
     
     echo "[OK] DDlog environment ready!"
 }
