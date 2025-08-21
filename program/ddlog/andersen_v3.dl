@@ -1,16 +1,16 @@
-typedef TId = signed<32>
+typedef node = signed<32>
 
-input relation AddressOf(y: TId, x: TId)
-input relation Assign(y: TId, x: TId)
-input relation Load(y: TId, x: TId)
-input relation Store(y: TId, x: TId)
+input relation AddressOf(y: node, x: node)
+input relation Assign(y: node, x: node)
+input relation Load(y: node, x: node)
+input relation Store(y: node, x: node)
 
-output relation PointsTo(y: TId, x: TId)
-output relation RelationSizes(relation_name: string, size: signed<32>)
+output relation PointsTo(y: node, x: node)
 
 PointsTo(y, x) :- AddressOf(y, x).
 PointsTo(y, x) :- Assign(y, z), PointsTo(z, x).
 PointsTo(y, w) :- PointsTo(x, z), PointsTo(z, w), Load(y, x).
 PointsTo(z, w) :- Store(y, x), PointsTo(x, w), PointsTo(y, z).
 
-RelationSizes("PointsTo", size) :- size = Aggregate((), count_distinct(PointsTo(y, x))).
+output relation RelationSizes(rel: string, size:bit<64>)
+RelationSizes("PointsTo", size) :- PointsTo(y, x),  var size = (y, x).group_by(()).count_distinct().
