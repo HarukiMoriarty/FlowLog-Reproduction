@@ -973,105 +973,121 @@ download_dataset() {
     fi
 }
 
-# Helper function to run non-ddlog engines for a program/dataset pair
-run_non_ddlog_engines() {
-    local program=$1
-    local dataset=$2
+
+# =============================================================================
+# Main Benchmark Loop - Process each program-dataset pair completely
+# =============================================================================
+
+echo ""
+echo "========================================"
+echo "Processing program-dataset pairs"
+echo "========================================"
+
+while IFS='=' read -r program dataset; do
+    [[ -z "$program" || "$program" =~ ^# ]] && continue
+
+    echo ""
+    echo "==============================================="
+    echo "=== PROCESSING: $program on $dataset ==="
+    echo "==============================================="
     
-    # Prepare default values for all engines (in case some are skipped)
-    local duck_load="-1"; local duck_exec="-1"
-    local umbra_load="-1"; local umbra_exec="-1"
-    local flowlog_load="-1"; local flowlog_exec="-1"
-    local souffle_load="-1"; local souffle_exec="-1"
-    local recstep_load="-1"; local recstep_exec="-1"
+    # Initialize default values for all engines
+    duck_load="-1"; duck_exec="-1"
+    umbra_load="-1"; umbra_exec="-1"
+    flowlog_load="-1"; flowlog_exec="-1"
+    souffle_load="-1"; souffle_exec="-1"
+    ddlog_load="-1"; ddlog_exec="-1"
+    recstep_load="-1"; recstep_exec="-1"
 
-    # Run DuckDB benchmark (if requested)
-    if engine_selected duckdb; then
-        echo ""
-        echo "--- DuckDB Benchmark ---"
-        run_duckdb "$program" "$dataset"
-        mapfile -t lines < "$TEMP_RESULT_FILE"
-        duck_load="${lines[0]}"
-        duck_exec="${lines[1]}"
-        echo "DuckDB completed: load=$duck_load exec=$duck_exec"
-    else
-        echo "--- DuckDB skipped ---"
+    # Check if we need non-ddlog dataset
+    need_regular_dataset=false
+    if engine_selected duckdb || engine_selected umbra || engine_selected flowlog || engine_selected souffle || engine_selected recstep; then
+        need_regular_dataset=true
     fi
 
-    # Run Umbra benchmark (if requested)
-    if engine_selected umbra; then
+    # Download and run non-ddlog engines
+    if [[ "$need_regular_dataset" == "true" ]]; then
         echo ""
-        echo "--- Umbra Benchmark ---"
-        run_umbra "$program" "$dataset"
-        mapfile -t lines < "$TEMP_RESULT_FILE"
-        umbra_load="${lines[0]}"
-        umbra_exec="${lines[1]}"
-        echo "Umbra completed: load=$umbra_load exec=$umbra_exec"
-    else
-        echo "--- Umbra skipped ---"
+        echo "--- Downloading dataset for non-ddlog engines ---"
+        download_dataset "$program" "$dataset" "false"
+        
+        # Run DuckDB benchmark (if requested)
+        if engine_selected duckdb; then
+            echo ""
+            echo "--- DuckDB Benchmark ---"
+            run_duckdb "$program" "$dataset"
+            mapfile -t lines < "$TEMP_RESULT_FILE"
+            duck_load="${lines[0]}"
+            duck_exec="${lines[1]}"
+            echo "DuckDB completed: load=$duck_load exec=$duck_exec"
+        else
+            echo "--- DuckDB skipped ---"
+        fi
+
+        # Run Umbra benchmark (if requested)
+        if engine_selected umbra; then
+            echo ""
+            echo "--- Umbra Benchmark ---"
+            run_umbra "$program" "$dataset"
+            mapfile -t lines < "$TEMP_RESULT_FILE"
+            umbra_load="${lines[0]}"
+            umbra_exec="${lines[1]}"
+            echo "Umbra completed: load=$umbra_load exec=$umbra_exec"
+        else
+            echo "--- Umbra skipped ---"
+        fi
+
+        # Run FlowLog benchmark (if requested)
+        if engine_selected flowlog; then
+            echo ""
+            echo "--- FlowLog Benchmark ---"
+            run_flowlog "$program" "$dataset"
+            mapfile -t lines < "$TEMP_RESULT_FILE"
+            flowlog_load="${lines[0]}"
+            flowlog_exec="${lines[1]}"
+            echo "FlowLog completed: load=$flowlog_load exec=$flowlog_exec"
+        else
+            echo "--- FlowLog skipped ---"
+        fi
+
+        # Run Souffle benchmark (if requested)
+        if engine_selected souffle; then
+            echo ""
+            echo "--- Souffle Benchmark ---"
+            run_souffle "$program" "$dataset"
+            mapfile -t lines < "$TEMP_RESULT_FILE"
+            souffle_load="${lines[0]}"
+            souffle_exec="${lines[1]}"
+            echo "Souffle completed: load=$souffle_load exec=$souffle_exec"
+        else
+            echo "--- Souffle skipped ---"
+        fi
+
+        # RecStep benchmark (if requested)
+        if engine_selected recstep; then
+            echo ""
+            echo "--- RecStep Benchmark ---"
+            run_recstep "$program" "$dataset"
+            mapfile -t lines < "$TEMP_RESULT_FILE"
+            recstep_load="${lines[0]}"
+            recstep_exec="${lines[1]}"
+            echo "RecStep completed: load=$recstep_load exec=$recstep_exec"
+        else
+            echo "--- RecStep skipped ---"
+        fi
+        
+        # Cleanup regular dataset to save space
+        echo ""
+        echo "CLEANUP: Removing dataset: $dataset"
+        rm -rf "${DATASET_DIR:?}/${dataset}"
     fi
 
-    # Run FlowLog benchmark (if requested)
-    if engine_selected flowlog; then
-        echo ""
-        echo "--- FlowLog Benchmark ---"
-        run_flowlog "$program" "$dataset"
-        mapfile -t lines < "$TEMP_RESULT_FILE"
-        flowlog_load="${lines[0]}"
-        flowlog_exec="${lines[1]}"
-        echo "FlowLog completed: load=$flowlog_load exec=$flowlog_exec"
-    else
-        echo "--- FlowLog skipped ---"
-    fi
-
-    # Run Souffle benchmark (if requested)
-    if engine_selected souffle; then
-        echo ""
-        echo "--- Souffle Benchmark ---"
-        run_souffle "$program" "$dataset"
-        mapfile -t lines < "$TEMP_RESULT_FILE"
-        souffle_load="${lines[0]}"
-        souffle_exec="${lines[1]}"
-        echo "Souffle completed: load=$souffle_load exec=$souffle_exec"
-    else
-        echo "--- Souffle skipped ---"
-    fi
-
-    # RecStep benchmark (if requested)
-    if engine_selected recstep; then
-        echo ""
-        echo "--- RecStep Benchmark ---"
-        run_recstep "$program" "$dataset"
-        mapfile -t lines < "$TEMP_RESULT_FILE"
-        recstep_load="${lines[0]}"
-        recstep_exec="${lines[1]}"
-        echo "RecStep completed: load=$recstep_load exec=$recstep_exec"
-    else
-        echo "--- RecStep skipped ---"
-    fi
-    
-    # Store results in associative arrays (simulate by writing to temp files)
-    echo "$duck_load" > "/tmp/results_${program}_${dataset}_duck_load"
-    echo "$duck_exec" > "/tmp/results_${program}_${dataset}_duck_exec"
-    echo "$umbra_load" > "/tmp/results_${program}_${dataset}_umbra_load"
-    echo "$umbra_exec" > "/tmp/results_${program}_${dataset}_umbra_exec"
-    echo "$flowlog_load" > "/tmp/results_${program}_${dataset}_flowlog_load"
-    echo "$flowlog_exec" > "/tmp/results_${program}_${dataset}_flowlog_exec"
-    echo "$souffle_load" > "/tmp/results_${program}_${dataset}_souffle_load"
-    echo "$souffle_exec" > "/tmp/results_${program}_${dataset}_souffle_exec"
-    echo "$recstep_load" > "/tmp/results_${program}_${dataset}_recstep_load"
-    echo "$recstep_exec" > "/tmp/results_${program}_${dataset}_recstep_exec"
-}
-
-# Helper function to run ddlog engine for a program/dataset pair
-run_ddlog_engine() {
-    local program=$1
-    local dataset=$2
-    
-    local ddlog_load="-1"; local ddlog_exec="-1"
-    
-    # Run DDlog benchmark (if requested)
+    # Download and run ddlog engine
     if engine_selected ddlog; then
+        echo ""
+        echo "--- Downloading dataset for DDlog engine ---"
+        download_dataset "$program" "$dataset" "true"
+        
         echo ""
         echo "--- DDlog Benchmark ---"
         run_ddlog "$program" "$dataset"
@@ -1079,144 +1095,35 @@ run_ddlog_engine() {
         ddlog_load="${lines[0]}"
         ddlog_exec="${lines[1]}"
         echo "DDlog completed: load=$ddlog_load exec=$ddlog_exec"
+        
+        # Cleanup DDlog dataset to save space
+        echo ""
+        echo "CLEANUP: Removing DDlog dataset: ${dataset}-${program}"
+        rm -rf "${DATASET_DIR:?}/${dataset}-${program}"
     else
         echo "--- DDlog skipped ---"
     fi
-    
-    # Store ddlog results
-    echo "$ddlog_load" > "/tmp/results_${program}_${dataset}_ddlog_load"
-    echo "$ddlog_exec" > "/tmp/results_${program}_${dataset}_ddlog_exec"
-}
 
-# Helper function to write final results for a program/dataset pair
-write_final_results() {
-    local program=$1
-    local dataset=$2
-    
-    # Read all results from temp files
-    local duck_load=$(cat "/tmp/results_${program}_${dataset}_duck_load" 2>/dev/null || echo "-1")
-    local duck_exec=$(cat "/tmp/results_${program}_${dataset}_duck_exec" 2>/dev/null || echo "-1")
-    local umbra_load=$(cat "/tmp/results_${program}_${dataset}_umbra_load" 2>/dev/null || echo "-1")
-    local umbra_exec=$(cat "/tmp/results_${program}_${dataset}_umbra_exec" 2>/dev/null || echo "-1")
-    local flowlog_load=$(cat "/tmp/results_${program}_${dataset}_flowlog_load" 2>/dev/null || echo "-1")
-    local flowlog_exec=$(cat "/tmp/results_${program}_${dataset}_flowlog_exec" 2>/dev/null || echo "-1")
-    local souffle_load=$(cat "/tmp/results_${program}_${dataset}_souffle_load" 2>/dev/null || echo "-1")
-    local souffle_exec=$(cat "/tmp/results_${program}_${dataset}_souffle_exec" 2>/dev/null || echo "-1")
-    local ddlog_load=$(cat "/tmp/results_${program}_${dataset}_ddlog_load" 2>/dev/null || echo "-1")
-    local ddlog_exec=$(cat "/tmp/results_${program}_${dataset}_ddlog_exec" 2>/dev/null || echo "-1")
-    local recstep_load=$(cat "/tmp/results_${program}_${dataset}_recstep_load" 2>/dev/null || echo "-1")
-    local recstep_exec=$(cat "/tmp/results_${program}_${dataset}_recstep_exec" 2>/dev/null || echo "-1")
-    
-    # Write results to file
+    # Write results immediately to result file
+    echo ""
+    echo "--- Writing results for $program on $dataset ---"
     printf "%-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s\n" \
         "$program" "$dataset" "$duck_load" "$duck_exec" \
         "$umbra_load" "$umbra_exec" "$flowlog_load" "$flowlog_exec" \
         "$souffle_load" "$souffle_exec" "$ddlog_load" "$ddlog_exec" \
         "$recstep_load" "$recstep_exec" \
         >> "$RESULT_FILE"
-        
-    # Clean up temp result files
-    rm -f "/tmp/results_${program}_${dataset}_"*
-}
 
-# Check if any non-ddlog engines are selected
-has_non_ddlog_engines() {
-    engine_selected duckdb || engine_selected umbra || engine_selected flowlog || engine_selected souffle || engine_selected recstep
-}
-
-# PHASE 1: Run all non-ddlog engines first
-if has_non_ddlog_engines; then
-    echo ""
-    echo "========================================"
-    echo "PHASE 1: Running non-ddlog engines"
-    echo "========================================"
+    echo "Results written for $program on $dataset"
     
-    while IFS='=' read -r program dataset; do
-        [[ -z "$program" || "$program" =~ ^# ]] && continue
-
-        echo ""
-        echo "=== RUNNING NON-DDLOG: $program on $dataset ==="
-        
-        # Download dataset for non-ddlog engines
-        download_dataset "$program" "$dataset" "false"
-        
-        # Run non-ddlog engines
-        run_non_ddlog_engines "$program" "$dataset"
-        
-        # Cleanup dataset to save space
-        echo ""
-        echo "CLEANUP: Removing dataset: $dataset"
-        rm -rf "${DATASET_DIR:?}/${dataset}"
-
-        echo "Non-ddlog engines completed for $program on $dataset"
-        
-        # Show current results if we have any completed pairs
-        echo ""
-        echo "=== CURRENT RESULTS (Non-DDlog engines only) ==="
-        if [[ -f "$RESULT_FILE" ]]; then
-            cat "$RESULT_FILE"
-        else
-            echo "No results written yet."
-        fi
-        echo ""
-    done < "$CONFIG_FILE"
-fi
-
-# PHASE 2: Run ddlog engine separately
-if engine_selected ddlog; then
+    # Show current complete results
     echo ""
-    echo "========================================"
-    echo "PHASE 2: Running ddlog engine"
-    echo "========================================"
-    
-    while IFS='=' read -r program dataset; do
-        [[ -z "$program" || "$program" =~ ^# ]] && continue
-
-        echo ""
-        echo "=== RUNNING DDLOG: $program on $dataset ==="
-        
-        # Download dataset for ddlog engine
-        download_dataset "$program" "$dataset" "true"
-        
-        # Run ddlog engine
-        run_ddlog_engine "$program" "$dataset"
-        
-        # Cleanup dataset to save space (DDlog uses different directory structure)
-        echo ""
-        echo "CLEANUP: Removing DDlog dataset: ${dataset}-${program}"
-        rm -rf "${DATASET_DIR:?}/${dataset}-${program}"
-
-        echo "DDlog engine completed for $program on $dataset"
-        
-        # Show current results if we have any completed pairs
-        echo ""
-        echo "=== CURRENT RESULTS (DDlog engine only) ==="
-        if [[ -f "$RESULT_FILE" ]]; then
-            cat "$RESULT_FILE"
-        else
-            echo "No results written yet."
-        fi
-        echo ""
-    done < "$CONFIG_FILE"
-fi
-
-# PHASE 3: Write all final results
-echo ""
-echo "========================================"
-echo "PHASE 3: Writing final results"
-echo "========================================"
-
-while IFS='=' read -r program dataset; do
-    [[ -z "$program" || "$program" =~ ^# ]] && continue
-    write_final_results "$program" "$dataset"
-    
-    # Show progress after each program-dataset pair
-    echo ""
-    echo "=== FINAL RESULTS==="
+    echo "=== CURRENT RESULTS ==="
     cat "$RESULT_FILE"
     echo ""
     echo "Completed: $program on $dataset"
     echo ""
+    
 done < "$CONFIG_FILE"
 
 # =============================================================================
