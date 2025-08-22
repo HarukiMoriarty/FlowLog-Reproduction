@@ -20,7 +20,7 @@ CREATE TABLE Id (
 
 -- Load data
 COPY Arc FROM '{{DATASET_PATH}}/Arc.csv' (FORMAT CSV, HEADER false);
-COPY Id FROM '{{DATASET_PATH}}/id.csv' (FORMAT CSV, HEADER false);
+COPY Id FROM '{{DATASET_PATH}}/Id.csv' (FORMAT CSV, HEADER false);
 
 
 SELECT COUNT(*) FROM Arc;

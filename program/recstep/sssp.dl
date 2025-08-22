@@ -1,12 +1,12 @@
 EDB_DECL:
 Arc(x int, y int, z int)
-id(x int)
+Id(x int)
 
 IDB_DECL:
 sssp2(x int, y int)
 sssp(x int, y int)
 
 RULE_DECL:
-sssp2(x, 0) :- id(x).
+sssp2(x, 0) :- Id(x).
 sssp2(y, MIN(d1 + d2)) :- sssp2(x, d1), Arc(x, y, d2).
 sssp(x, MIN(d)) :- sssp2(x, d).
