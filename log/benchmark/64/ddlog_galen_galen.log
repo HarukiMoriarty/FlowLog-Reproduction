@@ -1,0 +1,3 @@
+=== DDlog Execute Log for galen on galen (64 workers) ===
+RelationSizes{.rel = "OutP", .size = 7560179}
+RelationSizes{.rel = "OutQ", .size = 16595494}

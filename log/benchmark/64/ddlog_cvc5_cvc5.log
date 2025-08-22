@@ -1,0 +1,12 @@
+=== DDlog Execute Log for cvc5 on cvc5 (64 workers) ===
+RelationSizes{.rel = "Def_used_for_address", .size = 10299}
+RelationSizes{.rel = "Jump_table_target", .size = 811}
+RelationSizes{.rel = "Reg_def_use_def_used", .size = 65950}
+RelationSizes{.rel = "Reg_def_use_live_var_at_block_end", .size = 84775}
+RelationSizes{.rel = "Reg_def_use_live_var_at_prior_used", .size = 46552}
+RelationSizes{.rel = "Reg_def_use_live_var_used", .size = 41186}
+RelationSizes{.rel = "Reg_def_use_return_val_used", .size = 4442}
+RelationSizes{.rel = "Reg_reg_arithmetic_operation_defs", .size = 117}
+RelationSizes{.rel = "Stack_def_use_def_used", .size = 2065369}
+RelationSizes{.rel = "Stack_def_use_live_var_at_block_end", .size = 21236205}
+RelationSizes{.rel = "Stack_def_use_live_var_at_prior_used", .size = 4289196}
