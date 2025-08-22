@@ -115,18 +115,36 @@ Results:
 
 Use the variant benchmark to compare FlowLog and Soufflé variants:
 ```bash
-# syntax: variant.sh [TIMEOUT_SECONDS] [THREAD_COUNT] [BENCHMARK_TYPE]
-# BENCHMARK_TYPE: flowlog | souffle | both (default: both)
-./tool/experiment/variant.sh 900 64 both
+# syntax: benchmark.sh [-t SECONDS] [-n THREADS] [-e ENGINES]
+# Use variant.txt as configuration file for variant benchmarking
+./tool/experiment/benchmark.sh -t 900 -n 64 -e flowlog,souffle
 ```
 
 Configuration:
 - Variants are listed in `./tool/config/variant.txt` as `program_variant=dataset`.
-- For the paper, we provide variants for DOOP, DDISASM, and Galen. To obtain the original Figure 9 data, edit `variant.txt` to include all available variants for these three programs (e.g., `doop`, `doop-1`, …; `ddisasm`, `ddisasm-1`, …; `galen`, `galen-1`, …) with their corresponding datasets.
+- For the paper, we provide variants for DOOP, DDISASM, and Galen. To obtain the original Figure 9 data, edit `variant.txt` to include all available variants for these three programs (e.g., `galen`, `galen_v1`, …) with their corresponding datasets.
+- The benchmark script automatically detects and uses `variant.txt` when program names contain version suffixes (e.g., `_v1`, `_v2`).
 
 Results:
-- Output table: `./result/variant.txt`
-- Logs: `./log/variant_benchmark/<threads>/` (compile/execute) and `./log/benchmark/<threads>/` (timing runs)
+- Output table: `./result/benchmark.txt`
+- Logs: `./log/benchmark/<threads>/`
 
+## Reproduce Table 2
 
+Table 2 contains a small set of specific program variants that should be run manually with FlowLog. 
+
+Instructions:
+1. Refer to Table 2 in the paper to see the specific variants to run
+2. Use the FlowLog executable directly (typically located in `../`)
+3. Run each variant manually using the command below:
+
+```bash
+# Under FlowLog file folder, it is default in the ../
+../target/release/executing -p <variant_program> -f <facts_path> -w 64
+```
+
+Where:
+- `<variant_program>`: The specific variant program listed in Table 2
+- `<facts_path>`: Path to the corresponding dataset facts file
+- `-w 64`: Number of worker threads (adjust as needed)
 

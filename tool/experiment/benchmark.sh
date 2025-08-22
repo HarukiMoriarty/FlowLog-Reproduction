@@ -924,8 +924,9 @@ download_dataset() {
         ZIP_PATH="/dev/shm/${ZIP_FILENAME}"
         
         # Try two possible URLs for DDlog datasets
-        local URL1="https://pages.cs.wisc.edu/~m0riarty/dataset/ddin/${ZIP_FILENAME}"
-        local URL2="https://pages.cs.wisc.edu/~simonfrisk/${ZIP_FILENAME}"
+        local URL1="https://pages.cs.wisc.edu/~simonfrisk/${ZIP_FILENAME}"
+        local URL2="https://pages.cs.wisc.edu/~simonfrisk/${dataset}.zip"
+        local URL3="https://pages.cs.wisc.edu/~m0riarty/dataset/ddin/${ZIP_FILENAME}"
         
     else
         # Other engines extract to dataset/${dataset}/ directory
@@ -941,7 +942,7 @@ download_dataset() {
         echo "PREP: Downloading and extracting dataset: $dataset (for_ddlog=$for_ddlog)"
         
         if [[ "$for_ddlog" == "true" ]]; then
-            # Try both URLs for DDlog datasets
+            # Try three URLs for DDlog datasets
             echo "      Trying URL1: $URL1"
             if wget -O "$ZIP_PATH" "$URL1"; then
                 echo "      Successfully downloaded from URL1"
@@ -952,9 +953,15 @@ download_dataset() {
                     echo "      Successfully downloaded from URL2"
                     ZIP_URL="$URL2"  # For logging purposes
                 else
-                    echo "      ERROR: Both URLs failed for DDlog dataset: $ZIP_FILENAME"
-                    rm -f "$ZIP_PATH"  # Clean up partial download
-                    return 1
+                    echo "      URL2 failed, trying URL3: $URL3"
+                    if wget -O "$ZIP_PATH" "$URL3"; then
+                        echo "      Successfully downloaded from URL3"
+                        ZIP_URL="$URL3"  # For logging purposes
+                    else
+                        echo "      ERROR: All three URLs failed for DDlog dataset: $ZIP_FILENAME"
+                        rm -f "$ZIP_PATH"  # Clean up partial download
+                        return 1
+                    fi
                 fi
             fi
         else
@@ -1086,7 +1093,9 @@ while IFS='=' read -r program dataset; do
     if engine_selected ddlog; then
         echo ""
         echo "--- Downloading dataset for DDlog engine ---"
-        download_dataset "$program" "$dataset" "true"
+        # Strip version suffix (_v1, _v2, etc.) from program name for dataset download
+        local base_program="${program%_v*}"
+        download_dataset "$base_program" "$dataset" "true"
         
         echo ""
         echo "--- DDlog Benchmark ---"
@@ -1098,8 +1107,9 @@ while IFS='=' read -r program dataset; do
         
         # Cleanup DDlog dataset to save space
         echo ""
-        echo "CLEANUP: Removing DDlog dataset: ${dataset}-${program}"
-        rm -rf "${DATASET_DIR:?}/${dataset}-${program}"
+        echo "CLEANUP: Removing DDlog dataset: ${dataset}-${base_program}"
+        rm -rf "${DATASET_DIR:?}/${dataset}-${base_program}"
+        rm -rf "${DATASET_DIR:?}/${dataset}"
     else
         echo "--- DDlog skipped ---"
     fi
