@@ -1,23 +1,23 @@
-typedef TId = signed<32>
+typedef int = signed<32>
 
-input relation Arc(y: TId, x: TId)
-input relation Source(x: TId)
+input relation Source(id: int)
+input relation Arc(x: int, y: int)
 
-output relation BipartiteViolation(x: TId)
-output relation Zero(x: TId)
-output relation One(x: TId)
-output relation RelationSizes(relation_name: string, size: signed<32>)
+output relation BipartiteViolation(x: int)
+output relation Zero(x: int)
+output relation MOne(x: int)
 
 Zero(x) :- Source(x).
 
-One(y) :- Arc(x, y), Zero(x).
-One(x) :- Arc(x, y), Zero(y).
+MOne(y) :- Arc(x, y), Zero(x).
+MOne(x) :- Arc(x, y), Zero(y).
 
-Zero(y) :- Arc(x, y), One(x).
-Zero(x) :- Arc(x, y), One(y).
+Zero(y) :- MOne(x), Arc(x, y).
+Zero(x) :- MOne(y), Arc(x, y).
 
-BipartiteViolation(x) :- One(x), Zero(x).
+BipartiteViolation(x) :- MOne(x), Zero(x).
 
-RelationSizes("BipartiteViolation", size) :- size = Aggregate((), count_distinct(BipartiteViolation(x))).
-RelationSizes("Zero", size) :- size = Aggregate((), count_distinct(Zero(x))).
-RelationSizes("One", size) :- size = Aggregate((), count_distinct(One(x))).
+output relation RelationSizes(rel: string, size: bit<64>)
+RelationSizes("Zero", size) :- Zero(x),  var size = (x).group_by(()).count_distinct().
+RelationSizes("MOne", size) :- MOne(x),  var size = (x).group_by(()).count_distinct().
+RelationSizes("BipartiteViolation", size) :- BipartiteViolation(x),  var size = (x).group_by(()).count_distinct().

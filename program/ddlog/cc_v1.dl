@@ -1,13 +1,16 @@
 typedef node = signed<32>
 
-input relation Arc(a: node, b: node)
+input relation Arc(x: node, y: node) 
 
-relation CC2(cc: node)
-output relation CC(node: node, cc: node)
+relation CC3(x: node, y: node)
+relation CC2(x: node, y: node)
 
-CC(node, min_node) :- Arc(node, _), var min_node = Aggregate((node), group_min(node)).
-CC(node, min_cc) :- CC(other, cc), Arc(other, node), var min_cc = Aggregate((node), group_min(cc)).
-CC2(min_cc) :- CC(node, cc), var min_cc = Aggregate((node), group_min(cc)).
+output relation CC(x: node) 
+
+CC3(x, min_x) :- Arc(x, _), var min_x = Aggregate((x), group_min(x)).
+CC3(y, min_z) :- Arc(x, y), CC3(x, z), var min_z = Aggregate((y), group_min(z)).
+CC2(x, min_y) :- CC3(x,y), var min_y = Aggregate((x), group_min(y)).
+CC(x) :- CC2(_, x).
 
 output relation RelationSizes(rel: string, size:bit<64>)
-RelationSizes("CC", size) :- CC(node, cc),  var size = (node, cc).group_by(()).count_distinct().
+RelationSizes("CC", size) :- CC(x),  var size = (x).group_by(()).count_distinct().

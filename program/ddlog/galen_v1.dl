@@ -1,24 +1,26 @@
-typedef TId = signed<32>
+typedef number = signed<32> 
 
-input relation P(X: TId, Z: TId)
-input relation Q(X: TId, Y: TId, Z: TId)
-input relation R(R: TId, P: TId, E: TId)
-input relation C(Y: TId, Z: TId, W: TId)
-input relation U(R: TId, Z: TId, W: TId)
-input relation S(R: TId, P: TId)
+input relation P(x: number, z: number)
+input relation Q(x: number, y: number, z: number)
+input relation R(r: number, p: number, e: number)
+input relation C(y: number, z: number, w: number)
+input relation U(r: number, z: number, w: number)
+input relation S(r: number, p: number)
 
-output relation OutP(X: TId, Z: TId)
-output relation OutQ(X: TId, Y: TId, Z: TId)
-output relation RelationSizes(relation_name: string, size: signed<32>)
+output relation OutP(x: number, z: number)
+output relation OutQ(x: number, y: number, z: number)
 
-OutP(x,y) :- P(x,y).
-OutQ(x,y,z) :- Q(x,y,z).
+OutP(x,z) :- P(x,z).
+OutQ(x,r,z) :- Q(x,r,z).
+
 OutP(x,z) :- OutP(x,y), OutP(y,z).
 OutQ(x,r,z) :- OutQ(y,r,z), OutP(x,y).
-OutP(x,z) :- OutQ(x,r,y), U(w,r,z), OutP(y,w).
-OutP(x,z) :- C(y,w,z), OutP(x,y), OutP(x,w).
+OutP(x,z) :- U(w,r,z), OutQ(x,r,y), OutP(y,w).
+OutP(x,z) :- C(y,w,z), OutP(x,w), OutP(x,y).
 OutQ(x,q,z) :- S(r,q), OutQ(x,r,z).
-OutQ(x,e,o) :- OutQ(z,u,o), R(y,u,e), OutQ(x,y,z).
+OutQ(x,e,o) :- R(y,u,e), OutQ(z,u,o), OutQ(x,y,z).
 
-RelationSizes("OutP", size) :- size = Aggregate((), count_distinct(OutP(x, z))).
-RelationSizes("OutQ", size) :- size = Aggregate((), count_distinct(OutQ(x, y, z))).
+
+output relation RelationSizes(rel: string, size:bit<64>)
+RelationSizes("OutP", size) :- OutP(x, y),  var size = (x, y).group_by(()).count_distinct().
+RelationSizes("OutQ", size) :- OutQ(x, y, z),  var size = (x, y, z).group_by(()).count_distinct().

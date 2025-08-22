@@ -1,20 +1,21 @@
-typedef node = signed<32>
-typedef label = signed<32>
+typedef number = bit<32>
 
-input relation Arc(x: node, y: node, l: label)
+input relation Arc(x:number, y:number, l:number)
 
-relation Zero(x: node, y: node)
-relation One(x: node, y: node)
-output relation Dyck(x: node, y: node)
+output relation Zero(x:number, y:number)
+output relation MOne(x:number, y:number)
+output relation Dyck(x:number, y:number)
 
 Zero(x, y) :- Arc(x, y, 0).
-One(x, y) :- Arc(x, y, 1).
+MOne(x, y) :- Arc(x, y, 1).
 
 Dyck(x, y) :- Zero(x, z), Zero(z, y).
-Dyck(x, y) :- One(x, z), One(z, y).
+Dyck(x, y) :- MOne(x, z), MOne(z, y).
 Dyck(x, y) :- Zero(x, z), Dyck(z, w), Zero(w, y).
-Dyck(x, y) :- One(w, y), Dyck(z, w), One(x, z).
+Dyck(x, y) :- Dyck(z, w), MOne(w, y), MOne(x, z).
 Dyck(x, y) :- Dyck(x, z), Dyck(z, y).
 
-output relation RelationSizes(rel: string, size:bit<64>)
+output relation RelationSizes(rel: string, size: bit<64>)
+RelationSizes("Zero", size) :- Zero(x, y),  var size = (x, y).group_by(()).count_distinct().
+RelationSizes("MOne", size) :- MOne(x, y),  var size = (x, y).group_by(()).count_distinct().
 RelationSizes("Dyck", size) :- Dyck(x, y),  var size = (x, y).group_by(()).count_distinct().
