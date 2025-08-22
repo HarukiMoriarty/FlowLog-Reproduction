@@ -1,0 +1,4 @@
+=== DDlog Execute Log for cspa on httpd (4 workers) ===
+RelationSizes{.rel = "MemoryAlias", .size = 88905342}
+RelationSizes{.rel = "ValueAlias", .size = 234237608}
+RelationSizes{.rel = "ValueFlow", .size = 1365306}

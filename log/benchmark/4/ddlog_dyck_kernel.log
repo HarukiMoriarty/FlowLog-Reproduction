@@ -1,0 +1,4 @@
+=== DDlog Execute Log for dyck on kernel (4 workers) ===
+RelationSizes{.rel = "Dyck", .size = 4458939}
+RelationSizes{.rel = "MOne", .size = 7502955}
+RelationSizes{.rel = "Zero", .size = 1981258}

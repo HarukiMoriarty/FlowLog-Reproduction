@@ -1,0 +1,3 @@
+=== DDlog Execute Log for bipartite on netflix (4 workers) ===
+RelationSizes{.rel = "MOne", .size = 17770}
+RelationSizes{.rel = "Zero", .size = 480189}

@@ -1,0 +1,4 @@
+=== DDlog Execute Log for cspa on linux (4 workers) ===
+RelationSizes{.rel = "MemoryAlias", .size = 13777625}
+RelationSizes{.rel = "ValueAlias", .size = 30938106}
+RelationSizes{.rel = "ValueFlow", .size = 5509641}

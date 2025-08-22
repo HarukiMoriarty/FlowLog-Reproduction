@@ -1,0 +1,4 @@
+=== DDlog Execute Log for dyck on postgresql (4 workers) ===
+RelationSizes{.rel = "Dyck", .size = 3854063}
+RelationSizes{.rel = "MOne", .size = 3468946}
+RelationSizes{.rel = "Zero", .size = 1209597}

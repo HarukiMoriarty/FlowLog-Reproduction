@@ -1,0 +1,18 @@
+=== DDlog Execute Log for crdt_slow on crdt (4 workers) ===
+RelationSizes{.rel = "Assign", .size = 182315}
+RelationSizes{.rel = "CurrentValue", .size = 104852}
+RelationSizes{.rel = "FirstChild", .size = 178874}
+RelationSizes{.rel = "HasChild", .size = 178874}
+RelationSizes{.rel = "HasNextSibling", .size = 3441}
+RelationSizes{.rel = "HasValue", .size = 104852}
+RelationSizes{.rel = "Insert", .size = 182315}
+RelationSizes{.rel = "LaterChild", .size = 3441}
+RelationSizes{.rel = "LaterSibling", .size = 3776}
+RelationSizes{.rel = "LaterSibling2", .size = 335}
+RelationSizes{.rel = "NextElem", .size = 182315}
+RelationSizes{.rel = "NextSibling", .size = 3441}
+RelationSizes{.rel = "NextSiblingAnc", .size = 181836}
+RelationSizes{.rel = "NextVisible", .size = 104851}
+RelationSizes{.rel = "Remove", .size = 77463}
+RelationSizes{.rel = "ResultP", .size = 104851}
+RelationSizes{.rel = "Sibling", .size = 189867}

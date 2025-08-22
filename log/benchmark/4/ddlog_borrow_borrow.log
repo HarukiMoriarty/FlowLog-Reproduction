@@ -1,0 +1,18 @@
+=== DDlog Execute Log for borrow on borrow (4 workers) ===
+RelationSizes{.rel = "Ancestor_path", .size = 30}
+RelationSizes{.rel = "Cfg_node", .size = 45912}
+RelationSizes{.rel = "Move_error", .size = 291546023}
+RelationSizes{.rel = "Origin_contains_loan_on_entry", .size = 1316}
+RelationSizes{.rel = "Origin_live_on_entry", .size = 1033354}
+RelationSizes{.rel = "Path_accessed_at", .size = 7838}
+RelationSizes{.rel = "Path_assigned_at", .size = 6793}
+RelationSizes{.rel = "Path_begins_with_var", .size = 6372}
+RelationSizes{.rel = "Path_maybe_initialized_on_exit", .size = 1048567}
+RelationSizes{.rel = "Path_maybe_uninitialized_on_exit", .size = 291552229}
+RelationSizes{.rel = "Path_moved_at", .size = 16295}
+RelationSizes{.rel = "Placeholder_origin", .size = 6}
+RelationSizes{.rel = "Subset", .size = 5068815}
+RelationSizes{.rel = "Var_drop_live_on_entry", .size = 3588}
+RelationSizes{.rel = "Var_live_on_entry", .size = 329734}
+RelationSizes{.rel = "Var_maybe_partly_initialized_on_entry", .size = 1048413}
+RelationSizes{.rel = "Var_maybe_partly_initialized_on_exit", .size = 1048423}

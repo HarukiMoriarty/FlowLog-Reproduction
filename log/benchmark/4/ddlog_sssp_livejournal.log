@@ -1,0 +1,2 @@
+=== DDlog Execute Log for sssp on livejournal (4 workers) ===
+Error: "unknown constructor Arc of type 'Arc' in PosStruct(\"Arc\", [Int(BigInt { sign: Plus, data: BigUint { data: [1511654] } }), Int(BigInt { sign: Plus, data: BigUint { data: [989195] } })])"

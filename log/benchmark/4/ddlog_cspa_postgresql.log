@@ -1,0 +1,4 @@
+=== DDlog Execute Log for cspa on postgresql (4 workers) ===
+RelationSizes{.rel = "MemoryAlias", .size = 89475479}
+RelationSizes{.rel = "ValueAlias", .size = 223793861}
+RelationSizes{.rel = "ValueFlow", .size = 3712452}
