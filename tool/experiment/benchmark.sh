@@ -924,9 +924,9 @@ download_dataset() {
         ZIP_PATH="/dev/shm/${ZIP_FILENAME}"
         
         # Try two possible URLs for DDlog datasets
-        local URL1="https://pages.cs.wisc.edu/~simonfrisk/${ZIP_FILENAME}"
-        local URL2="https://pages.cs.wisc.edu/~simonfrisk/${dataset}.zip"
-        local URL3="https://pages.cs.wisc.edu/~m0riarty/dataset/ddin/${ZIP_FILENAME}"
+        local URL1="https://pages.cs.wisc.edu/~hangdong/data/ddin/${ZIP_FILENAME}"
+        local URL2="https://pages.cs.wisc.edu/~m0riarty/dataset/ddin/${ZIP_FILENAME}"
+        local URL3="https://pages.cs.wisc.edu/~simonfrisk/${ZIP_FILENAME}"
         
     else
         # Other engines extract to dataset/${dataset}/ directory
@@ -1094,7 +1094,7 @@ while IFS='=' read -r program dataset; do
         echo ""
         echo "--- Downloading dataset for DDlog engine ---"
         # Strip version suffix (_v1, _v2, etc.) from program name for dataset download
-        local base_program="${program%_v*}"
+        base_program="${program%_v*}"
         download_dataset "$base_program" "$dataset" "true"
         
         echo ""
