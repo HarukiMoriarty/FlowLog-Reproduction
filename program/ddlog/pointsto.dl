@@ -1,0 +1,19 @@
+typedef number = signed<32>
+
+input relation PrimitiveAssign(x: number, y: number) 
+input relation Load(x: number, y: number, z: number) 
+input relation Store(x: number, y: number, z: number) 
+input relation AssignAlloc(x: number, y: number) 
+
+output relation Assign(x: number, y: number)
+output relation Alias(x: number, y: number)
+output relation VarPointsTo(x: number, y: number) 
+
+Assign(var1, var2) :- PrimitiveAssign(var1, var2). 
+Alias(instanceVar, iVar) :- VarPointsTo(instanceVar, instanceHeap), VarPointsTo(iVar, instanceHeap).
+VarPointsTo(var1, heap) :- AssignAlloc(var1, heap). 
+VarPointsTo(var1, heap) :- Assign(var2, var1), VarPointsTo(var2, heap).
+Assign(var1, var2) :- Alias(instanceVar2, instanceVar1), Load(instanceVar1, var2, field), Store(var1, instanceVar2, field).
+
+output relation RelationSizes(rel: string, size:bit<64>)
+RelationSizes("PointsTo", size) :- VarPointsTo(x, y), var size = (x, y).group_by(()).count_distinct().
