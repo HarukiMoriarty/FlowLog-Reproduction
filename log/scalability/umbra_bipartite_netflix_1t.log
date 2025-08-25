@@ -1,4 +1,0 @@
-=== Umbra Scalability Log for bipartite on netflix (1 CPUs) ===
-zero_count one_count intersection_count
-480189 17770 0
-INFO:    [s] execution: (17.525772 min, 17.525772 max, 17.525772 median, 0.0% relMAD, 17.525772 avg, 0.000000 sdev, 200961016 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.004172 min, 0.004172 max, 0.004172 median, 0.0% relMAD, 0.004172 avg, 0.000000 sdev)

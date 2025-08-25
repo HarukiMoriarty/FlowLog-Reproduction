@@ -1,7 +1,0 @@
-=== FlowLog Execute Log for cc_v1 on livejournal ===
-[2m2025-08-07T06:20:51.905978Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 6.446475ms:	Dataflow assembled
-[2m2025-08-07T06:20:55.758971Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 3.859439792s:	Data loaded for Arc
-[2m2025-08-07T06:21:02.903192Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [CC]: ((), (), 25831588)
-[2m2025-08-07T06:21:02.934097Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) CC2: ((), (), 4847571)
-[2m2025-08-07T06:21:02.934342Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 11.034806731s:	Dataflow executed
-[2m2025-08-07T06:21:02.947689Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

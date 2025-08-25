@@ -1,4 +1,0 @@
-=== DDlog Execute Log for bipartite on roadNet-CA (64 workers) ===
-RelationSizes{.rel = "BipartiteViolation", .size = 1957027}
-RelationSizes{.rel = "MOne", .size = 1957027}
-RelationSizes{.rel = "Zero", .size = 1957027}

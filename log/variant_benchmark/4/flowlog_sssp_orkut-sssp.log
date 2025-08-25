@@ -1,8 +1,0 @@
-=== FlowLog Execute Log for sssp on orkut-sssp ===
-[2m2025-08-08T05:39:52.265064Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 2.293523ms:	Dataflow assembled
-[2m2025-08-08T05:39:58.428536Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 6.165768412s:	Data loaded for arc
-[2m2025-08-08T05:39:58.428586Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 6.165821983s:	Data loaded for id
-[2m2025-08-08T05:40:14.834747Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [sssp2]: ((), (), 3072441)
-[2m2025-08-08T05:40:14.982444Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) sssp: ((), (), 3072441)
-[2m2025-08-08T05:40:14.982581Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 22.719796057s:	Dataflow executed
-[2m2025-08-08T05:40:14.988446Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

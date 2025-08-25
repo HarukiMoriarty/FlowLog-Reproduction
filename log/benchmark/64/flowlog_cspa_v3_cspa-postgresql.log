@@ -1,9 +1,0 @@
-=== FlowLog Execute Log for cspa_v3 on cspa-postgresql ===
-[2m2025-08-07T12:51:49.540215Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 20.559392ms:	Dataflow assembled
-[2m2025-08-07T12:51:49.954475Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 434.823289ms:	Data loaded for Assign
-[2m2025-08-07T12:51:49.954544Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 434.899643ms:	Data loaded for Dereference
-[2m2025-08-07T12:52:05.810597Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [MemoryAlias]: ((), (), 89475479)
-[2m2025-08-07T12:52:05.814008Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [ValueAlias]: ((), (), 223793861)
-[2m2025-08-07T12:52:05.816961Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [ValueFlow]: ((), (), 3712452)
-[2m2025-08-07T12:52:05.872738Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 16.352959704s:	Dataflow executed
-[2m2025-08-07T12:52:06.153110Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

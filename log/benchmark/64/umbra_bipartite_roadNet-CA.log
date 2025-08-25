@@ -1,4 +1,0 @@
-=== Umbra Execute Log for bipartite on roadNet-CA ===
-zero_count one_count intersection_count
-1957027 1957027 1957027
-INFO:    [s] execution: (32.036427 min, 32.036427 max, 32.036427 median, 0.0% relMAD, 32.036427 avg, 0.000000 sdev, 11066430 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.003397 min, 0.003397 max, 0.003397 median, 0.0% relMAD, 0.003397 avg, 0.000000 sdev)

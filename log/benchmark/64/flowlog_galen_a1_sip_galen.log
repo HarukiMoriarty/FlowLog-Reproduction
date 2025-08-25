@@ -1,8 +1,0 @@
-=== FlowLog Execute Log for galen_a1_sip on galen ===
-[2m2025-08-11T23:04:20.297359Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 185.355974ms:	Dataflow assembled
-[2m2025-08-11T23:04:20.359067Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 247.066708ms:	Data loaded for P
-[2m2025-08-11T23:04:20.359090Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 247.093268ms:	Data loaded for Q
-[2m2025-08-11T23:04:20.359095Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 247.098588ms:	Data loaded for R
-[2m2025-08-11T23:04:20.359099Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 247.102445ms:	Data loaded for C
-[2m2025-08-11T23:04:20.359103Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 247.106363ms:	Data loaded for U
-[2m2025-08-11T23:04:20.359107Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 247.110791ms:	Data loaded for S

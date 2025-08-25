@@ -1,4 +1,0 @@
-=== Umbra Execute Log for sssp on livejournal-sssp ===
-count
-4400347
-INFO:    [s] execution: (6.348962 min, 6.348962 max, 6.348962 median, 0.0% relMAD, 6.348962 avg, 0.000000 sdev, 68993775 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.002344 min, 0.002344 max, 0.002344 median, 0.0% relMAD, 0.002344 avg, 0.000000 sdev)

@@ -1,4 +1,0 @@
-=== Umbra Scalability Log for csda on csda-postgresql (1 CPUs) ===
-count
-21503813
-INFO:    [s] execution: (358.545227 min, 358.545227 max, 358.545227 median, 0.0% relMAD, 358.545227 avg, 0.000000 sdev, 34798151 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.002260 min, 0.002260 max, 0.002260 median, 0.0% relMAD, 0.002260 avg, 0.000000 sdev)

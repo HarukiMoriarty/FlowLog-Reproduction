@@ -1,6 +1,0 @@
-=== FlowLog Scalability Log for tc on G10K-0.001 (32 workers) ===
-[2m2025-08-06T19:54:43.696836Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 3.555365ms:	Dataflow assembled
-[2m2025-08-06T19:54:43.702786Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 9.522414ms:	Data loaded for Arc
-[2m2025-08-06T19:54:58.037549Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Tc]: ((), (), 100000000)
-[2m2025-08-06T19:54:58.110261Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 14.416988073s:	Dataflow executed
-[2m2025-08-06T19:54:58.115042Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

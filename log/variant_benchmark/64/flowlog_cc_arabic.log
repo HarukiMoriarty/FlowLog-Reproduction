@@ -1,7 +1,0 @@
-=== FlowLog Execute Log for cc on arabic ===
-[2m2025-08-07T06:26:45.573789Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 6.587001ms:	Dataflow assembled
-[2m2025-08-07T06:27:20.076470Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 34.509270488s:	Data loaded for Arc
-[2m2025-08-07T06:27:56.472088Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [CC]: ((), (), 229818612)
-[2m2025-08-07T06:27:56.609368Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) CC2: ((), (), 22743892)
-[2m2025-08-07T06:27:56.613862Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 71.045209657s:	Dataflow executed
-[2m2025-08-07T06:27:56.635164Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

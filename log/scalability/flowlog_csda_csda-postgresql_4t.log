@@ -1,7 +1,0 @@
-=== FlowLog Scalability Log for csda on csda-postgresql (4 workers) ===
-[2m2025-08-06T17:53:22.069943Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 1.997135ms:	Dataflow assembled
-[2m2025-08-06T17:53:24.682214Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 2.61427036s:	Data loaded for NullEdge
-[2m2025-08-06T17:53:24.682264Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 2.614324252s:	Data loaded for Edge
-[2m2025-08-06T17:53:37.280712Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [NullNode]: ((), (), 21503813)
-[2m2025-08-06T17:53:37.280853Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 15.212905708s:	Dataflow executed
-[2m2025-08-06T17:53:37.288876Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

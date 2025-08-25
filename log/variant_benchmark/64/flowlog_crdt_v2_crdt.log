@@ -1,9 +1,0 @@
-=== FlowLog Execute Log for crdt_v2 on crdt ===
-[2m2025-08-07T13:23:45.982672Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 28.019351ms:	Dataflow assembled
-[2m2025-08-07T13:23:45.997196Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 42.552592ms:	Data loaded for Insert_input
-[2m2025-08-07T13:23:45.997207Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 42.563994ms:	Data loaded for Remove_input
-[2m2025-08-07T13:23:49.279531Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [nextSiblingAnc]: ((), (), 181836)
-[2m2025-08-07T13:23:53.731557Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [value_blank_star]: ((), (), 182314)
-[2m2025-08-07T13:23:53.737053Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) result: ((), (), 104851)
-[2m2025-08-07T13:23:53.737219Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 7.78256454s:	Dataflow executed
-[2m2025-08-07T13:23:53.742281Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

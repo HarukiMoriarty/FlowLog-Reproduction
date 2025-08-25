@@ -1,7 +1,0 @@
-=== Souffle Compile Log for crdt_slow_v1 on crdt ===
-Warning: No rules/facts defined for relation valueStep in file crdt_slow_v1.dl at line 30
-.decl valueStep(FromCtr: number, FromN: number, ToCtr: number, ToN: number)
-------^---------------------------------------------------------------------
-Warning: No rules/facts defined for relation blankStep in file crdt_slow_v1.dl at line 31
-.decl blankStep(FromCtr: number, FromN: number, ToCtr: number, ToN: number)
-------^---------------------------------------------------------------------

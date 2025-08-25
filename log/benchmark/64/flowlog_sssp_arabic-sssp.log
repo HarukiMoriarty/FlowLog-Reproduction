@@ -1,8 +1,0 @@
-=== FlowLog Execute Log for sssp on arabic-sssp ===
-[2m2025-08-16T01:18:23.463156Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 17.553818ms:	Dataflow assembled
-[2m2025-08-16T01:19:00.682919Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 37.237327411s:	Data loaded for arc
-[2m2025-08-16T01:19:00.682961Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 37.237373909s:	Data loaded for id
-[2m2025-08-16T01:19:11.050304Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [sssp2]: ((), (), 22359925)
-[2m2025-08-16T01:19:11.164783Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) sssp: ((), (), 22359925)
-[2m2025-08-16T01:19:11.165199Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 47.719605823s:	Dataflow executed
-[2m2025-08-16T01:19:11.182702Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

@@ -1,4 +1,0 @@
-=== Umbra Execute Log for tc on G10K-0.001 ===
-count
-100000000
-INFO:    [s] execution: (24.310293 min, 24.310293 max, 24.310293 median, 0.0% relMAD, 24.310293 avg, 0.000000 sdev, 199611 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.001772 min, 0.001772 max, 0.001772 median, 0.0% relMAD, 0.001772 avg, 0.000000 sdev)

@@ -1,7 +1,0 @@
-=== FlowLog Execute Log for csda_v1 on csda-httpd ===
-[2m2025-08-07T12:38:43.342134Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 2.973972ms:	Dataflow assembled
-[2m2025-08-07T12:38:44.235381Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 896.194924ms:	Data loaded for NullEdge
-[2m2025-08-07T12:38:44.235577Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 896.422784ms:	Data loaded for Edge
-[2m2025-08-07T12:38:44.898781Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [NullNode]: ((), (), 9393283)
-[2m2025-08-07T12:38:44.899174Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 1.560010098s:	Dataflow executed
-[2m2025-08-07T12:38:44.902514Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

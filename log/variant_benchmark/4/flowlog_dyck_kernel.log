@@ -1,6 +1,0 @@
-=== FlowLog Execute Log for dyck on kernel ===
-[2m2025-08-09T05:07:24.843200Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 4.201667ms:	Dataflow assembled
-[2m2025-08-09T05:07:25.400353Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 561.354005ms:	Data loaded for Arc
-[2m2025-08-09T05:07:29.543510Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Dyck]: ((), (), 4458939)
-[2m2025-08-09T05:07:29.546018Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 4.707016264s:	Dataflow executed
-[2m2025-08-09T05:07:29.546514Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

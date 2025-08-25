@@ -1,7 +1,0 @@
-=== FlowLog Execute Log for reach on livejournal ===
-[2m2025-08-07T18:45:34.174162Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 1.664843ms:	Dataflow assembled
-[2m2025-08-07T18:45:37.441254Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 3.268757228s:	Data loaded for Source
-[2m2025-08-07T18:45:37.441313Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 3.268820677s:	Data loaded for Arc
-[2m2025-08-07T18:45:45.471926Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Reach]: ((), (), 4400347)
-[2m2025-08-07T18:45:45.472049Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 11.299550356s:	Dataflow executed
-[2m2025-08-07T18:45:45.472699Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

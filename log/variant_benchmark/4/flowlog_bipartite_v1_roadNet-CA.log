@@ -1,9 +1,0 @@
-=== FlowLog Execute Log for bipartite_v1 on roadNet-CA ===
-[2m2025-08-09T01:09:45.849248Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 3.224586ms:	Dataflow assembled
-[2m2025-08-09T01:09:46.116623Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 270.600096ms:	Data loaded for Arc
-[2m2025-08-09T01:09:46.116698Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 270.685858ms:	Data loaded for Source
-[2m2025-08-09T01:09:49.264515Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Zero]: ((), (), 1957027)
-[2m2025-08-09T01:09:49.306872Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [One]: ((), (), 1957027)
-[2m2025-08-09T01:09:49.340315Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Size of (non-recursive) BipartiteViolation: ((), (), 1957027)
-[2m2025-08-09T01:09:49.340387Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 3.494352096s:	Dataflow executed
-[2m2025-08-09T01:09:49.340581Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

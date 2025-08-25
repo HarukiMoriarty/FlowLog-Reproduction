@@ -1,8 +1,0 @@
-=== FlowLog Scalability Log for bipartite on netflix (8 workers) ===
-[2m2025-08-06T16:33:18.314830Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 2.897147ms:	Dataflow assembled
-[2m2025-08-06T16:33:24.743910Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 6.43197822s:	Data loaded for Arc
-[2m2025-08-06T16:33:24.743975Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 6.43204778s:	Data loaded for Source
-[2m2025-08-06T16:33:40.628385Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [One]: ((), (), 17770)
-[2m2025-08-06T16:33:40.628500Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Zero]: ((), (), 480189)
-[2m2025-08-06T16:33:40.629875Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 22.317939512s:	Dataflow executed
-[2m2025-08-06T16:33:40.630480Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

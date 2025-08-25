@@ -1,2 +1,0 @@
-=== DDlog Execute Log for sssp on orkut (4 workers) ===
-Error: "unknown constructor Arc of type 'Arc' in PosStruct(\"Arc\", [Int(BigInt { sign: Plus, data: BigUint { data: [1097316] } }), Int(BigInt { sign: Plus, data: BigUint { data: [1249405] } })])"

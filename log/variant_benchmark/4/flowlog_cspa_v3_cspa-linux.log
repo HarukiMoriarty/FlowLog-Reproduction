@@ -1,9 +1,0 @@
-=== FlowLog Execute Log for cspa_v3 on cspa-linux ===
-[2m2025-08-09T03:42:25.255469Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 4.160092ms:	Dataflow assembled
-[2m2025-08-09T03:42:25.753422Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 502.11707ms:	Data loaded for Assign
-[2m2025-08-09T03:42:25.753458Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 502.162356ms:	Data loaded for Dereference
-[2m2025-08-09T03:42:51.189668Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [MemoryAlias]: ((), (), 13777625)
-[2m2025-08-09T03:42:51.195044Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [ValueAlias]: ((), (), 30938106)
-[2m2025-08-09T03:42:51.197038Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [ValueFlow]: ((), (), 5509641)
-[2m2025-08-09T03:42:51.199307Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 25.947996133s:	Dataflow executed
-[2m2025-08-09T03:42:51.202717Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

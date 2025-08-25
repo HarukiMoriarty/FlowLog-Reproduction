@@ -1,4 +1,0 @@
-=== Umbra Execute Log for cc on orkut ===
-total_nodes
-3072441
-INFO:    [s] execution: (6.757238 min, 6.757238 max, 6.757238 median, 0.0% relMAD, 6.757238 avg, 0.000000 sdev, 234370167 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.002269 min, 0.002269 max, 0.002269 median, 0.0% relMAD, 0.002269 avg, 0.000000 sdev)

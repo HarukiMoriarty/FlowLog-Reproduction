@@ -1,6 +1,0 @@
-=== FlowLog Execute Log for dyck_v2 on postgre ===
-[2m2025-08-09T05:09:39.280037Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 4.380846ms:	Dataflow assembled
-[2m2025-08-09T05:09:39.554229Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 278.58212ms:	Data loaded for Arc
-[2m2025-08-09T05:09:42.882317Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Dyck]: ((), (), 3854063)
-[2m2025-08-09T05:09:42.882739Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 3.607086022s:	Dataflow executed
-[2m2025-08-09T05:09:42.884708Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

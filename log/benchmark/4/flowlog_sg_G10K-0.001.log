@@ -1,6 +1,0 @@
-=== FlowLog Execute Log for sg on G10K-0.001 ===
-[2m2025-08-06T00:15:56.768021Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 4.697043ms:	Dataflow assembled
-[2m2025-08-06T00:15:56.772321Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 9.001315ms:	Data loaded for Arc
-[2m2025-08-06T00:19:01.597293Z[0m [32m INFO[0m [2mreading::inspect[0m[2m:[0m Delta of (recursive) [Sg]: ((), (), 100000000)
-[2m2025-08-06T00:19:01.597396Z[0m [32m INFO[0m [2mexecuting::dataflow[0m[2m:[0m 184.834070658s:	Dataflow executed
-[2m2025-08-06T00:19:01.615369Z[0m [32m INFO[0m [2mexecuting[0m[2m:[0m success query

@@ -1,4 +1,0 @@
-=== Umbra Execute Log for cc on livejournal ===
-total_nodes
-4847571
-INFO:    [s] execution: (17.496990 min, 17.496990 max, 17.496990 median, 0.0% relMAD, 17.496990 avg, 0.000000 sdev, 137987547 scale, nan IPC, nan CPUs, nan GHz) compilation: (0.002386 min, 0.002386 max, 0.002386 median, 0.0% relMAD, 0.002386 avg, 0.000000 sdev)

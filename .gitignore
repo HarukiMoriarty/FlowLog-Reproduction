@@ -2,7 +2,7 @@
 /dataset/
 
 # Execution Logs
-# /log/
+/log/
 
 # FlowLog Result
 /result/
