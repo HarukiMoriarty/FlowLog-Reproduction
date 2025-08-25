@@ -1,15 +1,18 @@
-// simple call-insensitive field-sensitive points-to analysis in Datalog
-.type Variable 
-.type Allocation
-.type Field
+.decl AssignAlloc(var: number, heap: number)
+.input AssignAlloc(IO="file", filename="AssignAlloc.csv", delimiter=",")
 
-.decl AssignAlloc(var:Variable, heap:Allocation) input
-.decl Assign(source:Variable, destination:Variable) output
-.decl PrimitiveAssign(source:Variable, dest:Variable) input
-.decl Load(base:Variable, dest:Variable, field:Field) input
-.decl Store(source:Variable, base:Variable, field:Field) input
-.decl VarPointsTo(var:Variable, heap:Allocation) output
-.decl Alias(x:Variable,y:Variable) output
+.decl PrimitiveAssign(source: number, dest: number)
+.input PrimitiveAssign(IO="file", filename="PrimitiveAssign.csv", delimiter=",")
+
+.decl Load(base: number, dest: number, field: number)
+.input Load(IO="file", filename="Load.csv", delimiter=",")
+
+.decl Store(source: number, base: number, field: number)
+.input Store(IO="file", filename="Store.csv", delimiter=",")
+
+.decl VarPointsTo(var: number, heap: number)
+.decl Alias(x: number,y: number)
+.decl Assign(source: number, destination: number)
 
 Assign(var1, var2) :- 
   PrimitiveAssign(var1,var2). 
@@ -29,3 +32,5 @@ Assign(var1, var2) :-
   Store(var1, instanceVar2, field), 
   Alias(instanceVar2, instanceVar1), 
   Load(instanceVar1, var2, field).
+
+.printsize Assign

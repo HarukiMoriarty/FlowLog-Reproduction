@@ -1,8 +1,12 @@
 .in 
 .decl PrimitiveAssign(source: number, dest: number) 
+.input PrimitiveAssign.csv
 .decl Load(base: number, dest: number, field: number) 
+.input Load.csv
 .decl Store(source: number, base: number, field: number) 
+.input Store.csv
 .decl AssignAlloc(var: number, heap: number) 
+.input AssignAlloc.csv
 
 .printsize 
 .decl VarPointsTo(var: number, heap: number) 
