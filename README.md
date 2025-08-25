@@ -6,7 +6,7 @@ For now, this repository is scoped to paper reproduction. Start with the environ
 
 ## Recommended environment
 
-- CloudLab Clem cluster, type 6525
+- CloudLab Clem cluster, [type 6525](https://docs.cloudlab.us/hardware.html)
   - CPU: AMD EPYC 7543, 32-core processors (64 physical cores total), hyper-threading
   - RAM: 256 GB ECC Memory (16 x 16 GB 3200MHz DDR4)
   - Disk: One 480GB SATA SSD
