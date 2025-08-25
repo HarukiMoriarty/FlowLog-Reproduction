@@ -156,3 +156,6 @@ Where:
 - `<facts_path>`: Path to the corresponding dataset facts file
 - `-w 64`: Number of worker threads (adjust as needed)
 
+## Acknowledgment
+
+If you have any questions or concerns regarding reproducing any data in this paper, please feel free to open an issue or contact me.
