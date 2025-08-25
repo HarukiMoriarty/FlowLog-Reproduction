@@ -7,9 +7,10 @@ For now, this repository is scoped to paper reproduction. Start with the environ
 ## Recommended environment
 
 - CloudLab Clem cluster, type 6525
-- CPU: AMD EPYC 7543, 32-core processors (64 physical cores total), hyper-threading
+  - CPU: AMD EPYC 7543, 32-core processors (64 physical cores total), hyper-threading
+  - RAM: 256 GB ECC Memory (16 x 16 GB 3200MHz DDR4)
+  - Disk: One 480GB SATA SSD
 - OS: Ubuntu 22.04
-- Memory: 256 GiB
 
 We highly recommend using the same or similar hardware/OS to match performance characteristics reported in the paper.
 
@@ -21,10 +22,6 @@ Install prerequisites and toolchains. You can install everything at once (recomm
 ```bash
 # syntax: env.sh [--all | --systems LIST]
 ./tool/experiment/env.sh --all
-
-# After installation, you may need to start a new terminal session
-# or run `source ~/.bashrc` (or `source ~/.zshrc` if using zsh)
-# so that environment variables and PATH updates take effect.
 ```
 
 - Or install selected systems (comma-separated):
@@ -51,18 +48,18 @@ Configuration:
 
 Results:
 - Output table: `./result/benchmark.txt`
-- For some engines, Load(s) and Exec(s) are reported separately; sum Load + Exec if you need a single total time.
+- For some engines (DuckDB, Umbra, FlowLog, Souffle), Load(s) and Exec(s) are reported separately; sum Load + Exec if you need a single total time.
 - Logs: `./log/benchmark/<threads>/`
 
 ## Reproduce Figure 6
 
-1) Ensure environment and datasets are prepared (same usage as Table 1):
+1) Ensure environment is prepared, and then run (same usage as Table 1):
 ```bash
 # syntax: benchmark.sh [-t SECONDS] [-n THREADS]
 ./tool/experiment/benchmark.sh -t 900 -n 64
 ```
 
-2) Plot stacked Exec+Load bars for selected programs:
+2) Plot stacked Exec + Load bars for selected programs:
 ```bash
 # syntax: plot_stack.py --file FILE --programs P1 P2 ... --out OUT --threads N
 python3 tool/plot/plot_stack.py --file table/stack_plot.txt \
@@ -76,7 +73,10 @@ Inputs and behavior:
 
 Output:
 - The figure is saved to `figure6.pdf` (or the path you pass via `--out`).
-- Note: The camera-ready Figure 6 is typeset in LaTeX. The exact LaTeX figure source is not included; the script above is a helper to approximate the plot for reproduction.
+
+Note: 
+- The camera-ready Figure 6 is typeset in LaTeX. The exact LaTeX figure source is not included; the script above is a helper to approximate the plot for reproduction.
+- For the RecStep and DDlog engines, load time needs to be measured manually; typically, you should use a separate program file with only the loading logic.
 
 ## Reproduce Figure 7
 
@@ -98,6 +98,7 @@ Notes:
 - Filenames like `Program_Dataset_Threads_Engine.log` are expected (e.g., `Bipartite_netflix_4_flowlog.log`).
 - `plot_live.py` requires LaTeX (`pdflatex`) and outputs `liveplot.png` and `liveplot.pgf`.
 - Prepared example logs are under `./table/live-plot/`.
+- Umbra runs inside a Docker container, so `dlbench` cannot track its usage. Instead, you must manually monitor CPU and memory with docker stats.
 
 ## Reproduce Figure 8
 
@@ -114,6 +115,9 @@ Configuration:
 Results:
 - Output table: `./scalability.txt`
 - Logs: `./log/scalability/`
+
+Notes:
+- The camera-ready Figure 8 is typeset in LaTeX. The exact LaTeX figure source is not included; the script above is a helper to approximate the plot for reproduction.
 
 ## Reproduce Figure 9
 
