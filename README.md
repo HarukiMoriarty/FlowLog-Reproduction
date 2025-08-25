@@ -13,7 +13,7 @@ For now, this repository is scoped to paper reproduction. Start with the environ
 
 We highly recommend using the same or similar hardware/OS to match performance characteristics reported in the paper.
 
-## Environment setup (Step 1)
+## Environment setup
 
 Install prerequisites and toolchains. You can install everything at once (recommended), or select specific systems.
 
@@ -21,6 +21,10 @@ Install prerequisites and toolchains. You can install everything at once (recomm
 ```bash
 # syntax: env.sh [--all | --systems LIST]
 ./tool/experiment/env.sh --all
+
+# After installation, you may need to start a new terminal session
+# or run `source ~/.bashrc` (or `source ~/.zshrc` if using zsh)
+# so that environment variables and PATH updates take effect.
 ```
 
 - Or install selected systems (comma-separated):
