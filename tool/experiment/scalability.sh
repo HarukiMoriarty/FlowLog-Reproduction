@@ -49,7 +49,7 @@ if [ ! -d "$FLOWLOG_DIR" ]; then
     exit 1
 fi
 pushd "$FLOWLOG_DIR" > /dev/null
-git checkout nemo_arithmetic
+git checkout main
 cargo build --release
 popd > /dev/null
 echo "FlowLog build completed"

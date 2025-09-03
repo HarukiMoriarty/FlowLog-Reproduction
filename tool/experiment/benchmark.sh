@@ -229,7 +229,7 @@ run_flowlog() {
         return
     fi
     pushd "$FLOWLOG_DIR" > /dev/null
-    git checkout nemo_arithmetic
+    git checkout main
     git pull
     cargo build --release
     popd > /dev/null
