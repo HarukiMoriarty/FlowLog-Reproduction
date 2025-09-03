@@ -33,6 +33,7 @@ Install prerequisites and toolchains. You can install everything at once (recomm
 Notes:
 - You need sudo privileges; the script installs packages and configures Docker.
 - After the script completes, re-login (or reboot) so docker group membership takes effect, and run: `source ~/.bashrc` to pick up PATH updates.
+- The arithmetic feature in FlowLog is **not stable** at the moment. Currently, we only guarantee that the **SSSP** program runs successfully with arithmetic enabled. By default, all reproduction scripts use the `main` branch of FlowLog. If you specifically want to benchmark **SSSP** with arithmetic, please manually switch FlowLog to the `nemo_arithmetic` branch before running.  
 
 ## Reproduce Table 1
 
